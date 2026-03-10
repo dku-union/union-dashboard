@@ -46,7 +46,9 @@ export default function DashboardLayout({
       <AppSidebar />
       <SidebarInset>
         <DashboardHeader />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 blue-atmosphere">
+          <div className="relative z-[1]">{children}</div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

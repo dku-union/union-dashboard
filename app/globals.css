@@ -53,30 +53,30 @@
 
 /* ═══════════════════════════════════════════
    UNION — Light Theme
-   Bright whites + soft borders + sky blue accents
+   Blue-tinted surfaces + deep navy sidebar + vivid blue accents
    ═══════════════════════════════════════════ */
 :root {
-  --background: #FAFBFD;
-  --foreground: #1E293B;
+  --background: #EDF2FF;
+  --foreground: #1A2744;
   --card: #FFFFFF;
-  --card-foreground: #1E293B;
+  --card-foreground: #1A2744;
   --popover: #FFFFFF;
-  --popover-foreground: #1E293B;
-  --primary: #1E293B;
-  --primary-foreground: #FAFBFD;
-  --secondary: #F1F5F9;
-  --secondary-foreground: #1E293B;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  --accent: #EFF6FF;
-  --accent-foreground: #1E293B;
+  --popover-foreground: #1A2744;
+  --primary: #1A2744;
+  --primary-foreground: #EDF2FF;
+  --secondary: #DBEAFE;
+  --secondary-foreground: #1A2744;
+  --muted: #DFE8FF;
+  --muted-foreground: #5B7294;
+  --accent: #D4E4FF;
+  --accent-foreground: #1A2744;
   --destructive: #EF4444;
-  --border: #E8EDF4;
-  --input: #E8EDF4;
+  --border: #C1D2EE;
+  --input: #C1D2EE;
   --ring: #3B82F6;
 
   /* Brand colors */
-  --union: #3B82F6;
+  --union: #2563EB;
   --sage: #10B981;
   --gold: #F59E0B;
 
@@ -89,39 +89,39 @@
 
   --radius: 0.625rem;
 
-  /* Sidebar — light */
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #64748B;
-  --sidebar-primary: #3B82F6;
+  /* Sidebar — deep navy */
+  --sidebar: #0F1B2E;
+  --sidebar-foreground: #8BA3C7;
+  --sidebar-primary: #60A5FA;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EFF6FF;
-  --sidebar-accent-foreground: #1E293B;
-  --sidebar-border: #E8EDF4;
+  --sidebar-accent: #172744;
+  --sidebar-accent-foreground: #E2E8F0;
+  --sidebar-border: #1E3050;
   --sidebar-ring: #3B82F6;
 }
 
 /* ═══════════════════════════════════════════
    UNION — Dark Theme
-   Soft dark + muted blue + vivid blue accents
+   Deep blue-black + muted blue + vivid blue accents
    ═══════════════════════════════════════════ */
 .dark {
-  --background: #0F1219;
+  --background: #0B1120;
   --foreground: #E2E8F0;
-  --card: #171B24;
+  --card: #131B2E;
   --card-foreground: #E2E8F0;
-  --popover: #171B24;
+  --popover: #131B2E;
   --popover-foreground: #E2E8F0;
   --primary: #E2E8F0;
-  --primary-foreground: #0F1219;
-  --secondary: #1E2430;
+  --primary-foreground: #0B1120;
+  --secondary: #1A2540;
   --secondary-foreground: #E2E8F0;
-  --muted: #1E2430;
+  --muted: #1A2540;
   --muted-foreground: #94A3B8;
-  --accent: #1E2430;
+  --accent: #1A2540;
   --accent-foreground: #E2E8F0;
   --destructive: #F87171;
-  --border: #2A3040;
-  --input: #2A3040;
+  --border: #243352;
+  --input: #243352;
   --ring: #60A5FA;
 
   --union: #60A5FA;
@@ -134,13 +134,13 @@
   --chart-4: #FBBF24;
   --chart-5: #94A3B8;
 
-  --sidebar: #131720;
-  --sidebar-foreground: #94A3B8;
+  --sidebar: #080E1A;
+  --sidebar-foreground: #8BA3C7;
   --sidebar-primary: #60A5FA;
-  --sidebar-primary-foreground: #0F1219;
-  --sidebar-accent: #1E2430;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #121D32;
   --sidebar-accent-foreground: #E2E8F0;
-  --sidebar-border: #2A3040;
+  --sidebar-border: #1A2744;
   --sidebar-ring: #60A5FA;
 }
 
@@ -304,11 +304,11 @@
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px -8px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 8px 30px -8px rgba(37, 99, 235, 0.18), 0 2px 8px -2px rgba(37, 99, 235, 0.08);
   border-color: var(--union);
 }
 .dark .card-hover:hover {
-  box-shadow: 0 8px 30px -8px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 8px 30px -8px rgba(59, 130, 246, 0.2), 0 2px 8px -2px rgba(59, 130, 246, 0.1);
 }
 
 /* Union accent line on cards */
@@ -335,15 +335,39 @@
 .auth-bg {
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(15, 23, 42, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(96, 165, 250, 0.10) 0%, transparent 50%);
 }
 .dark .auth-bg {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(129, 140, 248, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(129, 140, 248, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(37, 99, 235, 0.06) 0%, transparent 50%);
+}
+
+/* ═══════════════════════════════════════════
+   Blue Atmosphere — gradient mesh for content area
+   ═══════════════════════════════════════════ */
+.blue-atmosphere {
+  position: relative;
+}
+.blue-atmosphere::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(96, 165, 250, 0.05) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+}
+.dark .blue-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(96, 165, 250, 0.03) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
 }
 
 /* ═══════════════════════════════════════════

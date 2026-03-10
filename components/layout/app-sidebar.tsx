@@ -62,10 +62,10 @@ export function AppSidebar() {
             className="group relative transition-all duration-200"
           >
             {isActive(item.href) && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-union rounded-r-full" />
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-sidebar-primary rounded-r-full" />
             )}
-            <item.icon className={`h-4 w-4 transition-colors ${isActive(item.href) ? "text-union" : "text-sidebar-foreground/70"}`} />
-            <span className={`text-[13px] ${isActive(item.href) ? "font-semibold text-foreground" : "font-normal text-sidebar-foreground"}`}>
+            <item.icon className={`h-4 w-4 transition-colors ${isActive(item.href) ? "text-sidebar-primary" : "text-sidebar-foreground/70"}`} />
+            <span className={`text-[13px] ${isActive(item.href) ? "font-semibold text-sidebar-accent-foreground" : "font-normal text-sidebar-foreground"}`}>
               {item.title}
             </span>
           </SidebarMenuButton>
@@ -78,12 +78,12 @@ export function AppSidebar() {
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader>
         <div className="flex items-center gap-3 px-3 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-union text-white heading-display text-sm font-bold">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-white heading-display text-sm font-bold">
             U
           </div>
           <div>
-            <p className="heading-display text-sm font-semibold text-foreground">Union</p>
-            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Publisher</p>
+            <p className="heading-display text-sm font-semibold text-sidebar-accent-foreground">Union</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-sidebar-foreground/70">Publisher</p>
           </div>
         </div>
       </SidebarHeader>
@@ -98,7 +98,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/60 px-3">
+          <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-sidebar-foreground/50 px-3">
             팀
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -107,7 +107,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/60 px-3">
+          <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-sidebar-foreground/50 px-3">
             리소스
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -120,7 +120,7 @@ export function AppSidebar() {
         <SidebarSeparator className="opacity-50" />
         {renderMenu(bottomItems)}
         <div className="px-3 py-3">
-          <p className="text-[10px] text-muted-foreground/40 tracking-wider">
+          <p className="text-[10px] text-sidebar-foreground/40 tracking-wider">
             Union Platform v1.0
           </p>
         </div>
