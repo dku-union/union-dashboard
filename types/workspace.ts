@@ -19,4 +19,5 @@ export interface Workspace {
   ownerId: string;
   members: TeamMember[];
   appIds: string[]; // mini-app IDs belonging to this workspace
+  color: string; // hex accent color
 }
