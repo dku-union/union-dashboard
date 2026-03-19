@@ -3,14 +3,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, SignupFormValues } from "@/lib/validations";
-import { useMockAuth } from "@/hooks/use-mock-auth";
+import { useAuthActions } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
 } from "@/components/ui/card";
 import {
   Form,
@@ -24,13 +23,13 @@ import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 
 export function SignupForm() {
-  const { handleSignup, isSubmitting } = useMockAuth();
+  const { handleSignup, isSubmitting } = useAuthActions();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
-      organization: "",
+      contactEmail: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -38,12 +37,17 @@ export function SignupForm() {
   });
 
   const onSubmit = async (data: SignupFormValues) => {
-    await handleSignup(data);
+    await handleSignup({
+      name: data.name,
+      contactEmail: data.contactEmail ?? "",
+      email: data.email,
+      password: data.password,
+    });
   };
 
   const fields = [
     { name: "name" as const, label: "이름", placeholder: "홍길동", type: "text" },
-    { name: "organization" as const, label: "소속", placeholder: "단국대학교", type: "text" },
+    { name: "contactEmail" as const, label: "연락 이메일", placeholder: "contact@example.com", type: "email" },
     { name: "email" as const, label: "이메일", placeholder: "developer@dankook.ac.kr", type: "email" },
     { name: "password" as const, label: "비밀번호", placeholder: "영문, 숫자 포함 8자 이상", type: "password" },
     { name: "confirmPassword" as const, label: "비밀번호 확인", placeholder: "비밀번호를 다시 입력하세요", type: "password" },

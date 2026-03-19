@@ -10,13 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/components/providers/auth-provider";
-import { useMockAuth } from "@/hooks/use-mock-auth";
+import { useAuthActions } from "@/hooks/use-auth";
 import { LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 
 export function UserNav() {
   const { user } = useAuth();
-  const { handleLogout } = useMockAuth();
+  const { handleLogout } = useAuthActions();
 
   const initials = user?.name
     ? user.name.split("").slice(0, 2).join("")

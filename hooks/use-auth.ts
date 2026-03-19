@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useState } from "react";
+import { toast } from "sonner";
 
-export function useMockAuth() {
+export function useAuthActions() {
   const { user, isLoading, login, signup, logout } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,11 +13,17 @@ export function useMockAuth() {
   const handleLogin = async (email: string, password: string) => {
     setIsSubmitting(true);
     try {
-      const success = await login(email, password);
-      if (success) {
-        router.push("/");
+      const result = await login(email, password);
+      if (result.success) {
+        if (result.role === "ROLE_ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
+        return true;
       }
-      return success;
+      toast.error(result.error || "로그인에 실패했습니다.");
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -24,24 +31,26 @@ export function useMockAuth() {
 
   const handleSignup = async (data: {
     name: string;
-    organization: string;
+    contactEmail: string;
     email: string;
     password: string;
   }) => {
     setIsSubmitting(true);
     try {
-      const success = await signup(data);
-      if (success) {
-        router.push("/verify-email");
+      const result = await signup(data);
+      if (result.success) {
+        router.push("/");
+        return true;
       }
-      return success;
+      toast.error(result.error || "회원가입에 실패했습니다.");
+      return false;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push("/login");
   };
 

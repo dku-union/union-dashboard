@@ -34,8 +34,8 @@ export default function SettingsPage() {
             <Input id="name" defaultValue={user?.name} className="h-11 bg-muted/30 border-border/60 focus:border-union" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="organization" className="text-xs uppercase tracking-wider text-muted-foreground">소속</Label>
-            <Input id="organization" defaultValue={user?.organization} className="h-11 bg-muted/30 border-border/60 focus:border-union" />
+            <Label htmlFor="contactEmail" className="text-xs uppercase tracking-wider text-muted-foreground">연락 이메일</Label>
+            <Input id="contactEmail" type="email" defaultValue={user?.contactEmail ?? ""} className="h-11 bg-muted/30 border-border/60 focus:border-union" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">이메일</Label>
