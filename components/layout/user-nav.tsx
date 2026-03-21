@@ -17,6 +17,7 @@ import Link from "next/link";
 export function UserNav() {
   const { user } = useAuth();
   const { handleLogout } = useAuthActions();
+  const settingsHref = user?.role === "ROLE_ADMIN" ? "/admin/settings" : "/settings";
 
   const initials = user?.name
     ? user.name.split("").slice(0, 2).join("")
@@ -43,7 +44,7 @@ export function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/settings" />} className="text-[13px]">
+        <DropdownMenuItem render={<Link href={settingsHref} />} className="text-[13px]">
           <Settings className="mr-2 h-4 w-4" />
           설정
         </DropdownMenuItem>
