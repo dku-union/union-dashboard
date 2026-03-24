@@ -1,10 +1,12 @@
-export type PublisherStatus = "active" | "suspended" | "pending";
+export type PublisherRole = "ROLE_USER" | "ROLE_ADMIN";
+export type PublisherStatus = "ACTIVE" | "SUSPENDED" | "PENDING";
 
 export interface Publisher {
   id: string;
   email: string;
   name: string;
-  organization: string;
+  contactEmail?: string;
+  role: PublisherRole;
   status: PublisherStatus;
   createdAt: string;
   profileImage?: string;

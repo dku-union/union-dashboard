@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormValues } from "@/lib/validations";
-import { useMockAuth } from "@/hooks/use-mock-auth";
+import { useAuthActions } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,7 +23,7 @@ import Link from "next/link";
 import { Loader2, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
-  const { handleLogin, isSubmitting } = useMockAuth();
+  const { handleLogin, isSubmitting } = useAuthActions();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

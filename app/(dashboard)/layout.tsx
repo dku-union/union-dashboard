@@ -4,22 +4,13 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { useAuth } from "@/components/providers/auth-provider";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, isLoading, router]);
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -35,10 +26,6 @@ export default function DashboardLayout({
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   return (
