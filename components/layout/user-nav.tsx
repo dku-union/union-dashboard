@@ -4,19 +4,24 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/components/providers/auth-provider";
-import { useAuthActions } from "@/hooks/use-auth";
 import { LogOut, Settings } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function UserNav() {
-  const { user } = useAuth();
-  const { handleLogout } = useAuthActions();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout().then(() => router.push("/login"));
+  };
 
   const initials = user?.name
     ? user.name.split("").slice(0, 2).join("")
@@ -36,12 +41,14 @@ export function UserNav() {
         }
       />
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-semibold">{user?.name}</p>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
-          </div>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-semibold">{user?.name}</p>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href="/settings" />} className="text-[13px]">
           <Settings className="mr-2 h-4 w-4" />
