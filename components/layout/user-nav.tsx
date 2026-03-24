@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 export function UserNav() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const settingsHref = user?.role === "ROLE_ADMIN" ? "/admin/settings" : "/settings";
 
   const handleLogout = () => {
     logout().then(() => router.push("/login"));
@@ -50,7 +51,7 @@ export function UserNav() {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem render={<Link href="/settings" />} className="text-[13px]">
+        <DropdownMenuItem render={<Link href={settingsHref} />} className="text-[13px]">
           <Settings className="mr-2 h-4 w-4" />
           설정
         </DropdownMenuItem>

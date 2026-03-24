@@ -19,6 +19,8 @@ import {
   LayoutDashboard,
   Users,
   AppWindow,
+  ShieldAlert,
+  UserRound,
   Settings,
   Shield,
 } from "lucide-react";
@@ -33,6 +35,9 @@ const adminNavItems = [
   { title: "관리 대시보드", href: "/admin", icon: LayoutDashboard },
   { title: "퍼블리셔 관리", href: "/admin/publishers", icon: Users },
   { title: "앱 심사", href: "/admin/apps", icon: AppWindow },
+  { title: "미니앱 운영", href: "/admin/mini-apps", icon: Shield },
+  { title: "신고 관리", href: "/admin/reports", icon: ShieldAlert },
+  { title: "사용자 관리", href: "/admin/users", icon: UserRound },
   { title: "설정", href: "/admin/settings", icon: Settings },
 ];
 
