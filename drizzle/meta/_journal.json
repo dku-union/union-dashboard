@@ -8,6 +8,13 @@
       "when": 1773900266126,
       "tag": "0000_easy_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774429457206,
+      "tag": "0001_dark_madame_hydra",
+      "breakpoints": true
     }
   ]
 }
