@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { publishers } from "@/lib/db/schema";
+import { publishers, emailVerifications } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
-import { eq } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 const signupSchema = z.object({
   name: z.string().min(2),
@@ -26,6 +26,26 @@ export async function POST(request: Request) {
     }
 
     const { name, email, password, contactEmail } = parsed.data;
+
+    // 이메일 인증 완료 여부 확인
+    const [verification] = await db
+      .select()
+      .from(emailVerifications)
+      .where(
+        and(
+          eq(emailVerifications.email, email),
+          eq(emailVerifications.verified, true),
+        ),
+      )
+      .orderBy(desc(emailVerifications.createdAt))
+      .limit(1);
+
+    if (!verification) {
+      return NextResponse.json(
+        { error: "이메일 인증을 먼저 완료해주세요." },
+        { status: 400 },
+      );
+    }
 
     // Check duplicate email
     const existing = await db
