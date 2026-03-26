@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-const publicPaths = ["/login", "/signup"];
+const publicPaths = ["/", "/login", "/signup"];
 
 async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get("union-session")?.value;
@@ -22,10 +22,10 @@ export async function middleware(request: NextRequest) {
   const session = await getSessionFromRequest(request);
 
   // Auth pages: redirect logged-in users based on role
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
+  if (pathname === "/" || publicPaths.some((p) => p !== "/" && pathname.startsWith(p))) {
     if (session) {
       const dest =
-        session.role === "ROLE_ADMIN" ? "/admin" : "/";
+        session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
       return NextResponse.redirect(new URL(dest, request.url));
     }
     return NextResponse.next();
@@ -37,12 +37,19 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     if (session.role !== "ROLE_ADMIN") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     return NextResponse.next();
   }
 
   // Dashboard routes: require authentication
+  if (pathname.startsWith("/dashboard")) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next();
+  }
+
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 import { mockWorkspaces } from "@/data/workspace";
 
 const breadcrumbMap: Record<string, string> = {
-  "/": "대시보드",
+  "/dashboard": "대시보드",
   "/apps": "미니앱 관리",
   "/apps/new": "새 미니앱 등록",
   "/reviews": "심사 현황",
@@ -39,8 +39,8 @@ export function DashboardHeader() {
   const pathname = usePathname();
 
   const getBreadcrumbs = () => {
-    if (pathname === "/") {
-      return [{ label: "대시보드", href: "/" }];
+    if (pathname === "/dashboard") {
+      return [{ label: "대시보드", href: "/dashboard" }];
     }
 
     const segments = pathname.split("/").filter(Boolean);
