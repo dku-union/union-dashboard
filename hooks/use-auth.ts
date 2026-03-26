@@ -31,7 +31,6 @@ export function useAuthActions() {
 
   const handleSignup = async (data: {
     name: string;
-    contactEmail: string;
     email: string;
     password: string;
   }) => {

@@ -37,7 +37,6 @@ export function SignupForm() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
-      contactEmail: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -131,7 +130,6 @@ export function SignupForm() {
     }
     await handleSignup({
       name: data.name,
-      contactEmail: data.contactEmail ?? "",
       email: data.email,
       password: data.password,
     });
@@ -175,32 +173,12 @@ export function SignupForm() {
               )}
             />
 
-            {/* 연락 이메일 */}
-            <FormField
-              control={form.control}
-              name="contactEmail"
-              render={({ field }) => (
-                <FormItem className="animate-fade-up delay-2">
-                  <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">연락 이메일</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="contact@example.com"
-                      className="h-11 bg-muted/50 border-border/60 focus:border-union focus:ring-union/20 transition-colors"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* 이메일 + 인증 */}
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="animate-fade-up delay-3">
+                <FormItem className="animate-fade-up delay-2">
                   <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">이메일</FormLabel>
                   <div className="flex gap-2">
                     <FormControl>
@@ -271,7 +249,7 @@ export function SignupForm() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="animate-fade-up delay-4">
+                <FormItem className="animate-fade-up delay-3">
                   <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">비밀번호</FormLabel>
                   <FormControl>
                     <Input
@@ -291,7 +269,7 @@ export function SignupForm() {
               control={form.control}
               name="confirmPassword"
               render={({ field }) => (
-                <FormItem className="animate-fade-up delay-5">
+                <FormItem className="animate-fade-up delay-4">
                   <FormLabel className="text-xs uppercase tracking-wider text-muted-foreground">비밀번호 확인</FormLabel>
                   <FormControl>
                     <Input
@@ -308,7 +286,7 @@ export function SignupForm() {
 
             <Button
               type="submit"
-              className="animate-fade-up delay-6 w-full h-11 bg-union text-white hover:bg-union/90 transition-all group mt-2"
+              className="animate-fade-up delay-5 w-full h-11 bg-union text-white hover:bg-union/90 transition-all group mt-2"
               disabled={isSubmitting || !emailVerified}
             >
               {isSubmitting ? (
@@ -324,7 +302,7 @@ export function SignupForm() {
         </Form>
       </CardContent>
       <CardFooter className="justify-center pt-2 pb-6">
-        <p className="text-sm text-muted-foreground animate-fade-up delay-7">
+        <p className="text-sm text-muted-foreground animate-fade-up delay-6">
           이미 계정이 있으신가요?{" "}
           <Link href="/login" className="text-union hover:text-union/80 font-medium transition-colors">
             로그인

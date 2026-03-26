@@ -10,7 +10,6 @@ const signupSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(8),
-  contactEmail: z.string().email().optional().or(z.literal("")),
 });
 
 export async function POST(request: Request) {
@@ -25,7 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, password, contactEmail } = parsed.data;
+    const { name, email, password } = parsed.data;
 
     // 이메일 인증 완료 여부 확인
     const [verification] = await db
@@ -69,7 +68,6 @@ export async function POST(request: Request) {
         name,
         email,
         password: hashedPassword,
-        contactEmail: contactEmail || null,
         role: "ROLE_USER",
         pubstatus: "ACTIVE",
       })

@@ -19,7 +19,6 @@ export async function GET() {
         name: publishers.name,
         role: publishers.role,
         pubstatus: publishers.pubstatus,
-        contactEmail: publishers.contactEmail,
         createdAt: publishers.createdAt,
       })
       .from(publishers)
@@ -37,7 +36,6 @@ export async function GET() {
         name: publisher.name,
         role: publisher.role,
         status: publisher.pubstatus,
-        contactEmail: publisher.contactEmail,
         createdAt: publisher.createdAt?.toISOString(),
       },
     });
