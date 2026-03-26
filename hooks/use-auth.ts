@@ -18,7 +18,7 @@ export function useAuthActions() {
         if (result.role === "ROLE_ADMIN") {
           router.push("/admin");
         } else {
-          router.push("/");
+          router.push("/dashboard");
         }
         return true;
       }
@@ -39,7 +39,7 @@ export function useAuthActions() {
     try {
       const result = await signup(data);
       if (result.success) {
-        router.push("/");
+        router.push("/dashboard");
         return true;
       }
       toast.error(result.error || "회원가입에 실패했습니다.");
