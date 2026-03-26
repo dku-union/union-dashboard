@@ -7,7 +7,7 @@ interface AuthContextType {
   user: Publisher | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; role?: string }>;
-  signup: (data: { name: string; contactEmail: string; email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
+  signup: (data: { name: string; email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { success: true, role: data.role };
   }, []);
 
-  const signup = useCallback(async (data: { name: string; contactEmail: string; email: string; password: string }) => {
+  const signup = useCallback(async (data: { name: string; email: string; password: string }) => {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

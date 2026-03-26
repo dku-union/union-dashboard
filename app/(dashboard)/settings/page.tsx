@@ -34,10 +34,6 @@ export default function SettingsPage() {
             <Input id="name" defaultValue={user?.name} className="h-11 bg-muted/30 border-border/60 focus:border-union" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="contactEmail" className="text-xs uppercase tracking-wider text-muted-foreground">연락 이메일</Label>
-            <Input id="contactEmail" type="email" defaultValue={user?.contactEmail ?? ""} className="h-11 bg-muted/30 border-border/60 focus:border-union" />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">이메일</Label>
             <Input id="email" type="email" defaultValue={user?.email} disabled className="h-11 bg-muted/30 border-border/60" />
             <p className="text-[11px] text-muted-foreground/60">이메일은 변경할 수 없습니다.</p>

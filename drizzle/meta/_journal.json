@@ -15,6 +15,13 @@
       "when": 1774429457206,
       "tag": "0001_dark_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774509890609,
+      "tag": "0002_salty_black_queen",
+      "breakpoints": true
     }
   ]
 }

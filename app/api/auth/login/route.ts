@@ -61,7 +61,6 @@ export async function POST(request: Request) {
       name: publisher.name,
       role: publisher.role,
       status: publisher.pubstatus,
-      contactEmail: publisher.contactEmail,
       createdAt: publisher.createdAt?.toISOString(),
     });
   } catch (error) {
