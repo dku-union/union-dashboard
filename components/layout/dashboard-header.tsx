@@ -13,8 +13,6 @@ import {
 import { ThemeToggle } from "./theme-toggle";
 import { UserNav } from "./user-nav";
 import { usePathname } from "next/navigation";
-import { mockWorkspaces } from "@/data/workspace";
-
 const breadcrumbMap: Record<string, string> = {
   "/dashboard": "대시보드",
   "/apps": "미니앱 관리",
@@ -26,13 +24,8 @@ const breadcrumbMap: Record<string, string> = {
   "/docs/development-guide": "개발 가이드",
   "/docs/bridge-api": "Bridge API",
   "/workspace": "워크스페이스",
+  "/workspace/new": "새 워크스페이스",
   "/settings": "설정",
-};
-
-// Dynamic workspace name lookup
-const getWorkspaceBreadcrumb = (id: string) => {
-  const ws = mockWorkspaces.find((w) => w.id === id);
-  return ws?.name ?? id;
 };
 
 export function DashboardHeader() {
@@ -49,10 +42,7 @@ export function DashboardHeader() {
     let currentPath = "";
     for (const segment of segments) {
       currentPath += `/${segment}`;
-      let label = breadcrumbMap[currentPath];
-      if (!label && currentPath.startsWith("/workspace/")) {
-        label = getWorkspaceBreadcrumb(segment);
-      }
+      const label = breadcrumbMap[currentPath];
       crumbs.push({ label: label || segment, href: currentPath });
     }
 

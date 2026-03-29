@@ -10,4 +10,5 @@ export interface Publisher {
   status: PublisherStatus;
   createdAt: string;
   profileImage?: string;
+  hasWorkspace?: boolean;
 }
