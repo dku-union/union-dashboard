@@ -29,28 +29,28 @@ export default function DashboardHome() {
 
   const stats = [
     {
-      label: "Total apps",
+      label: "전체 앱",
       value: totalApps,
       icon: AppWindow,
       color: "text-foreground",
       bg: "bg-gradient-to-br from-foreground/5 to-foreground/[0.02]",
     },
     {
-      label: "Published",
+      label: "게시됨",
       value: publishedCount,
       icon: AppWindow,
       color: "text-sage",
       bg: "bg-gradient-to-br from-sage/10 to-sage/5",
     },
     {
-      label: "In review",
+      label: "심사 중",
       value: inReviewCount,
       icon: ClipboardCheck,
       color: "text-gold",
       bg: "bg-gradient-to-br from-gold/10 to-gold/5",
     },
     {
-      label: "Needs action",
+      label: "처리 필요",
       value: pendingReviews,
       icon: BarChart3,
       color: "text-union",
@@ -62,20 +62,20 @@ export default function DashboardHome() {
     {
       href: "/apps/new",
       icon: Plus,
-      label: "Register mini app",
-      description: "Create a new app entry and prepare the first release.",
+      label: "미니앱 등록",
+      description: "새로운 앱을 등록하고 첫 번째 릴리즈를 준비하세요.",
     },
     {
       href: "/workspace",
       icon: Users,
-      label: "Open workspace",
-      description: "Manage collaborators and shared publisher resources.",
+      label: "워크스페이스",
+      description: "팀원을 관리하고 퍼블리셔 리소스를 공유하세요.",
     },
     {
       href: "/docs",
       icon: BookOpen,
-      label: "Read docs",
-      description: "Check implementation details and submission guidance.",
+      label: "문서 보기",
+      description: "개발 가이드와 심사 제출 안내를 확인하세요.",
     },
   ];
 
@@ -83,10 +83,10 @@ export default function DashboardHome() {
     <div className="max-w-6xl space-y-8">
       <div className="animate-fade-up">
         <h1 className="heading-display text-3xl tracking-tight">
-          Welcome back, <span className="union-underline">{user?.name}</span>
+          안녕하세요, <span className="union-underline">{user?.name}</span>님
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Track releases, reviews, and workspace activity from one dashboard.
+          Union Publisher Dashboard에 오신 것을 환영합니다.
         </p>
       </div>
 
@@ -113,7 +113,7 @@ export default function DashboardHome() {
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-3 lg:col-span-2">
           <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-            Quick actions
+            빠른 작업
           </h2>
           <div className="space-y-2">
             {quickActions.map((action) => (
@@ -143,7 +143,7 @@ export default function DashboardHome() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-                Recent review activity
+                최근 심사 현황
               </CardTitle>
               <div className="h-0.5 w-6 bg-union" />
             </div>
