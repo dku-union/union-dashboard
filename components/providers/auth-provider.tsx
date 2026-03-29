@@ -6,7 +6,7 @@ import { Publisher } from "@/types/user";
 interface AuthContextType {
   user: Publisher | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; role?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; role?: string; hasWorkspace?: boolean }>;
   signup: (data: { name: string; email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setUser(data);
-    return { success: true, role: data.role };
+    return { success: true, role: data.role, hasWorkspace: data.hasWorkspace };
   }, []);
 
   const signup = useCallback(async (data: { name: string; email: string; password: string }) => {

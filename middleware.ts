@@ -11,7 +11,7 @@ async function getSessionFromRequest(request: NextRequest) {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret);
-    return payload as { id: string; email: string; name: string; role: string };
+    return payload as { id: string; email: string; name: string; role: string; hasWorkspace?: boolean };
   } catch {
     return null;
   }
@@ -42,16 +42,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Dashboard routes: require authentication
-  if (pathname.startsWith("/dashboard")) {
-    if (!session) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    return NextResponse.next();
-  }
-
+  // All other routes: require authentication
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Workspace redirect: 퍼블리셔가 워크스페이스 없으면 /workspace/new로
+  // 기존 JWT에 hasWorkspace가 없으면 true로 간주 (기존 사용자 호환)
+  const hasWorkspace = session.hasWorkspace ?? true;
+  if (!hasWorkspace && session.role !== "ROLE_ADMIN") {
+    // /workspace/new와 /api는 허용
+    if (!pathname.startsWith("/workspace/new") && !pathname.startsWith("/api/")) {
+      return NextResponse.redirect(new URL("/workspace/new", request.url));
+    }
   }
 
   return NextResponse.next();

@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    await createSession(newPublisher);
+    await createSession({ ...newPublisher, hasWorkspace: false });
 
     return NextResponse.json({
       id: newPublisher.publisherId,
@@ -81,6 +81,7 @@ export async function POST(request: Request) {
       name: newPublisher.name,
       role: newPublisher.role,
       status: newPublisher.pubstatus,
+      hasWorkspace: false,
     });
   } catch (error) {
     console.error("Signup error:", error);

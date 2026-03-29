@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { publishers } from "@/lib/db/schema";
+import { publishers, workspaceMembers } from "@/lib/db/schema";
 import { verifyPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { eq } from "drizzle-orm";
@@ -53,7 +53,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await createSession(publisher);
+    const memberRows = await db
+      .select({ id: workspaceMembers.id })
+      .from(workspaceMembers)
+      .where(eq(workspaceMembers.publisherId, publisher.publisherId))
+      .limit(1);
+    const hasWorkspace = memberRows.length > 0;
+
+    await createSession({ ...publisher, hasWorkspace });
 
     return NextResponse.json({
       id: publisher.publisherId,
@@ -62,6 +69,7 @@ export async function POST(request: Request) {
       role: publisher.role,
       status: publisher.pubstatus,
       createdAt: publisher.createdAt?.toISOString(),
+      hasWorkspace,
     });
   } catch (error) {
     console.error("Login error:", error);

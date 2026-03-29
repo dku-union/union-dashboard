@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { workspaces, workspaceMembers, publishers } from "@/lib/db/schema";
-import { getSession } from "@/lib/auth/session";
+import { getSession, createSession } from "@/lib/auth/session";
 import { createWorkspaceSchema } from "@/lib/validations";
 import { eq, sql } from "drizzle-orm";
 
@@ -86,6 +86,15 @@ export async function POST(request: Request) {
       workspaceId: workspace.workspaceId,
       publisherId: session.id,
       role: "owner",
+    });
+
+    // 세션 갱신: hasWorkspace를 true로
+    await createSession({
+      publisherId: session.id,
+      email: session.email,
+      name: session.name,
+      role: session.role,
+      hasWorkspace: true,
     });
 
     return NextResponse.json({
