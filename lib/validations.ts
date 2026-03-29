@@ -46,3 +46,30 @@ export const miniAppSchema = z.object({
 });
 
 export type MiniAppFormValues = z.infer<typeof miniAppSchema>;
+
+export const createWorkspaceSchema = z.object({
+  name: z
+    .string()
+    .min(2, "워크스페이스 이름은 2자 이상이어야 합니다.")
+    .max(100, "워크스페이스 이름은 100자 이하여야 합니다."),
+  description: z
+    .string()
+    .max(500, "설명은 500자 이하여야 합니다.")
+    .optional(),
+  contactEmail: z.string().email("유효한 이메일 주소를 입력해주세요."),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, "유효한 색상 코드를 입력해주세요.")
+    .optional(),
+});
+
+export type CreateWorkspaceFormValues = z.infer<typeof createWorkspaceSchema>;
+
+export const inviteMemberSchema = z.object({
+  email: z.string().email("유효한 이메일 주소를 입력해주세요."),
+  role: z.enum(["admin", "developer", "viewer"], {
+    required_error: "역할을 선택해주세요.",
+  }),
+});
+
+export type InviteMemberFormValues = z.infer<typeof inviteMemberSchema>;

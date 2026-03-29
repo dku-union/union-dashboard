@@ -1,23 +1,23 @@
 export type MemberRole = "owner" | "admin" | "developer" | "viewer";
 
 export interface TeamMember {
-  id: string;
+  id: number;
+  publisherId: string;
   name: string;
   email: string;
   role: MemberRole;
-  avatarUrl?: string;
   joinedAt: string;
-  lastActiveAt: string;
-  assignedApps: string[]; // mini-app IDs
 }
 
 export interface Workspace {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
+  contactEmail: string;
+  color: string;
+  ownerId: string | null;
   createdAt: string;
-  ownerId: string;
-  members: TeamMember[];
-  appIds: string[]; // mini-app IDs belonging to this workspace
-  color: string; // hex accent color
+  updatedAt: string;
+  memberCount?: number;
+  members?: TeamMember[];
 }
