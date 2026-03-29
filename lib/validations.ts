@@ -68,7 +68,7 @@ export type CreateWorkspaceFormValues = z.infer<typeof createWorkspaceSchema>;
 export const inviteMemberSchema = z.object({
   email: z.string().email("유효한 이메일 주소를 입력해주세요."),
   role: z.enum(["admin", "developer", "viewer"], {
-    required_error: "역할을 선택해주세요.",
+    message: "역할을 선택해주세요.",
   }),
 });
 

@@ -64,7 +64,7 @@ export async function POST(request: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.errors[0].message },
+        { error: "입력값이 올바르지 않습니다." },
         { status: 400 },
       );
     }
