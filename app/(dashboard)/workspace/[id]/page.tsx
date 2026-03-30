@@ -8,6 +8,7 @@ import { InviteMemberDialog } from "@/components/workspace/invite-member-dialog"
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MemberRole } from "@/types/workspace";
+import { Badge } from "@/components/ui/badge";
 import {
   Users,
   UserPlus,
@@ -15,6 +16,8 @@ import {
   Settings,
   ArrowLeft,
   Loader2,
+  Clock,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -82,6 +85,7 @@ export default function WorkspaceDetailPage() {
   }
 
   const members = workspace.members ?? [];
+  const pendingInvitations = workspace.pendingInvitations ?? [];
   const myRole = workspace.myRole as MemberRole;
   const canManage = myRole === "owner" || myRole === "admin";
   const canChangeRole = myRole === "owner";
@@ -207,6 +211,33 @@ export default function WorkspaceDetailPage() {
               </div>
             ))}
           </div>
+
+          {pendingInvitations.length > 0 && canManage && (
+            <div className="mt-6 space-y-3">
+              <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-medium flex items-center gap-1.5">
+                <Clock className="h-3 w-3" />
+                대기 중인 초대 ({pendingInvitations.length})
+              </h3>
+              {pendingInvitations.map((inv: { id: number; email: string; role: string; createdAt: string }) => (
+                <Card key={inv.id} className="border-border/60 border-dashed">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted/60">
+                      <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate">{inv.email}</p>
+                      <p className="text-[10px] text-muted-foreground/60">
+                        {inv.createdAt ? new Date(inv.createdAt).toLocaleDateString("ko-KR") : ""}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      {inv.role} · 대기중
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mini-app placeholder */}

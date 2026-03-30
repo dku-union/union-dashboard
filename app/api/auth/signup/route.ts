@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { publishers, emailVerifications } from "@/lib/db/schema";
+import { publishers, emailVerifications, workspaceInvitations, notifications, workspaces } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
 import { eq, and, desc } from "drizzle-orm";
@@ -73,6 +73,46 @@ export async function POST(request: Request) {
       })
       .returning();
 
+    // 가입 전 받은 pending 초대가 있으면 알림 생성
+    const pendingInvites = await db
+      .select({
+        id: workspaceInvitations.id,
+        workspaceId: workspaceInvitations.workspaceId,
+        role: workspaceInvitations.role,
+        invitedBy: workspaceInvitations.invitedBy,
+      })
+      .from(workspaceInvitations)
+      .where(
+        and(
+          eq(workspaceInvitations.email, email),
+          eq(workspaceInvitations.status, "pending"),
+        ),
+      );
+
+    if (pendingInvites.length > 0) {
+      // 초대한 워크스페이스 이름 + 초대자 이름 조회
+      for (const inv of pendingInvites) {
+        const [ws] = await db
+          .select({ name: workspaces.name })
+          .from(workspaces)
+          .where(eq(workspaces.workspaceId, inv.workspaceId))
+          .limit(1);
+        const [inviter] = await db
+          .select({ name: publishers.name })
+          .from(publishers)
+          .where(eq(publishers.publisherId, inv.invitedBy))
+          .limit(1);
+
+        await db.insert(notifications).values({
+          publisherId: newPublisher.publisherId,
+          type: "workspace_invitation",
+          title: "워크스페이스 초대",
+          message: `${inviter?.name ?? "알 수 없음"}님이 "${ws?.name}" 워크스페이스에 초대했습니다.`,
+          referenceId: String(inv.id),
+        });
+      }
+    }
+
     await createSession({ ...newPublisher, hasWorkspace: false });
 
     return NextResponse.json({
@@ -82,6 +122,7 @@ export async function POST(request: Request) {
       role: newPublisher.role,
       status: newPublisher.pubstatus,
       hasWorkspace: false,
+      pendingInvitations: pendingInvites.length,
     });
   } catch (error) {
     console.error("Signup error:", error);
