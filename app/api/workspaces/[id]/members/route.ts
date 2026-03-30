@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { workspaceMembers, publishers } from "@/lib/db/schema";
+import { workspaceMembers, workspaceInvitations, notifications, publishers, workspaces } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { inviteMemberSchema } from "@/lib/validations";
 import { eq, and } from "drizzle-orm";
@@ -48,45 +48,79 @@ export async function POST(
 
     const { email, role } = parsed.data;
 
-    // 등록된 퍼블리셔인지 확인
+    // 이미 멤버인지 확인 (가입된 경우)
     const [publisher] = await db
-      .select({ publisherId: publishers.publisherId, name: publishers.name })
+      .select({ publisherId: publishers.publisherId })
       .from(publishers)
       .where(eq(publishers.email, email))
       .limit(1);
 
-    if (!publisher) {
-      return NextResponse.json(
-        { error: "등록되지 않은 이메일입니다. 가입된 퍼블리셔만 초대할 수 있습니다." },
-        { status: 404 },
-      );
+    if (publisher) {
+      const existing = await getMemberRole(workspaceId, publisher.publisherId);
+      if (existing) {
+        return NextResponse.json(
+          { error: "이미 워크스페이스에 소속된 멤버입니다." },
+          { status: 409 },
+        );
+      }
     }
 
-    // 이미 멤버인지 확인
-    const existing = await getMemberRole(workspaceId, publisher.publisherId);
-    if (existing) {
+    // 이미 대기 중인 초대가 있는지 확인
+    const [existingInvite] = await db
+      .select()
+      .from(workspaceInvitations)
+      .where(
+        and(
+          eq(workspaceInvitations.workspaceId, workspaceId),
+          eq(workspaceInvitations.email, email),
+          eq(workspaceInvitations.status, "pending"),
+        ),
+      )
+      .limit(1);
+
+    if (existingInvite) {
       return NextResponse.json(
-        { error: "이미 워크스페이스에 소속된 멤버입니다." },
+        { error: "이미 초대가 발송된 이메일입니다." },
         { status: 409 },
       );
     }
 
-    const [member] = await db
-      .insert(workspaceMembers)
+    // 워크스페이스 이름 조회
+    const [ws] = await db
+      .select({ name: workspaces.name })
+      .from(workspaces)
+      .where(eq(workspaces.workspaceId, workspaceId))
+      .limit(1);
+
+    // 초대 생성
+    const [invitation] = await db
+      .insert(workspaceInvitations)
       .values({
         workspaceId,
-        publisherId: publisher.publisherId,
+        email,
         role,
+        invitedBy: session.id,
       })
       .returning();
 
+    // 가입된 퍼블리셔라면 알림도 생성
+    if (publisher) {
+      await db.insert(notifications).values({
+        publisherId: publisher.publisherId,
+        type: "workspace_invitation",
+        title: "워크스페이스 초대",
+        message: `${session.name}님이 "${ws?.name}" 워크스페이스에 ${role}(으)로 초대했습니다.`,
+        referenceId: String(invitation.id),
+      });
+    }
+
     return NextResponse.json({
-      id: member.id,
-      publisherId: publisher.publisherId,
-      name: publisher.name,
+      id: invitation.id,
       email,
-      role: member.role,
-      joinedAt: member.joinedAt?.toISOString(),
+      role: invitation.role,
+      status: invitation.status,
+      createdAt: invitation.createdAt?.toISOString(),
+      isRegistered: !!publisher,
     });
   } catch (error) {
     console.error("POST /api/workspaces/[id]/members error:", error);

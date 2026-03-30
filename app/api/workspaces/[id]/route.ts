@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { workspaces, workspaceMembers, publishers } from "@/lib/db/schema";
+import { workspaces, workspaceMembers, publishers, workspaceInvitations } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
@@ -66,6 +66,22 @@ export async function GET(
       .innerJoin(publishers, eq(workspaceMembers.publisherId, publishers.publisherId))
       .where(eq(workspaceMembers.workspaceId, id));
 
+    // pending 초대 조회
+    const pendingInvites = await db
+      .select({
+        id: workspaceInvitations.id,
+        email: workspaceInvitations.email,
+        role: workspaceInvitations.role,
+        createdAt: workspaceInvitations.createdAt,
+      })
+      .from(workspaceInvitations)
+      .where(
+        and(
+          eq(workspaceInvitations.workspaceId, id),
+          eq(workspaceInvitations.status, "pending"),
+        ),
+      );
+
     return NextResponse.json({
       id: workspace.workspaceId,
       name: workspace.name,
@@ -83,6 +99,12 @@ export async function GET(
         email: m.email,
         role: m.role,
         joinedAt: m.joinedAt?.toISOString(),
+      })),
+      pendingInvitations: pendingInvites.map((inv) => ({
+        id: inv.id,
+        email: inv.email,
+        role: inv.role,
+        createdAt: inv.createdAt?.toISOString(),
       })),
     });
   } catch (error) {

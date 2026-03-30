@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, pgEnum, boolean, serial, unique } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, pgEnum, boolean, serial, unique, text } from "drizzle-orm/pg-core";
 
 export const pubStatusEnum = pgEnum("pub_status", [
   "ACTIVE",
@@ -16,6 +16,18 @@ export const workspaceRoleEnum = pgEnum("workspace_role", [
   "admin",
   "developer",
   "viewer",
+]);
+
+export const invitationStatusEnum = pgEnum("invitation_status", [
+  "pending",
+  "accepted",
+  "declined",
+]);
+
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "workspace_invitation",
+  "review_result",
+  "general",
 ]);
 
 export const emailVerifications = pgTable("email_verifications", {
@@ -63,3 +75,34 @@ export const workspaceMembers = pgTable(
   },
   (t) => [unique().on(t.workspaceId, t.publisherId)],
 );
+
+export const workspaceInvitations = pgTable(
+  "workspace_invitations",
+  {
+    id: serial("id").primaryKey(),
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.workspaceId, { onDelete: "cascade" }),
+    email: varchar("email", { length: 255 }).notNull(),
+    role: workspaceRoleEnum("role").notNull(),
+    status: invitationStatusEnum("status").notNull().default("pending"),
+    invitedBy: uuid("invited_by")
+      .notNull()
+      .references(() => publishers.publisherId),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [unique().on(t.workspaceId, t.email)],
+);
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  publisherId: uuid("publisher_id")
+    .notNull()
+    .references(() => publishers.publisherId, { onDelete: "cascade" }),
+  type: notificationTypeEnum("type").notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  message: varchar("message", { length: 500 }),
+  isRead: boolean("is_read").notNull().default(false),
+  referenceId: varchar("reference_id", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});

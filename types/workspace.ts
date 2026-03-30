@@ -9,6 +9,13 @@ export interface TeamMember {
   joinedAt: string;
 }
 
+export interface PendingInvitation {
+  id: number;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -20,4 +27,6 @@ export interface Workspace {
   updatedAt: string;
   memberCount?: number;
   members?: TeamMember[];
+  myRole?: string;
+  pendingInvitations?: PendingInvitation[];
 }

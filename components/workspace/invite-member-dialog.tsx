@@ -49,19 +49,19 @@ export function InviteMemberDialog({ open, onOpenChange, workspaceId, onInvited 
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || "멤버 추가에 실패했습니다.");
+        toast.error(data.error || "초대에 실패했습니다.");
         return;
       }
 
-      toast.success("멤버가 추가되었습니다.", {
-        description: `${email}을(를) ${ROLE_LABELS[role]}(으)로 추가했습니다.`,
+      toast.success("초대를 보냈습니다.", {
+        description: `${email}을(를) ${ROLE_LABELS[role]}(으)로 초대했습니다.${!data.isRegistered ? " (미가입 사용자 — 가입 후 알림을 받게 됩니다)" : ""}`,
       });
       setEmail("");
       setRole("developer");
       onOpenChange(false);
       onInvited?.();
     } catch {
-      toast.error("멤버 추가 중 오류가 발생했습니다.");
+      toast.error("초대 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
