@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { LandingSectionHeading } from "@/components/landing/landing-section-heading";
@@ -41,7 +42,7 @@ export function LandingFaqCta() {
                 Final CTA
               </p>
               <h2 className="mt-4 heading-display text-4xl font-semibold tracking-tight sm:text-5xl">
-                UniApp로
+                Union으로
                 <br />
                 캠퍼스 아이디어를 시작하세요
               </h2>
@@ -79,11 +80,17 @@ export function LandingFaqCta() {
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5B8CFF,#4776F3)] text-sm font-semibold text-white">
-                U
+              <div className="overflow-hidden rounded-full">
+                <Image
+                  src="/logo.png"
+                  alt="Union logo"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 object-cover"
+                />
               </div>
               <div>
-                <p className="heading-display text-lg font-semibold text-slate-950">UniApp</p>
+                <p className="heading-display text-lg font-semibold text-slate-950">Union</p>
                 <p className="text-sm text-slate-500">University mini-app launch platform</p>
               </div>
             </div>

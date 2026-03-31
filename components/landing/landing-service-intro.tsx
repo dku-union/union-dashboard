@@ -11,7 +11,7 @@ export function LandingServiceIntro() {
           align="left"
           title={
             <>
-              UniApp는 캠퍼스 아이디어를
+              Union은 캠퍼스 아이디어를
               <br />
               실제 서비스로 연결합니다
             </>

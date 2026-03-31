@@ -19,7 +19,7 @@ export function LandingHowItWorks() {
                 바로 출시할 수 있어요
               </>
             }
-            description="기존 앱스토어의 복잡한 절차와 높은 진입 장벽 대신, UniApp에서는 훨씬 가벼운 운영 흐름으로 서비스를 시작할 수 있습니다."
+            description="기존 앱스토어의 복잡한 절차와 높은 진입 장벽 대신, Union에서는 훨씬 가벼운 운영 흐름으로 서비스를 시작할 수 있습니다."
           />
 
           <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_-45px_rgba(15,23,42,0.45)]">

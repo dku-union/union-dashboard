@@ -22,7 +22,7 @@ export function LandingHero() {
             대학생에게 닿는 방법
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-300 sm:text-2xl">
-            UniApp에서 미니앱을 출시하고,
+            Union에서 미니앱을 출시하고,
             <br />
             전국 대학생들에게 내 서비스를 선보이세요.
           </p>
@@ -56,7 +56,7 @@ export function LandingHero() {
             <div className="rounded-[1.4rem] border border-white/8 bg-slate-950/30 p-3">
               <Image
                 src="/landing/hero-preview.png"
-                alt="UniApp landing page preview"
+                alt="Union landing page preview"
                 width={1180}
                 height={664}
                 className="h-auto w-full rounded-[1rem] object-cover"

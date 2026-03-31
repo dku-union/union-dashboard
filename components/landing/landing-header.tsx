@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 
@@ -11,11 +12,18 @@ export function LandingHeader() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3 text-white">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-indigo-400 to-indigo-600 text-sm font-semibold">
-            U
+          <div className="overflow-hidden rounded-full">
+            <Image
+              src="/logo.png"
+              alt="Union logo"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-cover"
+              priority
+            />
           </div>
           <div>
-            <p className="heading-display text-lg font-semibold">UniApp</p>
+            <p className="heading-display text-lg font-semibold">Union</p>
           </div>
         </Link>
 

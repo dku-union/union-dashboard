@@ -52,7 +52,7 @@ export function LandingMiniAppCatalog() {
             <div className="mt-6 overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white p-3">
               <Image
                 src="/landing/miniapp-mockup.webp"
-                alt="UniApp miniapp mockup"
+                alt="Union miniapp mockup"
                 width={760}
                 height={760}
                 className="mx-auto h-auto w-full max-w-[320px] object-contain"
@@ -65,7 +65,7 @@ export function LandingMiniAppCatalog() {
           <div className="overflow-hidden rounded-[1.75rem] border border-white/50 bg-white/60 p-3">
             <Image
               src="/landing/miniapp-grid.webp"
-              alt="UniApp miniapp grid preview"
+              alt="Union miniapp grid preview"
               width={894}
               height={729}
               className="h-auto w-full rounded-[1.25rem] object-cover"
