@@ -1,5 +1,6 @@
 import {
   AppWindow,
+  BadgeCheck,
   Bell,
   Briefcase,
   CalendarDays,
@@ -29,6 +30,24 @@ export const landingStats = [
   { label: "대학생 사용자", value: "200,000+" },
   { label: "등록된 미니앱", value: "50+" },
   { label: "연결된 대학", value: "300+" },
+];
+
+export const serviceHighlights = [
+  {
+    title: "대학생 전용 도달력",
+    description: "캠퍼스 안에서 바로 쓰이는 미니앱 경험에 집중해 실제 사용자를 더 빠르게 만납니다.",
+    icon: Users,
+  },
+  {
+    title: "빠른 출시 흐름",
+    description: "복잡한 앱스토어 배포보다 가볍고 빠른 형태로 새로운 아이디어를 테스트합니다.",
+    icon: BadgeCheck,
+  },
+  {
+    title: "운영과 확장까지 연결",
+    description: "출시 이후에도 Union 퍼블리셔 대시보드에서 운영 데이터를 바탕으로 다음 기능을 설계합니다.",
+    icon: AppWindow,
+  },
 ];
 
 export const miniAppCategories = [
