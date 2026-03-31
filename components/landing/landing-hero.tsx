@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { landingStats } from "@/data/landing";
@@ -50,19 +49,6 @@ export function LandingHero() {
                 <p className="mt-2 text-sm text-slate-300">{stat.label}</p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-16 w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-slate-900/40 p-3 shadow-2xl shadow-slate-950/40">
-            <div className="rounded-[1.4rem] border border-white/8 bg-slate-950/30 p-3">
-              <Image
-                src="/landing/hero-preview.png"
-                alt="Union landing page preview"
-                width={1180}
-                height={664}
-                className="h-auto w-full rounded-[1rem] object-cover"
-                priority
-              />
-            </div>
           </div>
         </div>
       </LandingShell>

@@ -60,18 +60,6 @@ export function LandingMiniAppCatalog() {
             </div>
           </div>
         </div>
-
-        <div className="px-6 pb-6 sm:px-8 lg:px-10 lg:pb-10">
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/50 bg-white/60 p-3">
-            <Image
-              src="/landing/miniapp-grid.webp"
-              alt="Union miniapp grid preview"
-              width={894}
-              height={729}
-              className="h-auto w-full rounded-[1.25rem] object-cover"
-            />
-          </div>
-        </div>
       </div>
     </LandingShell>
   );
