@@ -1,12 +1,12 @@
 import "dotenv/config";
+import { defineConfig } from "drizzle-kit";
 
-const drizzleConfig = {
+export default defineConfig({
   schema: "./lib/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-};
-
-export default drizzleConfig;
+  tablesFilter: ["publishers", "email_verifications", "workspaces", "workspace_members", "workspace_invitations", "notifications"],
+});

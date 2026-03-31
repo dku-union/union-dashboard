@@ -13,7 +13,7 @@ async function getSessionFromRequest(request: NextRequest) {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret);
-    return payload as { id: string; email: string; name: string; role: string };
+    return payload as { id: string; email: string; name: string; role: string; hasWorkspace?: boolean };
   } catch {
     return null;
   }
@@ -31,11 +31,9 @@ export async function middleware(request: NextRequest) {
 
   const session = await getSessionFromRequest(request);
 
-  // Auth pages: redirect logged-in users based on role
   if (publicPaths.includes(pathname)) {
     if (session) {
-      const dest =
-        session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
+      const dest = session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
       if (pathname === "/login" || pathname === "/signup") {
         return NextResponse.redirect(new URL(dest, request.url));
       }
@@ -44,20 +42,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Admin routes: require ROLE_ADMIN
   if (pathname.startsWith("/admin")) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     if (session.role !== "ROLE_ADMIN") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
     return NextResponse.next();
   }
 
-  // Dashboard routes: require authentication
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  const hasWorkspace = session.hasWorkspace ?? true;
+  if (!hasWorkspace && session.role !== "ROLE_ADMIN") {
+    if (!pathname.startsWith("/workspace/new") && !pathname.startsWith("/api/")) {
+      return NextResponse.redirect(new URL("/workspace/new", request.url));
+    }
   }
 
   return NextResponse.next();

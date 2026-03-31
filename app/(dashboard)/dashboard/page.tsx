@@ -1,49 +1,102 @@
 "use client";
 
-import { useAuth } from "@/components/providers/auth-provider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AppWindow, ClipboardCheck, BarChart3, Plus, ArrowUpRight, BookOpen, Users } from "lucide-react";
 import Link from "next/link";
+import {
+  AppWindow,
+  ArrowUpRight,
+  BarChart3,
+  BookOpen,
+  ClipboardCheck,
+  Plus,
+  Users,
+} from "lucide-react";
+import { useAuth } from "@/components/providers/auth-provider";
+import { StatusBadge } from "@/components/apps/status-badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockMiniApps } from "@/data/mini-apps";
 import { mockReviews } from "@/data/reviews";
-import { StatusBadge } from "@/components/apps/status-badge";
 
 export default function DashboardHome() {
   const { user } = useAuth();
 
-  const publishedCount = mockMiniApps.filter((a) => a.status === "published").length;
-  const inReviewCount = mockMiniApps.filter((a) => a.status === "in_review").length;
+  const publishedCount = mockMiniApps.filter((app) => app.status === "published").length;
+  const inReviewCount = mockMiniApps.filter((app) => app.status === "in_review").length;
   const totalApps = mockMiniApps.length;
   const pendingReviews = mockReviews.filter(
-    (r) => r.status === "in_review" || r.status === "rejected"
+    (review) => review.status === "in_review" || review.status === "rejected"
   ).length;
 
   const stats = [
-    { label: "전체 앱", value: totalApps, icon: AppWindow, color: "text-foreground", bg: "bg-gradient-to-br from-foreground/5 to-foreground/[0.02]" },
-    { label: "게시됨", value: publishedCount, icon: AppWindow, color: "text-sage", bg: "bg-gradient-to-br from-sage/10 to-sage/5" },
-    { label: "심사 중", value: inReviewCount, icon: ClipboardCheck, color: "text-gold", bg: "bg-gradient-to-br from-gold/10 to-gold/5" },
-    { label: "처리 필요", value: pendingReviews, icon: BarChart3, color: "text-union", bg: "bg-gradient-to-br from-union/10 to-union/5" },
+    {
+      label: "전체 앱",
+      value: totalApps,
+      icon: AppWindow,
+      color: "text-foreground",
+      bg: "bg-gradient-to-br from-foreground/5 to-foreground/[0.02]",
+    },
+    {
+      label: "게시됨",
+      value: publishedCount,
+      icon: AppWindow,
+      color: "text-sage",
+      bg: "bg-gradient-to-br from-sage/10 to-sage/5",
+    },
+    {
+      label: "심사 중",
+      value: inReviewCount,
+      icon: ClipboardCheck,
+      color: "text-gold",
+      bg: "bg-gradient-to-br from-gold/10 to-gold/5",
+    },
+    {
+      label: "처리 필요",
+      value: pendingReviews,
+      icon: BarChart3,
+      color: "text-union",
+      bg: "bg-gradient-to-br from-union/10 to-union/5",
+    },
+  ];
+
+  const quickActions = [
+    {
+      href: "/apps/new",
+      icon: Plus,
+      label: "미니앱 등록",
+      description: "새로운 앱을 등록하고 첫 번째 릴리즈를 준비하세요.",
+    },
+    {
+      href: "/workspace",
+      icon: Users,
+      label: "워크스페이스",
+      description: "팀원을 관리하고 퍼블리셔 리소스를 공유하세요.",
+    },
+    {
+      href: "/docs",
+      icon: BookOpen,
+      label: "문서 보기",
+      description: "개발 가이드와 심사 제출 안내를 확인하세요.",
+    },
   ];
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="max-w-6xl space-y-8">
       <div className="animate-fade-up">
         <h1 className="heading-display text-3xl tracking-tight">
           안녕하세요, <span className="union-underline">{user?.name}</span>님
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="mt-1 text-muted-foreground">
           Union Publisher Dashboard에 오신 것을 환영합니다.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, i) => (
-          <Card key={stat.label} className={`card-hover animate-fade-up delay-${i + 1} border-border/60`}>
+        {stats.map((stat, index) => (
+          <Card key={stat.label} className={`card-hover animate-fade-up delay-${index + 1} border-border/60`}>
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                  <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
                     {stat.label}
                   </p>
                   <p className="heading-display text-3xl">{stat.value}</p>
@@ -58,29 +111,27 @@ export default function DashboardHome() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-2 space-y-3 animate-fade-up delay-5">
-          <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">빠른 시작</h2>
+        <div className="space-y-3 lg:col-span-2">
+          <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+            빠른 작업
+          </h2>
           <div className="space-y-2">
-            {[
-              { href: "/apps/new", icon: Plus, label: "새 미니앱 등록", desc: "새로운 미니앱을 등록하세요" },
-              { href: "/workspace", icon: Users, label: "워크스페이스", desc: "팀원들과 함께 관리하세요" },
-              { href: "/docs", icon: BookOpen, label: "개발 문서", desc: "API 레퍼런스를 확인하세요" },
-            ].map((action) => (
+            {quickActions.map((action) => (
               <Card key={action.href} className="card-hover accent-line overflow-hidden border-border/60">
                 <Button
                   variant="ghost"
-                  className="w-full h-auto p-4 justify-start text-left group"
+                  className="group h-auto w-full justify-start p-4 text-left"
                   render={<Link href={action.href} />}
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-union/10 shrink-0">
+                  <div className="flex w-full items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-union/10">
                       <action.icon className="h-4 w-4 text-union" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold">{action.label}</p>
-                      <p className="text-xs text-muted-foreground">{action.desc}</p>
+                      <p className="text-xs text-muted-foreground">{action.description}</p>
                     </div>
-                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
                 </Button>
               </Card>
@@ -88,34 +139,34 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        <Card className="lg:col-span-3 animate-fade-up delay-6 border-border/60">
+        <Card className="animate-fade-up delay-6 border-border/60 lg:col-span-3">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-                최근 활동
+                최근 심사 현황
               </CardTitle>
               <div className="h-0.5 w-6 bg-union" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              {mockReviews.slice(0, 5).map((review, i) => (
+              {mockReviews.slice(0, 5).map((review, index) => (
                 <div
                   key={review.id}
-                  className={`flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors animate-fade-up delay-${i + 1}`}
+                  className={`animate-fade-up delay-${index + 1} flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted/50`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted shrink-0">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
                       <AppWindow className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{review.appName}</p>
+                      <p className="truncate text-sm font-medium">{review.appName}</p>
                       <p className="text-xs text-muted-foreground">v{review.version}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex shrink-0 items-center gap-3">
                     <StatusBadge status={review.status} />
-                    <span className="text-xs text-muted-foreground/60 hidden sm:block">
+                    <span className="hidden text-xs text-muted-foreground/60 sm:block">
                       {review.submittedAt}
                     </span>
                   </div>

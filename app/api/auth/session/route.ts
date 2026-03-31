@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { publishers } from "@/lib/db/schema";
+import { publishers, workspaceMembers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET() {
@@ -19,7 +19,6 @@ export async function GET() {
         name: publishers.name,
         role: publishers.role,
         pubstatus: publishers.pubstatus,
-        contactEmail: publishers.contactEmail,
         createdAt: publishers.createdAt,
       })
       .from(publishers)
@@ -30,6 +29,12 @@ export async function GET() {
       return NextResponse.json({ user: null });
     }
 
+    const memberRows = await db
+      .select({ id: workspaceMembers.id })
+      .from(workspaceMembers)
+      .where(eq(workspaceMembers.publisherId, publisher.publisherId))
+      .limit(1);
+
     return NextResponse.json({
       user: {
         id: publisher.publisherId,
@@ -37,8 +42,8 @@ export async function GET() {
         name: publisher.name,
         role: publisher.role,
         status: publisher.pubstatus,
-        contactEmail: publisher.contactEmail,
         createdAt: publisher.createdAt?.toISOString(),
+        hasWorkspace: memberRows.length > 0,
       },
     });
   } catch (error) {

@@ -8,6 +8,34 @@
       "when": 1773900266126,
       "tag": "0000_easy_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774429457206,
+      "tag": "0001_dark_madame_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774509890609,
+      "tag": "0002_salty_black_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774781566932,
+      "tag": "0003_stormy_wolverine",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774882818238,
+      "tag": "0004_far_ted_forrester",
+      "breakpoints": true
     }
   ]
 }
