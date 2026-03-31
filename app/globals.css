@@ -56,6 +56,8 @@
    Blue-tinted surfaces + deep navy sidebar + vivid blue accents
    ═══════════════════════════════════════════ */
 :root {
+  --font-display: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --background: #EDF2FF;
   --foreground: #1A2744;
   --card: #FFFFFF;
