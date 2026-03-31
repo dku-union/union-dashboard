@@ -3,6 +3,7 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { LandingHowItWorks } from "@/components/landing/landing-how-it-works";
 import { LandingMiniAppCatalog } from "@/components/landing/landing-miniapp-catalog";
+import { LandingServiceIntro } from "@/components/landing/landing-service-intro";
 import { LandingUseCases } from "@/components/landing/landing-use-cases";
 
 export function LandingPage() {
@@ -11,6 +12,7 @@ export function LandingPage() {
       <LandingHeader />
       <main>
         <LandingHero />
+        <LandingServiceIntro />
         <LandingMiniAppCatalog />
         <LandingHowItWorks />
         <LandingUseCases />
