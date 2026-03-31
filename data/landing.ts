@@ -11,11 +11,15 @@ import {
   House,
   MapPinned,
   Megaphone,
+  Rocket,
   Search,
   ShoppingBag,
   Star,
   Trophy,
   Users,
+  Wrench,
+  Zap,
+  Coins,
 } from "lucide-react";
 
 export const landingNavItems = [
@@ -71,19 +75,24 @@ export const miniAppCategories = [
 
 export const howItWorksSteps = [
   {
-    eyebrow: "Step 1",
-    title: "아이디어를 정리해요",
-    description: "학생에게 필요한 기능과 운영 방식을 간단히 정의하면 출발할 준비가 끝납니다.",
+    title: "간단한 등록 절차",
+    description: "복잡한 심사 없이 기본 정보 입력만으로 등록 완료. 빠르면 당일 출시도 가능해요.",
+    icon: Zap,
   },
   {
-    eyebrow: "Step 2",
-    title: "UniApp에서 빠르게 구성해요",
-    description: "복잡한 앱스토어 절차 없이 캠퍼스에 맞는 미니앱 구조를 빠르게 조합하고 검수합니다.",
+    title: "낮은 진입 장벽",
+    description: "앱스토어/구글플레이처럼 엄격한 규약이 없어요. 대학생 서비스라면 누구나 출시 가능.",
+    icon: Rocket,
   },
   {
-    eyebrow: "Step 3",
-    title: "대학생에게 바로 전달해요",
-    description: "학생회, 동아리, 학과 단위로 바로 배포하고 반응을 보며 다음 기능을 확장합니다.",
+    title: "무료로 시작",
+    description: "초기 출시 비용 없음. 서비스가 성장한 후에 수익화를 고민해도 늦지 않아요.",
+    icon: Coins,
+  },
+  {
+    title: "기술 지원 제공",
+    description: "개발 경험이 없어도 괜찮아요. UniApp의 SDK와 템플릿으로 빠르게 개발할 수 있어요.",
+    icon: Wrench,
   },
 ];
 

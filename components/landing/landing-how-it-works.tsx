@@ -53,14 +53,11 @@ export function LandingHowItWorks() {
               className="relative rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_70px_-50px_rgba(59,130,246,0.45)]"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-xl font-semibold text-white">
-                  0{index + 1}
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-500">
+                  <step.icon className="h-7 w-7" strokeWidth={2.2} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
-                    {step.eyebrow}
-                  </p>
-                  <h3 className="mt-2 heading-display text-2xl font-semibold text-slate-950">
+                  <h3 className="heading-display text-2xl font-semibold text-slate-950">
                     {step.title}
                   </h3>
                   <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
