@@ -28,7 +28,6 @@ export default function DashboardHome() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      {/* Welcome */}
       <div className="animate-fade-up">
         <h1 className="heading-display text-3xl tracking-tight">
           안녕하세요, <span className="union-underline">{user?.name}</span>님
@@ -38,7 +37,6 @@ export default function DashboardHome() {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, i) => (
           <Card key={stat.label} className={`card-hover animate-fade-up delay-${i + 1} border-border/60`}>
@@ -60,7 +58,6 @@ export default function DashboardHome() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        {/* Quick Actions */}
         <div className="lg:col-span-2 space-y-3 animate-fade-up delay-5">
           <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">빠른 시작</h2>
           <div className="space-y-2">
@@ -91,7 +88,6 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <Card className="lg:col-span-3 animate-fade-up delay-6 border-border/60">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
