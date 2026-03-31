@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { landingStats } from "@/data/landing";
 import { LandingShell } from "@/components/landing/landing-shell";
 
@@ -28,21 +27,18 @@ export function LandingHero() {
             전국 대학생들에게 내 서비스를 선보이세요.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="h-14 rounded-2xl bg-[linear-gradient(135deg,#5B8CFF,#4776F3)] px-8 text-base text-white shadow-xl shadow-blue-950/35 hover:opacity-95"
-              render={<Link href="/signup" />}
+            <Link
+              href="/signup"
+              className="inline-flex h-14 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#5B8CFF,#4776F3)] px-8 text-base font-medium text-white shadow-xl shadow-blue-950/35 transition-all hover:opacity-95"
             >
               지금 시작하기
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-14 rounded-2xl border-white/20 bg-white/8 px-8 text-base text-white hover:bg-white/12 hover:text-white"
-              render={<a href="#service" />}
+            </Link>
+            <a
+              href="#service"
+              className="inline-flex h-14 items-center justify-center rounded-2xl border border-white/20 bg-white/8 px-8 text-base font-medium text-white transition-all hover:bg-white/12 hover:text-white"
             >
               서비스 알아보기
-            </Button>
+            </a>
           </div>
 
           <div className="mt-14 grid w-full max-w-4xl gap-4 rounded-[2rem] border border-white/10 bg-white/6 p-6 backdrop-blur-xl sm:grid-cols-3">

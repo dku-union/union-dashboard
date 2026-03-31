@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { LandingSectionHeading } from "@/components/landing/landing-section-heading";
 import { LandingShell } from "@/components/landing/landing-shell";
-import { Button } from "@/components/ui/button";
 import { faqItems, landingNavItems } from "@/data/landing";
 
 export function LandingFaqCta() {
@@ -53,29 +52,24 @@ export function LandingFaqCta() {
             </div>
 
             <div className="flex flex-col gap-3 rounded-[1.8rem] border border-white/15 bg-white/8 p-5 backdrop-blur sm:p-6">
-              <Button
-                size="lg"
-                className="h-12 rounded-2xl bg-white text-blue-700 hover:bg-blue-50"
-                render={<Link href="/signup" />}
+              <Link
+                href="/signup"
+                className="inline-flex h-12 items-center justify-center rounded-2xl bg-white px-4 text-sm font-medium text-blue-700 transition-all hover:bg-blue-50"
               >
                 지금 시작하기
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 rounded-2xl border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
-                render={<Link href="/login" />}
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center justify-center rounded-2xl border border-white/25 bg-transparent px-4 text-sm font-medium text-white transition-all hover:bg-white/10 hover:text-white"
               >
                 로그인
-              </Button>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="h-12 rounded-2xl text-white hover:bg-white/10 hover:text-white"
-                render={<a href="#service" />}
+              </Link>
+              <a
+                href="#service"
+                className="inline-flex h-12 items-center justify-center rounded-2xl px-4 text-sm font-medium text-white transition-all hover:bg-white/10 hover:text-white"
               >
                 서비스 알아보기
-              </Button>
+              </a>
             </div>
           </div>
         </div>
