@@ -32,19 +32,18 @@ export function LandingHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Button
-            variant="ghost"
-            className="rounded-full px-5 text-white hover:bg-white/10 hover:text-white"
-            render={<Link href="/login" />}
+          <Link
+            href="/login"
+            className="inline-flex h-8 items-center justify-center rounded-full px-5 text-sm font-medium text-white transition-all hover:bg-white/10 hover:text-white"
           >
             로그인
-          </Button>
-          <Button
-            className="rounded-full bg-[linear-gradient(135deg,#5B8CFF,#4776F3)] px-5 text-white shadow-lg shadow-blue-900/30 hover:opacity-95"
-            render={<Link href="/signup" />}
+          </Link>
+          <Link
+            href="/signup"
+            className="inline-flex h-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5B8CFF,#4776F3)] px-5 text-sm font-medium text-white shadow-lg shadow-blue-900/30 transition-all hover:opacity-95"
           >
             지금 시작하기
-          </Button>
+          </Link>
         </div>
 
         <Button
