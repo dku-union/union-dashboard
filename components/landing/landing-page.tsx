@@ -10,7 +10,7 @@ export function LandingPage() {
   return (
     <div className="landing-page bg-[linear-gradient(180deg,#071127_0%,#0c1734_14%,#edf3ff_38%,#f7faff_100%)] text-slate-950">
       <LandingHeader />
-      <main>
+      <main className="landing-scroll-container lg:h-[calc(100svh-var(--landing-header-height))] lg:overflow-y-auto lg:snap-y lg:snap-mandatory lg:scroll-smooth">
         <LandingHero />
         <LandingServiceIntro />
         <LandingMiniAppCatalog />

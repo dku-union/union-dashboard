@@ -425,8 +425,25 @@
    Landing Page
    ═══════════════════════════════════════════ */
 .landing-page {
+  --landing-header-height: 4.625rem;
   --landing-surface: rgba(255, 255, 255, 0.78);
   --landing-stroke: rgba(148, 163, 184, 0.22);
+}
+
+.landing-scroll-container {
+  scrollbar-gutter: stable both-edges;
+}
+
+.landing-full-section {
+  position: relative;
+}
+
+.landing-full-section::after {
+  content: "";
+  position: absolute;
+  inset: auto 8% 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.25), transparent);
 }
 
 .landing-hero::before {
@@ -452,4 +469,33 @@
   filter: blur(64px);
   opacity: 0.9;
   pointer-events: none;
+}
+
+.landing-image-float {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.6s ease;
+}
+
+.landing-image-float:hover {
+  transform: translate3d(0, -6px, 0) scale(1.01);
+}
+
+@media (max-width: 1023px) {
+  .landing-scroll-container {
+    height: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-scroll-container {
+    scroll-behavior: auto;
+  }
+
+  .landing-image-float,
+  .landing-image-float:hover {
+    transform: none;
+    transition: none;
+  }
 }

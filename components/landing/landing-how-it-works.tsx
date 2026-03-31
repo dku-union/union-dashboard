@@ -1,42 +1,55 @@
 import Image from "next/image";
 
+import { LandingReveal } from "@/components/landing/landing-reveal";
 import { LandingSectionHeading } from "@/components/landing/landing-section-heading";
-import { LandingShell } from "@/components/landing/landing-shell";
+import { LandingSection } from "@/components/landing/landing-section";
 import { howItWorksSteps } from "@/data/landing";
 
 export function LandingHowItWorks() {
   return (
-    <LandingShell id="how-it-works" className="py-24 sm:py-28">
+    <LandingSection
+      id="how-it-works"
+      fullHeight
+      className="py-16 lg:py-8"
+      contentClassName="justify-center"
+    >
       <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
         <div className="space-y-8">
-          <LandingSectionHeading
-            eyebrow="How It Works"
-            align="left"
-            title={
-              <>
-                학생들에게 필요한 미니앱
-                <br />
-                간단한 절차로 런칭하세요
-              </>
-            }
-            description="기존 앱스토어의 복잡한 절차와 높은 진입 장벽 대신,  Union에서는 훨씬 가벼운 운영 흐름으로 서비스를 시작할 수 있습니다."
-          />
+          <LandingReveal delay={0.05}>
+            <LandingSectionHeading
+              eyebrow="How It Works"
+              align="left"
+              title={
+                <>
+                  학생들에게 필요한 미니앱
+                  <br />
+                  간단한 절차로 런칭하세요
+                </>
+              }
+              description="기존 앱스토어의 복잡한 절차와 높은 진입 장벽 대신, Union에서는 훨씬 가벼운 운영 흐름으로 서비스를 시작할 수 있습니다."
+            />
+          </LandingReveal>
 
-          <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_-45px_rgba(15,23,42,0.45)]">
+          <LandingReveal
+            variant="image"
+            delay={0.14}
+            className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_-45px_rgba(15,23,42,0.45)]"
+          >
             <Image
               src="/landing/easy-launch.webp"
               alt="Easy launch illustration"
               width={768}
               height={768}
-              className="h-auto w-full rounded-[1.5rem] object-cover"
+              className="landing-image-float h-auto w-full rounded-[1.5rem] object-cover"
             />
-          </div>
+          </LandingReveal>
         </div>
 
         <div className="grid gap-4">
           {howItWorksSteps.map((step, index) => (
-            <div
+            <LandingReveal
               key={step.title}
+              delay={0.14 + index * 0.08}
               className="relative rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_70px_-50px_rgba(59,130,246,0.45)]"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -55,10 +68,10 @@ export function LandingHowItWorks() {
                   </p>
                 </div>
               </div>
-            </div>
+            </LandingReveal>
           ))}
         </div>
       </div>
-    </LandingShell>
+    </LandingSection>
   );
 }
