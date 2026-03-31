@@ -5,6 +5,8 @@ import { jwtVerify } from "jose";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const publicPaths = ["/", "/login", "/signup"];
+const publicAssetPrefixes = ["/landing/"];
+const publicFilePattern = /\.(?:png|webp|jpg|jpeg|gif|svg|ico|bmp|avif)$/i;
 
 async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get("union-session")?.value;
@@ -19,19 +21,27 @@ async function getSessionFromRequest(request: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (
+    publicAssetPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+    publicFilePattern.test(pathname)
+  ) {
+    return NextResponse.next();
+  }
+
   const session = await getSessionFromRequest(request);
 
-  // Auth pages: redirect logged-in users based on role
-  if (pathname === "/" || publicPaths.some((p) => p !== "/" && pathname.startsWith(p))) {
+  if (publicPaths.includes(pathname)) {
     if (session) {
-      const dest =
-        session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
-      return NextResponse.redirect(new URL(dest, request.url));
+      const dest = session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
+      if (pathname === "/login" || pathname === "/signup") {
+        return NextResponse.redirect(new URL(dest, request.url));
+      }
+      return NextResponse.next();
     }
     return NextResponse.next();
   }
 
-  // Admin routes: require ROLE_ADMIN
   if (pathname.startsWith("/admin")) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", request.url));
@@ -42,16 +52,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // All other routes: require authentication
   if (!session) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Workspace redirect: 퍼블리셔가 워크스페이스 없으면 /workspace/new로
-  // 기존 JWT에 hasWorkspace가 없으면 true로 간주 (기존 사용자 호환)
   const hasWorkspace = session.hasWorkspace ?? true;
   if (!hasWorkspace && session.role !== "ROLE_ADMIN") {
-    // /workspace/new와 /api는 허용
     if (!pathname.startsWith("/workspace/new") && !pathname.startsWith("/api/")) {
       return NextResponse.redirect(new URL("/workspace/new", request.url));
     }
