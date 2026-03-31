@@ -121,7 +121,7 @@ export default function AdminLayout({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                render={<Link href="/" />}
+                render={<Link href="/dashboard" />}
                 className="group relative transition-all duration-200"
               >
                 <LayoutDashboard className="h-4 w-4 text-sidebar-foreground/70" />

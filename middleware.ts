@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-const publicPaths = ["/login", "/signup"];
+const publicPaths = ["/", "/login", "/signup"];
 
 async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get("union-session")?.value;
@@ -22,11 +22,14 @@ export async function middleware(request: NextRequest) {
   const session = await getSessionFromRequest(request);
 
   // Auth pages: redirect logged-in users based on role
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
+  if (publicPaths.includes(pathname)) {
     if (session) {
       const dest =
-        session.role === "ROLE_ADMIN" ? "/admin" : "/";
-      return NextResponse.redirect(new URL(dest, request.url));
+        session.role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
+      if (pathname === "/login" || pathname === "/signup") {
+        return NextResponse.redirect(new URL(dest, request.url));
+      }
+      return NextResponse.next();
     }
     return NextResponse.next();
   }
