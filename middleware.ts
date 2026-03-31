@@ -5,6 +5,8 @@ import { jwtVerify } from "jose";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const publicPaths = ["/", "/login", "/signup"];
+const publicAssetPrefixes = ["/landing/"];
+const publicFilePattern = /\.(?:png|webp|jpg|jpeg|gif|svg|ico|bmp|avif)$/i;
 
 async function getSessionFromRequest(request: NextRequest) {
   const token = request.cookies.get("union-session")?.value;
@@ -19,6 +21,14 @@ async function getSessionFromRequest(request: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (
+    publicAssetPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+    publicFilePattern.test(pathname)
+  ) {
+    return NextResponse.next();
+  }
+
   const session = await getSessionFromRequest(request);
 
   // Auth pages: redirect logged-in users based on role
