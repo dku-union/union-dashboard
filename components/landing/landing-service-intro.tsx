@@ -11,12 +11,12 @@ export function LandingServiceIntro() {
           align="left"
           title={
             <>
-              Union은 캠퍼스 아이디어를
+              Union으로 아이디어를
               <br />
-              실제 서비스로 연결합니다
+              손쉽게 배포하세요
             </>
           }
-          description="대학생 대상 공지, 참여, 모집, 운영 흐름을 미니앱 단위로 빠르게 만들고 검증할 수 있는 서비스 소개 블록입니다."
+          description="대학생 대상 공지, 참여, 모집, 운영 흐름을 미니앱 단위로 빠르게 만들고 검증하여, 미니앱을 서비스 할 수 있습니다."
         />
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
           {serviceHighlights.map((item) => (

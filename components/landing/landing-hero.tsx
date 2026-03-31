@@ -14,11 +14,11 @@ export function LandingHero() {
             대학생 전용 미니앱 플랫폼
           </div>
           <h1 className="heading-display max-w-5xl text-5xl font-semibold leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[6.5rem]">
-            내 아이디어가
+            우리 학교에
             <span className="block bg-linear-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
-              200,000명의
+              필요한 미니앱
             </span>
-            대학생에게 닿는 방법
+            직접 만들어보세요
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-300 sm:text-2xl">
             Union에서 미니앱을 출시하고,
@@ -38,17 +38,6 @@ export function LandingHero() {
             >
               서비스 알아보기
             </a>
-          </div>
-
-          <div className="mt-14 grid w-full max-w-4xl gap-4 rounded-[2rem] border border-white/10 bg-white/6 p-6 backdrop-blur-xl sm:grid-cols-3">
-            {landingStats.map((stat) => (
-              <div key={stat.label} className="rounded-[1.5rem] border border-white/8 bg-slate-950/25 px-6 py-7">
-                <div className="heading-display text-4xl font-semibold text-white">
-                  {stat.value}
-                </div>
-                <p className="mt-2 text-sm text-slate-300">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </LandingShell>
