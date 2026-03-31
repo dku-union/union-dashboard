@@ -1,73 +1,89 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-import { LandingSectionHeading } from "@/components/landing/landing-section-heading";
 import { LandingShell } from "@/components/landing/landing-shell";
-import { faqItems, landingNavItems } from "@/data/landing";
+import { faqItems } from "@/data/landing";
 
 export function LandingFaqCta() {
   return (
     <>
-      <LandingShell id="faq" className="py-24 sm:py-28">
-        <div className="space-y-10">
-          <LandingSectionHeading
-            eyebrow="FAQ"
-            title="도입 전에 많이 묻는 질문"
-            description="출시 준비, 대상 조직, 운영 연결 방식처럼 실제 도입 전에 자주 나오는 질문을 먼저 정리했습니다."
-          />
+      {/* FAQ */}
+      <LandingShell id="faq" className="py-20 sm:py-24">
+        <div className="space-y-8">
+          <div>
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-blue-600">
+              FAQ
+            </p>
+            <h2 className="mt-4 heading-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">
+              도입 전에 많이 묻는 질문
+            </h2>
+            <p className="mt-3 max-w-2xl text-[15px] leading-7 text-slate-500">
+              출시 준비, 대상 조직, 운영 연결 방식처럼 실제 도입 전에 자주 나오는
+              질문을 먼저 정리했습니다.
+            </p>
+          </div>
 
-          <div className="grid gap-4">
-            {faqItems.map((item) => (
-              <article
-                key={item.question}
-                className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_18px_60px_-50px_rgba(15,23,42,0.45)] sm:p-7"
-              >
-                <h3 className="text-lg font-semibold text-slate-950 sm:text-xl">
-                  {item.question}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
-                  {item.answer}
-                </p>
+          <div className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
+            {faqItems.map((item, index) => (
+              <article key={item.question} className="px-6 py-5 sm:px-8 sm:py-6">
+                <div className="flex items-start gap-4">
+                  <span className="mt-0.5 font-mono text-xs font-bold text-slate-300">
+                    0{index + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 sm:text-lg">
+                      {item.question}
+                    </h3>
+                    <p className="mt-2 text-sm leading-7 text-slate-500 sm:text-[15px]">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
               </article>
             ))}
           </div>
         </div>
       </LandingShell>
 
+      {/* CTA */}
       <LandingShell className="pb-16 sm:pb-20">
-        <div className="overflow-hidden rounded-[2.4rem] border border-blue-200 bg-[linear-gradient(135deg,#0f1f45,#244cc8_52%,#5687ff)] px-8 py-10 text-white shadow-[0_30px_90px_-35px_rgba(37,99,235,0.6)] sm:px-12 sm:py-14">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-[linear-gradient(135deg,#0a1628,#15295a_50%,#2563eb)] p-10 sm:p-14">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-100">
-                Final CTA
+              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-blue-200/80">
+                Get Started
               </p>
-              <h2 className="mt-4 heading-display text-4xl font-semibold tracking-tight sm:text-5xl">
+              <h2 className="mt-5 heading-display text-3xl font-bold tracking-[-0.025em] text-white sm:text-4xl lg:text-5xl">
                 Union으로
                 <br />
-                캠퍼스 아이디어를 시작하세요
+                캠퍼스 아이디어를
+                <br />
+                시작하세요
               </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-blue-50 sm:text-base">
-                학생에게 필요한 공지, 참여, 운영 경험을 더 빠르게 출시하고 검증할 수 있습니다.
-                지금 계정을 만들고 퍼블리셔 대시보드에서 다음 단계를 이어가세요.
+              <p className="mt-5 max-w-lg text-[15px] leading-7 text-blue-100/70">
+                학생에게 필요한 공지, 참여, 운영 경험을 더 빠르게 출시하고 검증할
+                수 있습니다. 지금 계정을 만들고 퍼블리셔 대시보드에서 다음 단계를
+                이어가세요.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 rounded-[1.8rem] border border-white/15 bg-white/8 p-5 backdrop-blur sm:p-6">
+            <div className="flex flex-col gap-2.5">
               <Link
                 href="/signup"
-                className="inline-flex h-12 items-center justify-center rounded-2xl bg-white px-4 text-sm font-medium text-blue-700 transition-all hover:bg-blue-50"
+                className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 text-[15px] font-semibold text-slate-950 transition-all hover:bg-slate-50"
               >
                 지금 시작하기
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex h-12 items-center justify-center rounded-2xl border border-white/25 bg-transparent px-4 text-sm font-medium text-white transition-all hover:bg-white/10 hover:text-white"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-white/15 bg-white/[0.05] px-5 text-[15px] font-medium text-white transition-all hover:bg-white/10"
               >
                 로그인
               </Link>
               <a
                 href="#service"
-                className="inline-flex h-12 items-center justify-center rounded-2xl px-4 text-sm font-medium text-white transition-all hover:bg-white/10 hover:text-white"
+                className="inline-flex h-12 items-center justify-center rounded-xl px-5 text-[15px] font-medium text-blue-100/80 transition-all hover:text-white"
               >
                 서비스 알아보기
               </a>
@@ -76,41 +92,6 @@ export function LandingFaqCta() {
         </div>
       </LandingShell>
 
-      <footer className="border-t border-slate-200/80 bg-white/80">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="overflow-hidden rounded-full">
-                <Image
-                  src="/logo.png"
-                  alt="Union logo"
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 object-cover"
-                />
-              </div>
-              <div>
-                <p className="heading-display text-lg font-semibold text-slate-950">Union</p>
-                <p className="text-sm text-slate-500">University mini-app launch platform</p>
-              </div>
-            </div>
-            <p className="mt-4 text-sm text-slate-500">
-              캠퍼스 안에서 바로 검증하고 확장하는 대학생 전용 미니앱 플랫폼
-            </p>
-          </div>
-
-          <nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-600">
-            {landingNavItems.map((item) => (
-              <a key={item.href} href={item.href} className="transition-colors hover:text-slate-950">
-                {item.label}
-              </a>
-            ))}
-            <Link href="/login" className="transition-colors hover:text-slate-950">
-              로그인
-            </Link>
-          </nav>
-        </div>
-      </footer>
     </>
   );
 }

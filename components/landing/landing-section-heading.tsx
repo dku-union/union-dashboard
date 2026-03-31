@@ -15,44 +15,48 @@ export function LandingSectionHeading({
   eyebrow,
   title,
   description,
-  align = "center",
+  align = "left",
   className,
   eyebrowClassName,
   titleClassName,
   descriptionClassName,
 }: LandingSectionHeadingProps) {
   return (
-    <div className={cn("space-y-4", align === "center" ? "text-center" : "text-left", className)}>
+    <div
+      className={cn(
+        align === "center" ? "text-center" : "text-left",
+        className,
+      )}
+    >
       {eyebrow ? (
         <p
           className={cn(
-            "text-sm font-semibold tracking-[0.22em] text-union uppercase",
+            "font-mono text-xs font-medium uppercase tracking-[0.2em] text-blue-600",
             eyebrowClassName,
           )}
         >
           {eyebrow}
         </p>
       ) : null}
-      <div className="space-y-3">
-        <h2
+      <h2
+        className={cn(
+          "mt-4 heading-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl",
+          titleClassName,
+        )}
+      >
+        {title}
+      </h2>
+      {description ? (
+        <p
           className={cn(
-            "heading-display text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl",
-            titleClassName,
+            "mt-3 max-w-2xl text-[15px] leading-7 text-slate-500",
+            align === "center" && "mx-auto",
+            descriptionClassName,
           )}
         >
-          {title}
-        </h2>
-        {description ? (
-          <p
-            className={cn(
-              "mx-auto max-w-3xl text-base leading-7 text-slate-600 sm:text-lg",
-              descriptionClassName,
-            )}
-          >
-            {description}
-          </p>
-        ) : null}
-      </div>
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

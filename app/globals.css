@@ -451,23 +451,23 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at top, rgba(96, 165, 250, 0.16), transparent 34%),
-    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18), transparent 22%),
-    radial-gradient(circle at 80% 18%, rgba(129, 140, 248, 0.18), transparent 18%),
-    linear-gradient(180deg, rgba(3, 7, 18, 0.35), rgba(3, 7, 18, 0));
+    radial-gradient(circle at top, rgba(96, 165, 250, 0.12), transparent 30%),
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.14), transparent 20%),
+    radial-gradient(circle at 75% 15%, rgba(167, 139, 250, 0.12), transparent 16%),
+    linear-gradient(180deg, rgba(3, 7, 18, 0.25), rgba(3, 7, 18, 0));
   pointer-events: none;
 }
 
 .landing-hero__aurora {
   position: absolute;
-  inset: 8% 12% auto;
-  height: 60%;
+  inset: 5% 15% auto;
+  height: 55%;
   border-radius: 9999px;
   background:
-    radial-gradient(circle at center, rgba(59, 130, 246, 0.38), transparent 42%),
-    radial-gradient(circle at center, rgba(125, 211, 252, 0.18), transparent 60%);
-  filter: blur(64px);
-  opacity: 0.9;
+    radial-gradient(circle at center, rgba(59, 130, 246, 0.30), transparent 40%),
+    radial-gradient(circle at center, rgba(125, 211, 252, 0.12), transparent 55%);
+  filter: blur(72px);
+  opacity: 0.85;
   pointer-events: none;
 }
 
@@ -486,6 +486,46 @@
     overflow: visible;
     scroll-snap-type: none;
   }
+}
+
+/* Pretext Hero Section */
+.landing-pretext-section {
+  background: #06090f;
+  min-height: 100svh;
+}
+
+@media (min-width: 1024px) {
+  .landing-pretext-section {
+    min-height: calc(100svh - var(--landing-header-height));
+  }
+}
+
+.landing-pretext-grid {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Particle Text Section */
+.landing-particle-section {
+  background: #080e1c;
+  min-height: 100svh;
+}
+
+@media (min-width: 1024px) {
+  .landing-particle-section {
+    min-height: calc(100svh - var(--landing-header-height));
+  }
+}
+
+.landing-particle-grid {
+  background-image: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 40px 40px;
 }
 
 @media (prefers-reduced-motion: reduce) {

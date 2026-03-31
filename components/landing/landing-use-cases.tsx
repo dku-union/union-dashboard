@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import { LandingReveal } from "@/components/landing/landing-reveal";
-import { LandingSectionHeading } from "@/components/landing/landing-section-heading";
 import { LandingSection } from "@/components/landing/landing-section";
 import { useCases } from "@/data/landing";
 
@@ -13,41 +12,47 @@ export function LandingUseCases() {
       className="py-16 lg:py-8"
       contentClassName="justify-center"
     >
-      <div className="space-y-12">
+      <div className="space-y-10">
         <LandingReveal>
-          <LandingSectionHeading
-            eyebrow="Use Cases"
-            title="캠퍼스 운영에 바로 연결되는 활용 사례"
-            description="학생회, 동아리, 학과, 캠퍼스 프로젝트 팀이 어떤 식으로 UniApp을 활용할 수 있는지 사례 중심으로 보여줍니다."
-          />
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-blue-600">
+            Use Cases
+          </p>
+          <h2 className="mt-4 heading-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">
+            캠퍼스 운영에 바로 연결되는 활용 사례
+          </h2>
+          <p className="mt-3 max-w-2xl text-[15px] leading-7 text-slate-500">
+            학생회, 동아리, 학과, 캠퍼스 프로젝트 팀이 어떤 식으로 UniApp을
+            활용할 수 있는지 사례 중심으로 보여줍니다.
+          </p>
         </LandingReveal>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-3">
           {useCases.map((item, index) => (
             <LandingReveal
               as="article"
               key={item.title}
               variant="image"
               delay={0.1 + index * 0.08}
-              className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_25px_80px_-50px_rgba(15,23,42,0.45)]"
+              className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white transition-all duration-300 hover:border-slate-300 hover:shadow-[0_16px_48px_-16px_rgba(15,23,42,0.15)]"
             >
-              <div className="overflow-hidden">
+              <div className="relative overflow-hidden">
                 <Image
                   src={item.image}
                   alt={item.title}
                   width={768}
                   height={768}
-                  className="landing-image-float h-72 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  className="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-              </div>
-              <div className="space-y-4 p-6">
-                <div className="inline-flex rounded-full bg-blue-600/10 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-blue-700 uppercase">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <span className="absolute bottom-3 left-3 rounded-lg bg-white/90 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-600 backdrop-blur-sm">
                   Case 0{index + 1}
-                </div>
-                <h3 className="heading-display text-2xl font-semibold text-slate-950">
+                </span>
+              </div>
+              <div className="p-5">
+                <h3 className="text-lg font-bold text-slate-900">
                   {item.title}
                 </h3>
-                <p className="text-sm leading-7 text-slate-600 sm:text-base">
+                <p className="mt-2 text-sm leading-6 text-slate-500">
                   {item.description}
                 </p>
               </div>

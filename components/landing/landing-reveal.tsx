@@ -19,6 +19,7 @@ interface LandingRevealProps<T extends ElementType = "div">
   extends ComponentPropsWithoutRef<T> {
   as?: T;
   children: ReactNode;
+  className: string;
   delay?: number;
   duration?: number;
   distance?: number;
