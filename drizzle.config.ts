@@ -8,4 +8,5 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
+  tablesFilter: ["publishers", "email_verifications", "workspaces", "workspace_members", "workspace_invitations", "notifications", "mini_apps"],
 });

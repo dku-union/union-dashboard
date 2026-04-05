@@ -20,26 +20,51 @@ import {
 } from "@/components/ui/select";
 import { ROLE_LABELS } from "@/lib/constants";
 import { MemberRole } from "@/types/workspace";
-import { UserPlus, Mail } from "lucide-react";
+import { UserPlus, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface InviteMemberDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  workspaceId: string;
+  onInvited?: () => void;
 }
 
-export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogProps) {
+export function InviteMemberDialog({ open, onOpenChange, workspaceId, onInvited }: InviteMemberDialogProps) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<MemberRole>("developer");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     if (!email) return;
-    toast.success("초대 발송 완료", {
-      description: `${email}로 초대 이메일이 발송되었습니다.`,
-    });
-    setEmail("");
-    setRole("developer");
-    onOpenChange(false);
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/workspaces/${workspaceId}/members`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, role }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "초대에 실패했습니다.");
+        return;
+      }
+
+      toast.success("초대를 보냈습니다.", {
+        description: `${email}을(를) ${ROLE_LABELS[role]}(으)로 초대했습니다.${!data.isRegistered ? " (미가입 사용자 — 가입 후 알림을 받게 됩니다)" : ""}`,
+      });
+      setEmail("");
+      setRole("developer");
+      onOpenChange(false);
+      onInvited?.();
+    } catch {
+      toast.error("초대 중 오류가 발생했습니다.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -104,9 +129,17 @@ export function InviteMemberDialog({ open, onOpenChange }: InviteMemberDialogPro
           <Button variant="outline" className="border-border/60" onClick={() => onOpenChange(false)}>
             취소
           </Button>
-          <Button onClick={handleInvite} disabled={!email} className="bg-union text-white hover:bg-union/90">
-            <UserPlus className="mr-1 h-4 w-4" />
-            초대 보내기
+          <Button
+            onClick={handleInvite}
+            disabled={!email || isSubmitting}
+            className="bg-union text-white hover:bg-union/90"
+          >
+            {isSubmitting ? (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            ) : (
+              <UserPlus className="mr-1 h-4 w-4" />
+            )}
+            멤버 추가
           </Button>
         </DialogFooter>
       </DialogContent>
