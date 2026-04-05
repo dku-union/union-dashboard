@@ -18,7 +18,10 @@ import {
   Loader2,
   Clock,
   Mail,
+  Upload,
 } from "lucide-react";
+import Link from "next/link";
+import { useMiniAppList } from "@/hooks/use-app-versions";
 import { toast } from "sonner";
 
 export default function WorkspaceDetailPage() {
@@ -27,6 +30,7 @@ export default function WorkspaceDetailPage() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const workspaceId = params.id as string;
   const { workspace, isLoading, refetch } = useWorkspace(workspaceId);
+  const { apps: miniApps, isLoading: appsLoading } = useMiniAppList(workspaceId);
 
   const handleRoleChange = async (memberId: number, role: MemberRole) => {
     try {
@@ -158,7 +162,7 @@ export default function WorkspaceDetailPage() {
                 <AppWindow className="h-5 w-5 text-union/70" />
               </div>
               <div>
-                <p className="heading-display text-2xl">-</p>
+                <p className="heading-display text-2xl">{appsLoading ? "-" : miniApps.length}</p>
                 <p className="text-xs text-muted-foreground">관리 중인 앱</p>
               </div>
             </div>
@@ -240,17 +244,63 @@ export default function WorkspaceDetailPage() {
           )}
         </div>
 
-        {/* Mini-app placeholder */}
+        {/* Mini-apps */}
         <div className="lg:col-span-2 space-y-4 animate-fade-up delay-3">
-          <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-            워크스페이스 앱
-          </h2>
-          <Card className="border-border/60 border-dashed">
-            <CardContent className="p-6 flex flex-col items-center gap-2 text-muted-foreground">
-              <AppWindow className="h-6 w-6" />
-              <p className="text-sm">미니앱 배포 기능은 준비 중입니다</p>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-between">
+            <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+              워크스페이스 앱 ({miniApps.length})
+            </h2>
+            {canManage && (
+              <Button
+                size="sm"
+                className="bg-union text-white hover:bg-union/90 h-8 text-xs"
+                render={<Link href={`/workspace/${workspaceId}/upload`} />}
+              >
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                업로드
+              </Button>
+            )}
+          </div>
+          {miniApps.length === 0 ? (
+            <Card className="border-border/60 border-dashed">
+              <CardContent className="p-6 flex flex-col items-center gap-2 text-muted-foreground">
+                <AppWindow className="h-6 w-6" />
+                <p className="text-sm">등록된 미니앱이 없습니다</p>
+                {canManage && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 border-border/60 text-xs"
+                    render={<Link href={`/workspace/${workspaceId}/upload`} />}
+                  >
+                    <Upload className="mr-1.5 h-3.5 w-3.5" />
+                    첫 미니앱 업로드
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {miniApps.map((app) => (
+                <Card key={app.id} className="border-border/60 card-hover">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-union/10 to-union/5 border border-union/10 shrink-0">
+                      <AppWindow className="h-4 w-4 text-union/70" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{app.name}</p>
+                      {app.description && (
+                        <p className="text-[11px] text-muted-foreground truncate">{app.description}</p>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      {app.status}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

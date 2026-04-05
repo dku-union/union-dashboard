@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, pgEnum, boolean, serial, unique, text } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, pgEnum, boolean, serial, unique, text, bigint } from "drizzle-orm/pg-core";
 
 export const pubStatusEnum = pgEnum("pub_status", [
   "ACTIVE",
@@ -93,6 +93,22 @@ export const workspaceInvitations = pgTable(
   },
   (t) => [unique().on(t.workspaceId, t.email)],
 );
+
+export const miniApps = pgTable("mini_apps", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedByDefaultAsIdentity(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  iconUrl: varchar("icon_url", { length: 500 }),
+  status: varchar("status", { length: 20 }).notNull().default("PENDING"),
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.workspaceId),
+  universityId: bigint("university_id", { mode: "number" }),
+  tags: varchar("tags", { length: 255 }),
+  categoryId: bigint("category_id", { mode: "number" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
 
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),

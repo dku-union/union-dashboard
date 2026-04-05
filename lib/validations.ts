@@ -73,3 +73,21 @@ export const inviteMemberSchema = z.object({
 });
 
 export type InviteMemberFormValues = z.infer<typeof inviteMemberSchema>;
+
+export const createMiniAppSchema = z.object({
+  name: z
+    .string()
+    .min(2, "앱 이름은 2자 이상이어야 합니다.")
+    .max(100, "앱 이름은 100자 이하여야 합니다."),
+  description: z.string().max(2000, "설명은 2000자 이하여야 합니다.").optional(),
+});
+
+export type CreateMiniAppFormValues = z.infer<typeof createMiniAppSchema>;
+
+export const createVersionSchema = z.object({
+  miniAppId: z.number().int().positive("미니앱 ID가 필요합니다."),
+  versionNumber: z.string().regex(/^\d+\.\d+\.\d+$/, "버전 형식은 x.y.z 이어야 합니다."),
+  releaseNotes: z.string().max(2000).optional(),
+});
+
+export type CreateVersionFormValues = z.infer<typeof createVersionSchema>;
