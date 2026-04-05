@@ -2,8 +2,9 @@
 
 import { Workspace, MemberRole } from "@/types/workspace";
 import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Users, ArrowUpRight, Calendar } from "lucide-react";
+import { Users, AppWindow, ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { ROLE_LABELS } from "@/lib/constants";
 
@@ -47,12 +48,31 @@ export function WorkspaceCard({ workspace, currentUserRole }: WorkspaceCardProps
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Users className="h-3.5 w-3.5" />
-                <span>{workspace.memberCount ?? 0}명</span>
+                <span>{workspace.members.length}명</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <AppWindow className="h-3.5 w-3.5" />
+                <span>{workspace.appIds.length}개</span>
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hidden sm:flex">
                 <Calendar className="h-3 w-3" />
-                <span>{workspace.createdAt ? new Date(workspace.createdAt).toLocaleDateString("ko-KR") : ""}</span>
+                <span>{workspace.createdAt}</span>
               </div>
+            </div>
+
+            <div className="flex -space-x-1.5">
+              {workspace.members.slice(0, 4).map((m) => (
+                <Avatar key={m.id} className="h-6 w-6 border-2 border-card">
+                  <AvatarFallback className="text-[9px] bg-muted font-medium">
+                    {m.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+              {workspace.members.length > 4 && (
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-muted text-[9px] text-muted-foreground font-medium">
+                  +{workspace.members.length - 4}
+                </div>
+              )}
             </div>
           </div>
         </CardContent>

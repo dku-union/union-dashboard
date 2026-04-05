@@ -5,7 +5,6 @@ export interface SessionPayload {
   email: string;
   name: string;
   role: string;
-  hasWorkspace: boolean;
 }
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);

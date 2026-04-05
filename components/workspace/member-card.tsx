@@ -1,6 +1,6 @@
 "use client";
 
-import { TeamMember, MemberRole } from "@/types/workspace";
+import { TeamMember } from "@/types/workspace";
 import { ROLE_LABELS, ROLE_COLORS } from "@/lib/constants";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,18 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Mail, Trash2, Shield } from "lucide-react";
+import { MoreHorizontal, Mail, AppWindow, Trash2 } from "lucide-react";
 
 interface MemberCardProps {
   member: TeamMember;
-  canManage?: boolean;
-  canChangeRole?: boolean;
-  onRoleChange?: (memberId: number, role: MemberRole) => void;
-  onRemove?: (memberId: number) => void;
+  appNames: Record<string, string>;
 }
 
 const roleAvatarColors: Record<string, string> = {
@@ -33,9 +27,7 @@ const roleAvatarColors: Record<string, string> = {
   viewer: "bg-muted text-muted-foreground",
 };
 
-export function MemberCard({ member, canManage, canChangeRole, onRoleChange, onRemove }: MemberCardProps) {
-  const availableRoles: MemberRole[] = ["admin", "developer", "viewer"];
-
+export function MemberCard({ member, appNames }: MemberCardProps) {
   return (
     <Card className="border-border/60 card-hover group">
       <CardContent className="p-4">
@@ -54,61 +46,56 @@ export function MemberCard({ member, canManage, canChangeRole, onRoleChange, onR
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 truncate">{member.email}</p>
+
+            {member.assignedApps.length > 0 && (
+              <div className="flex items-center gap-1 mt-2 flex-wrap">
+                <AppWindow className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                {member.assignedApps.slice(0, 3).map((appId) => (
+                  <span key={appId} className="text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded">
+                    {appNames[appId] || appId}
+                  </span>
+                ))}
+                {member.assignedApps.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground">
+                    +{member.assignedApps.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-          {member.role !== "owner" && (canManage || canChangeRole) && (
-            <DropdownMenu>
-              <DropdownMenuTrigger render={
-                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" />
-              }>
-                <MoreHorizontal className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="text-[13px]">
-                  <Mail className="mr-2 h-4 w-4" />
-                  이메일 보내기
+          <DropdownMenu>
+            <DropdownMenuTrigger render={
+              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" />
+            }>
+              <MoreHorizontal className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="text-[13px]">
+                <Mail className="mr-2 h-4 w-4" />
+                이메일 보내기
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-[13px]">
+                <AppWindow className="mr-2 h-4 w-4" />
+                앱 할당 관리
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {member.role !== "owner" && (
+                <DropdownMenuItem className="text-[13px] text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  멤버 삭제
                 </DropdownMenuItem>
-                {canChangeRole && onRoleChange && (
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="text-[13px]">
-                      <Shield className="mr-2 h-4 w-4" />
-                      역할 변경
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {availableRoles
-                        .filter((r) => r !== member.role)
-                        .map((r) => (
-                          <DropdownMenuItem
-                            key={r}
-                            className="text-[13px]"
-                            onClick={() => onRoleChange(member.id, r)}
-                          >
-                            {ROLE_LABELS[r]}
-                          </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                )}
-                {canManage && onRemove && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-[13px] text-destructive"
-                      onClick={() => onRemove(member.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      멤버 삭제
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/40">
           <span className="text-[10px] text-muted-foreground/60">
-            참여: {member.joinedAt ? new Date(member.joinedAt).toLocaleDateString("ko-KR") : "-"}
+            참여: {member.joinedAt}
+          </span>
+          <span className="text-[10px] text-muted-foreground/60">
+            최근 활동: {member.lastActiveAt}
           </span>
         </div>
       </CardContent>

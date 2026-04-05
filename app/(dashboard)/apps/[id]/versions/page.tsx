@@ -1,12 +1,19 @@
 "use client";
 
 import { use } from "react";
-import { useMiniAppDetail, useAppVersions } from "@/hooks/use-app-versions";
-import { VersionStatusBadge } from "@/components/apps/version-status-badge";
+import { mockMiniApps } from "@/data/mini-apps";
+import { StatusBadge } from "@/components/apps/status-badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AppWindow, ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft, AppWindow, History } from "lucide-react";
 import Link from "next/link";
 
 export default function VersionsPage({
@@ -15,20 +22,7 @@ export default function VersionsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const numId = Number(id);
-  const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading } = useAppVersions(numId);
-
-  const isLoading = appLoading || versionsLoading;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
+  const app = mockMiniApps.find((a) => a.id === id);
 
   if (!app) {
     return (
@@ -46,56 +40,56 @@ export default function VersionsPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between animate-fade-up">
+      <div className="flex items-center gap-4 animate-fade-up">
+        <Button variant="ghost" size="icon" className="hover:text-union" render={<Link href={`/apps/${id}`} />}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8" render={<Link href={`/apps/${id}`} />}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
+            <History className="h-5 w-5 text-union/70" />
+          </div>
           <div>
-            <h1 className="heading-display text-2xl tracking-tight">{app.name} - 버전 이력</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{app.workspaceName}</p>
+            <h1 className="heading-display text-2xl tracking-tight">
+              {app.name}
+            </h1>
+            <p className="text-sm text-muted-foreground">버전 이력</p>
           </div>
         </div>
-        <Button size="sm" className="bg-union text-white hover:bg-union/90" render={<Link href={`/workspace/${app.workspaceId}/upload`} />}>
-          <Upload className="mr-1 h-4 w-4" />
-          새 버전 업로드
-        </Button>
       </div>
 
       <Card className="animate-fade-up delay-1 border-border/60">
         <CardHeader>
           <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-            전체 버전 ({versions.length})
+            전체 버전 ({app.versions.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {versions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 mb-3">
-                <AppWindow className="h-6 w-6 text-muted-foreground/40" />
-              </div>
-              <p className="text-sm text-muted-foreground">등록된 버전이 없습니다.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border/60">
-              {versions.map((v) => (
-                <div key={v.id} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono font-semibold">v{v.versionNumber}</span>
-                    <VersionStatusBadge status={v.status} />
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {v.releaseNotes && (
-                      <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
-                    )}
-                    <span className="font-mono">
-                      {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                    </span>
-                  </div>
-                </div>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/60">
+                <TableHead className="text-xs uppercase tracking-wider">버전</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider">상태</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider">릴리즈 노트</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider">제출일</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider">심사일</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...app.versions].reverse().map((ver) => (
+                <TableRow key={ver.id} className="border-border/40">
+                  <TableCell className="font-mono text-sm font-medium">v{ver.version}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={ver.status} />
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
+                    {ver.releaseNote}
+                  </TableCell>
+                  <TableCell className="text-sm font-mono text-muted-foreground">{ver.submittedAt || "-"}</TableCell>
+                  <TableCell className="text-sm font-mono text-muted-foreground">{ver.reviewedAt || "-"}</TableCell>
+                </TableRow>
               ))}
-            </div>
-          )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

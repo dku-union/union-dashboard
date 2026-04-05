@@ -1,32 +1,23 @@
 export type MemberRole = "owner" | "admin" | "developer" | "viewer";
 
 export interface TeamMember {
-  id: number;
-  publisherId: string;
+  id: string;
   name: string;
   email: string;
   role: MemberRole;
+  avatarUrl?: string;
   joinedAt: string;
-}
-
-export interface PendingInvitation {
-  id: number;
-  email: string;
-  role: string;
-  createdAt: string;
+  lastActiveAt: string;
+  assignedApps: string[]; // mini-app IDs
 }
 
 export interface Workspace {
   id: string;
   name: string;
-  description: string | null;
-  contactEmail: string;
-  color: string;
-  ownerId: string | null;
+  description: string;
   createdAt: string;
-  updatedAt: string;
-  memberCount?: number;
-  members?: TeamMember[];
-  myRole?: string;
-  pendingInvitations?: PendingInvitation[];
+  ownerId: string;
+  members: TeamMember[];
+  appIds: string[]; // mini-app IDs belonging to this workspace
+  color: string; // hex accent color
 }

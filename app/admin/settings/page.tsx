@@ -42,6 +42,14 @@ export default function AdminSettingsPage() {
             <Label htmlFor="admin-email" className="text-xs uppercase tracking-wider text-muted-foreground">이메일</Label>
             <Input id="admin-email" defaultValue={user?.email} disabled className="h-11 border-border/60 bg-muted/30" />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="admin-contact-email" className="text-xs uppercase tracking-wider text-muted-foreground">연락 이메일</Label>
+            <Input
+              id="admin-contact-email"
+              defaultValue={user?.contactEmail ?? ""}
+              className="h-11 border-border/60 bg-muted/30 focus:border-union"
+            />
+          </div>
           <Button onClick={handleSave} className="bg-union text-white hover:bg-union/90">
             저장
           </Button>

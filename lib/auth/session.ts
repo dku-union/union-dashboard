@@ -8,14 +8,12 @@ export async function createSession(publisher: {
   email: string;
   name: string;
   role: string;
-  hasWorkspace?: boolean;
 }) {
   const token = await signToken({
     id: publisher.publisherId,
     email: publisher.email,
     name: publisher.name,
     role: publisher.role,
-    hasWorkspace: publisher.hasWorkspace ?? false,
   });
 
   const cookieStore = await cookies();

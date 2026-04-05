@@ -48,7 +48,7 @@ export function AppFormBuild({ form }: Props) {
       <div>
         <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">빌드 파일</label>
         <p className="text-[11px] text-muted-foreground/60 mb-3 mt-1">
-          .unionapp 형식의 빌드 파일을 업로드해주세요
+          .zip 형식의 빌드 파일을 업로드해주세요
         </p>
         {buildFile ? (
           <div className="flex items-center gap-3 rounded-lg border border-sage/20 bg-sage/5 p-3">
@@ -82,11 +82,11 @@ export function AppFormBuild({ form }: Props) {
               클릭하여 빌드 파일 업로드
             </span>
             <span className="text-[11px] text-muted-foreground/60 mt-1 font-mono">
-              .unionapp (최대 50MB)
+              .zip (최대 50MB)
             </span>
             <input
               type="file"
-              accept=".unionapp"
+              accept=".zip"
               className="hidden"
               onChange={handleFileChange}
             />

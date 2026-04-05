@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Layers, Check, Mail, Loader2 } from "lucide-react";
-import { useCreateWorkspace } from "@/hooks/use-workspaces";
+import { Layers, Check } from "lucide-react";
+import { toast } from "sonner";
 
 const PRESET_COLORS = [
   { label: "블루", value: "#2563EB" },
@@ -27,34 +27,22 @@ const PRESET_COLORS = [
 interface CreateWorkspaceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated?: () => void;
 }
 
-export function CreateWorkspaceDialog({ open, onOpenChange, onCreated }: CreateWorkspaceDialogProps) {
+export function CreateWorkspaceDialog({ open, onOpenChange }: CreateWorkspaceDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0].value);
-  const { createWorkspace, isCreating } = useCreateWorkspace();
 
-  const handleCreate = async () => {
-    if (!name.trim() || !contactEmail.trim()) return;
-
-    const result = await createWorkspace({
-      name: name.trim(),
-      description: description.trim() || undefined,
-      contactEmail: contactEmail.trim(),
-      color,
+  const handleCreate = () => {
+    if (!name.trim()) return;
+    toast.success("워크스페이스 생성 완료", {
+      description: `"${name}" 워크스페이스가 생성되었습니다.`,
     });
-
-    if (result) {
-      setName("");
-      setDescription("");
-      setContactEmail("");
-      setColor(PRESET_COLORS[0].value);
-      onOpenChange(false);
-      onCreated?.();
-    }
+    setName("");
+    setDescription("");
+    setColor(PRESET_COLORS[0].value);
+    onOpenChange(false);
   };
 
   return (
@@ -86,22 +74,6 @@ export function CreateWorkspaceDialog({ open, onOpenChange, onCreated }: CreateW
               onChange={(e) => setName(e.target.value)}
               className="border-border/60"
             />
-          </div>
-
-          <div>
-            <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">
-              대표 연락 이메일
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-              <Input
-                type="email"
-                placeholder="contact@example.com"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="pl-10 border-border/60"
-              />
-            </div>
           </div>
 
           <div>
@@ -151,15 +123,11 @@ export function CreateWorkspaceDialog({ open, onOpenChange, onCreated }: CreateW
           </Button>
           <Button
             onClick={handleCreate}
-            disabled={!name.trim() || !contactEmail.trim() || isCreating}
+            disabled={!name.trim()}
             className="text-white hover:opacity-90"
             style={{ backgroundColor: color }}
           >
-            {isCreating ? (
-              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-            ) : (
-              <Layers className="mr-1 h-4 w-4" />
-            )}
+            <Layers className="mr-1 h-4 w-4" />
             만들기
           </Button>
         </DialogFooter>

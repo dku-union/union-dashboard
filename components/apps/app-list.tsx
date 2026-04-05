@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { MiniAppWithWorkspace, MiniAppStatus } from "@/types/app-version";
+import { useState, useEffect } from "react";
+import { MiniApp, MiniAppStatus } from "@/types/mini-app";
 import { AppCard } from "./app-card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,17 +9,20 @@ import { AppWindow } from "lucide-react";
 
 const statusFilters: { label: string; value: MiniAppStatus | "all" }[] = [
   { label: "전체", value: "all" },
-  { label: "대기 중", value: "PENDING" },
-  { label: "승인됨", value: "APPROVED" },
+  { label: "임시저장", value: "draft" },
+  { label: "심사 중", value: "in_review" },
+  { label: "게시됨", value: "published" },
+  { label: "반려됨", value: "rejected" },
 ];
 
-interface AppListProps {
-  apps: MiniAppWithWorkspace[];
-  isLoading: boolean;
-}
-
-export function AppList({ apps, isLoading }: AppListProps) {
+export function AppList({ apps }: { apps: MiniApp[] }) {
   const [filter, setFilter] = useState<MiniAppStatus | "all">("all");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredApps =
     filter === "all" ? apps : apps.filter((a) => a.status === filter);
@@ -60,7 +63,7 @@ export function AppList({ apps, isLoading }: AppListProps) {
           <h3 className="heading-display text-lg">앱이 없습니다</h3>
           <p className="text-sm text-muted-foreground mt-1">
             {filter === "all"
-              ? "워크스페이스에서 미니앱을 등록해보세요."
+              ? "새 미니앱을 등록해보세요."
               : `'${statusFilters.find((s) => s.value === filter)?.label}' 상태의 앱이 없습니다.`}
           </p>
         </div>

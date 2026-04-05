@@ -17,10 +17,8 @@ export function useAuthActions() {
       if (result.success) {
         if (result.role === "ROLE_ADMIN") {
           router.push("/admin");
-        } else if (result.hasWorkspace === false) {
-          router.push("/workspace/new");
         } else {
-          router.push("/dashboard");
+          router.push("/");
         }
         return true;
       }
@@ -33,6 +31,7 @@ export function useAuthActions() {
 
   const handleSignup = async (data: {
     name: string;
+    contactEmail: string;
     email: string;
     password: string;
   }) => {
@@ -40,7 +39,7 @@ export function useAuthActions() {
     try {
       const result = await signup(data);
       if (result.success) {
-        router.push("/workspace/new");
+        router.push("/");
         return true;
       }
       toast.error(result.error || "회원가입에 실패했습니다.");

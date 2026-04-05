@@ -26,7 +26,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { title: "대시보드", href: "/dashboard", icon: LayoutDashboard },
+  { title: "대시보드", href: "/", icon: LayoutDashboard },
   { title: "미니앱 관리", href: "/apps", icon: AppWindow },
   { title: "심사 현황", href: "/reviews", icon: ClipboardCheck },
   { title: "분석", href: "/analytics", icon: BarChart3 },
@@ -48,7 +48,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
+    if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
