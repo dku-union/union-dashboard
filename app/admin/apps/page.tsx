@@ -1,7 +1,6 @@
 "use client";
 
 import { AdminReviewBoard } from "@/components/admin/admin-review-board";
-import { mockAdminReviews } from "@/data/admin-reviews";
 
 export default function AdminAppsPage() {
   return (
@@ -12,7 +11,7 @@ export default function AdminAppsPage() {
       </div>
 
       <div className="animate-fade-up delay-2">
-        <AdminReviewBoard initialReviews={mockAdminReviews} />
+        <AdminReviewBoard />
       </div>
     </div>
   );
