@@ -14,9 +14,12 @@ export const signupSchema = z
     email: z.string().email("유효한 이메일 주소를 입력해주세요."),
     password: z
       .string()
-      .min(8, "비밀번호는 8자 이상이어야 합니다.")
+      .min(10, "비밀번호는 10자 이상이어야 합니다.")
+      .max(128, "비밀번호는 128자 이하여야 합니다.")
       .regex(/[A-Za-z]/, "비밀번호에 영문자를 포함해야 합니다.")
-      .regex(/[0-9]/, "비밀번호에 숫자를 포함해야 합니다."),
+      .regex(/[0-9]/, "비밀번호에 숫자를 포함해야 합니다.")
+      .regex(/[^A-Za-z0-9]/, "비밀번호에 특수문자를 포함해야 합니다.")
+      .regex(/^\S+$/, "비밀번호에 공백을 포함할 수 없습니다."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
