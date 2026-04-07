@@ -254,7 +254,7 @@ export function SignupForm() {
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="영문, 숫자 포함 8자 이상"
+                      placeholder="영문, 숫자, 특수문자 포함 10자 이상"
                       className="h-11 bg-muted/50 border-border/60 focus:border-union focus:ring-union/20 transition-colors"
                       {...field}
                     />
