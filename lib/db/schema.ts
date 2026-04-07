@@ -47,6 +47,8 @@ export const publishers = pgTable("publishers", {
   pubstatus: pubStatusEnum("pubstatus").notNull().default("ACTIVE"),
   createdAt: timestamp("created_at").defaultNow(),
   role: publisherRoleEnum("role").notNull().default("ROLE_USER"),
+  id: bigint("id", { mode: "number" }).notNull().generatedByDefaultAsIdentity(),
+  description: text("description"),
 });
 
 export const workspaces = pgTable("workspaces", {
@@ -106,6 +108,36 @@ export const miniApps = pgTable("mini_apps", {
   universityId: bigint("university_id", { mode: "number" }),
   tags: varchar("tags", { length: 255 }),
   categoryId: bigint("category_id", { mode: "number" }),
+  appId: varchar("app_id", { length: 255 }),
+  searchableName: varchar("searchable_name", { length: 255 }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const appVersions = pgTable("app_versions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  miniAppId: bigint("mini_app_id", { mode: "number" })
+    .notNull()
+    .references(() => miniApps.id),
+  versionNumber: varchar("version_number", { length: 100 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("DRAFT"),
+  buildFileUrl: varchar("build_file_url", { length: 1000 }),
+  bundleSize: bigint("bundle_size", { mode: "number" }),
+  releaseNotes: text("release_notes"),
+  testedAt: timestamp("tested_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  versionId: uuid("version_id")
+    .notNull()
+    .references(() => appVersions.id),
+  reviewerId: uuid("reviewer_id").references(() => publishers.publisherId),
+  verdict: varchar("verdict", { length: 20 }).notNull(),
+  reason: text("reason"),
+  decidedAt: timestamp("decided_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

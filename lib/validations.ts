@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ADMIN_REVIEWABLE_VERSION_STATUSES } from "@/types/admin-review";
 
 export const loginSchema = z.object({
   email: z.string().email("유효한 이메일 주소를 입력해주세요."),
@@ -91,3 +92,19 @@ export const createVersionSchema = z.object({
 });
 
 export type CreateVersionFormValues = z.infer<typeof createVersionSchema>;
+
+export const adminReviewListQuerySchema = z.object({
+  status: z.enum(ADMIN_REVIEWABLE_VERSION_STATUSES).optional(),
+  q: z.string().trim().max(100).optional(),
+});
+
+export const adminRejectReviewSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(1, "반려 사유를 입력해주세요.")
+    .max(2000, "반려 사유는 2000자 이하여야 합니다."),
+});
+
+export type AdminReviewListQuery = z.infer<typeof adminReviewListQuerySchema>;
+export type AdminRejectReviewFormValues = z.infer<typeof adminRejectReviewSchema>;
