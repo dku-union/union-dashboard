@@ -7,9 +7,26 @@ import { type ReactNode } from "react";
 interface HighlightProps {
   children: ReactNode;
   className?: string;
+  /** "default" for ice/white backgrounds, "onRed" for red section backgrounds */
+  variant?: "default" | "onRed";
 }
 
-export function Highlight({ children, className }: HighlightProps) {
+const STYLES = {
+  default: {
+    bg: "#FDE8E7",
+    bar: "#E83A33",
+    text: "#E83A33",
+  },
+  onRed: {
+    bg: "#C42E29",
+    bar: "#FACCCB",
+    text: "#FFFFFF",
+  },
+} as const;
+
+export function Highlight({ children, className, variant = "default" }: HighlightProps) {
+  const s = STYLES[variant];
+
   return (
     <motion.span
       className={cn("relative inline-block cursor-default", className)}
@@ -17,17 +34,16 @@ export function Highlight({ children, className }: HighlightProps) {
       style={{ willChange: "transform" }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Glow underline + subtle background */}
+      {/* Subtle background */}
       <span
         aria-hidden
         className="pointer-events-none"
         style={{
           position: "absolute",
-          inset: "0 -0.18em",
+          inset: "0 -0.15em",
           zIndex: 0,
-          borderRadius: "0.15em",
-          background:
-            "linear-gradient(135deg, rgba(64,138,113,0.22) 0%, rgba(117,191,160,0.10) 100%)",
+          borderRadius: "0.2em",
+          background: s.bg,
         }}
       />
       {/* Bottom accent bar */}
@@ -35,22 +51,20 @@ export function Highlight({ children, className }: HighlightProps) {
         aria-hidden
         style={{
           position: "absolute",
-          bottom: "0.04em",
-          left: "0.05em",
-          right: "0.05em",
-          height: "0.08em",
+          bottom: "0.06em",
+          left: "0.08em",
+          right: "0.08em",
+          height: "0.06em",
           zIndex: 0,
           borderRadius: "1em",
-          background:
-            "linear-gradient(90deg, #408A71 0%, #75BFA0 50%, #408A71 100%)",
-          boxShadow: "0 0 20px rgba(82,168,130,0.5), 0 0 40px rgba(64,138,113,0.25)",
+          background: s.bar,
         }}
       />
       <span
         style={{
           position: "relative",
           zIndex: 1,
-          color: "#B0E4CC",
+          color: s.text,
           display: "inline-block",
         }}
       >

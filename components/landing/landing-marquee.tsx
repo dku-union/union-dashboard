@@ -1,13 +1,5 @@
 "use client";
 
-/* ─────────────────────────────────────────────────────────────
- * LandingMarquee — "Intersecting Ribbons"
- *
- * Two diagonal ticker ribbons crossing in an X-shape:
- *   Ribbon A — mint fill, -8 deg, scrolls left
- *   Ribbon B — transparent / outlined, +8 deg, scrolls right
- * ───────────────────────────────────────────────────────────── */
-
 const RIBBON_A: string[] = [
   "CONNECT EVERYTHING",
   "CAMPUS LIFE REIMAGINED",
@@ -24,11 +16,9 @@ const RIBBON_B: string[] = [
   "BEYOND LIMITS",
 ];
 
-/* Duplicate 3× so the seamless-loop never shows a gap */
 const A = [...RIBBON_A, ...RIBBON_A, ...RIBBON_A];
 const B = [...RIBBON_B, ...RIBBON_B, ...RIBBON_B];
 
-/* ── Shared text / separator styles ─────────────────────── */
 const BASE_SPAN: React.CSSProperties = {
   display:       "inline-flex",
   alignItems:    "center",
@@ -43,7 +33,6 @@ const BASE_SPAN: React.CSSProperties = {
   userSelect:    "none",
 };
 
-/* ── Individual ribbon strip ─────────────────────────────── */
 interface RibbonProps {
   items:          string[];
   top:            string;
@@ -58,16 +47,8 @@ interface RibbonProps {
 }
 
 function Ribbon({
-  items,
-  top,
-  rotateDeg,
-  animClass,
-  ribbonBg,
-  ribbonBorder,
-  textColor,
-  textStroke,
-  separatorColor,
-  zIndex,
+  items, top, rotateDeg, animClass, ribbonBg, ribbonBorder,
+  textColor, textStroke, separatorColor, zIndex,
 }: RibbonProps) {
   return (
     <div
@@ -98,12 +79,11 @@ function Ribbon({
               key={i}
               style={{
                 ...BASE_SPAN,
-                color:             textColor,
-                WebkitTextStroke:  textStroke ?? "0",
+                color:            textColor,
+                WebkitTextStroke: textStroke ?? "0",
               }}
             >
               {text}
-              {/* decorative four-point star separator */}
               <span
                 style={{
                   color:            separatorColor,
@@ -122,41 +102,40 @@ function Ribbon({
   );
 }
 
-/* ── Section ─────────────────────────────────────────────── */
 export function LandingMarquee() {
   return (
     <section
       aria-hidden
       style={{
         position:        "relative",
-        height:          "440px",
-        backgroundColor: "#070d0a",
+        height:          "420px",
+        backgroundColor: "#E83A33",
         overflow:        "hidden",
       }}
     >
-      {/* ── Ribbon A — mint, tilted left, scrolls left ────── */}
+      {/* Ribbon A — Charcoal fill, white text */}
       <Ribbon
         items={A}
         top="40%"
-        rotateDeg={-8}
+        rotateDeg={-4}
         animClass="animate-marquee-left"
-        ribbonBg="#75BFA0"
-        textColor="#070d0a"
-        separatorColor="#285A48"
+        ribbonBg="#262725"
+        textColor="#FFFFFF"
+        separatorColor="#EDF2FA"
         zIndex={10}
       />
 
-      {/* ── Ribbon B — outlined, tilted right, scrolls right  */}
+      {/* Ribbon B — transparent, white stroke text */}
       <Ribbon
         items={B}
         top="60%"
-        rotateDeg={8}
+        rotateDeg={4}
         animClass="animate-marquee-right"
         ribbonBg="transparent"
-        ribbonBorder="1.5px solid #408A71"
+        ribbonBorder="1.5px solid #EDF2FA"
         textColor="transparent"
-        textStroke="1.5px #52A882"
-        separatorColor="#408A71"
+        textStroke="1.5px #EDF2FA"
+        separatorColor="#EDF2FA"
         zIndex={0}
       />
     </section>

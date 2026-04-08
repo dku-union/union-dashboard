@@ -14,22 +14,23 @@ export function LandingSectionHeading({
   align = "center",
 }: LandingSectionHeadingProps) {
   return (
-    <div className={cn("space-y-4", align === "center" ? "text-center" : "text-left")}>
+    <div className={cn(align === "center" ? "text-center" : "text-left")}>
       {eyebrow ? (
-        <p className="text-[11px] font-medium tracking-[0.3em] text-[#52A882] uppercase">
+        <p className="text-[11px] font-medium uppercase tracking-[0.3em] text-[#E83A33] mb-5">
           {eyebrow}
         </p>
       ) : null}
-      <div className="space-y-3">
-        <h2 className="heading-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          {title}
-        </h2>
-        {description ? (
-          <p className="mx-auto max-w-3xl text-base leading-7 text-white/40 sm:text-lg">
-            {description}
-          </p>
-        ) : null}
-      </div>
+      <h2
+        className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
+        style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)" }}
+      >
+        {title}
+      </h2>
+      {description ? (
+        <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
+          {description}
+        </p>
+      ) : null}
     </div>
   );
 }

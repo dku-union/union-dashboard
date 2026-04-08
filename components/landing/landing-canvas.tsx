@@ -4,7 +4,7 @@
  * LandingCanvas — Fixed full-viewport Fibonacci Sphere
  *
  * Architecture: position:fixed, z-index:-1
- * - Solid sections (z:1, bg:#070d0a) cover it → canvas hidden
+ * - Solid sections (z:1, bg:#0d0a0a) cover it → canvas hidden
  * - Reveal gaps (transparent) → canvas visible
  * - Scroll interaction: velocity boost → Lerp back to base speed
  * - Scale pulse: 1.06 on scroll-down, 0.97 on scroll-up → ease back to 1.0
@@ -32,9 +32,9 @@ const LERP_SCALE = 0.055;        // scale ease
 const SCROLL_BOOST_Y = 0.00018;
 const SCROLL_BOOST_X = 0.00006;
 
-// Colors (rgb) — #75BFA0 nodes, #408A71 lines
-const RN = 117, GN = 191, BN = 160;
-const RL = 64,  GL = 138, BL = 113;
+// Colors (rgb) — #EF6560 nodes, #E83A33 lines
+const RN = 239, GN = 101, BN = 96;
+const RL = 232, GL = 58,  BL = 51;
 
 /* ── Types ──────────────────────────────────────────────────── */
 interface P3 { bx: number; by: number; bz: number; x: number; y: number; z: number }

@@ -18,9 +18,9 @@ const FOV = 400;
 const CONNECT_DIST = 80;
 const CONNECT_DIST_SQ = CONNECT_DIST * CONNECT_DIST;
 
-// Palette  (#75BFA0 nodes, #408A71 lines)
-const R_NODE = 117, G_NODE = 191, B_NODE = 160;
-const R_LINE = 64,  G_LINE = 138, B_LINE = 113;
+// Palette  (#EF6560 nodes, #E83A33 lines)
+const R_NODE = 239, G_NODE = 101, B_NODE = 96;
+const R_LINE = 232, G_LINE = 58,  B_LINE = 51;
 
 interface P3 { bx: number; by: number; bz: number; x: number; y: number; z: number }
 interface P2 { x: number; y: number; a: number }
