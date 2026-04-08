@@ -1,12 +1,23 @@
 import "dotenv/config";
-import { defineConfig } from "drizzle-kit";
 
-export default defineConfig({
+const config = {
   schema: "./lib/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  tablesFilter: ["publishers", "email_verifications", "workspaces", "workspace_members", "workspace_invitations", "notifications", "mini_apps"],
-});
+  tablesFilter: [
+    "publishers",
+    "email_verifications",
+    "workspaces",
+    "workspace_members",
+    "workspace_invitations",
+    "notifications",
+    "mini_apps",
+    "app_versions",
+    "reviews",
+  ],
+};
+
+export default config;
