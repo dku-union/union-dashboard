@@ -8,21 +8,22 @@ import { LandingMarquee }        from "@/components/landing/landing-marquee";
 import { LandingMiniAppCatalog } from "@/components/landing/landing-miniapp-catalog";
 import { LandingServiceIntro }   from "@/components/landing/landing-service-intro";
 import { LandingUseCases }       from "@/components/landing/landing-use-cases";
+import { StickySection }         from "@/components/landing/sticky-section";
 
 export function LandingPage() {
   return (
     <div className="bg-[#EDF2FA] text-[#262725] overflow-x-clip">
       <LandingHeader />
       <main>
-        <div className="sticky top-0 z-[1]"><LandingHero /></div>
-        <div className="sticky top-0 z-[2]"><LandingServiceIntro /></div>
-        <div className="sticky top-0 z-[3]"><LandingImpactStats /></div>
-        <div className="sticky top-0 z-[4]"><LandingMarquee /></div>
-        <div className="sticky top-0 z-[5]"><LandingFeatureBento /></div>
-        <div className="sticky top-0 z-[6]"><LandingMiniAppCatalog /></div>
-        <div className="sticky top-0 z-[7]"><LandingHowItWorks /></div>
-        <div className="sticky top-0 z-[8]"><LandingUseCases /></div>
-        <div className="sticky top-0 z-[9]"><LandingFaqCta /></div>
+        <StickySection zIndex={1}><LandingHero /></StickySection>
+        <StickySection zIndex={2}><LandingServiceIntro /></StickySection>
+        <StickySection zIndex={3}><LandingImpactStats /></StickySection>
+        <StickySection zIndex={4}><LandingMarquee /></StickySection>
+        <StickySection zIndex={5}><LandingFeatureBento /></StickySection>
+        <StickySection zIndex={6}><LandingMiniAppCatalog /></StickySection>
+        <StickySection zIndex={7}><LandingHowItWorks /></StickySection>
+        <StickySection zIndex={8}><LandingUseCases /></StickySection>
+        <StickySection zIndex={9}><LandingFaqCta /></StickySection>
       </main>
     </div>
   );
