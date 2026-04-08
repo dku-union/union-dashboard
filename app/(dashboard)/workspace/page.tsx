@@ -21,7 +21,6 @@ export default function WorkspaceListPage() {
           <p className="text-sm text-muted-foreground mt-1">
             소속된 워크스페이스를 관리하고 새로 만드세요.
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
         <Button onClick={() => setCreateOpen(true)} className="bg-union text-white hover:bg-union/90">
           <Plus className="mr-2 h-4 w-4" />

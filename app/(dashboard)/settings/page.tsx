@@ -21,7 +21,6 @@ export default function SettingsPage() {
       <div className="animate-fade-up">
         <h1 className="heading-display text-2xl tracking-tight">설정</h1>
         <p className="text-sm text-muted-foreground mt-1">계정 및 프로필 설정을 관리하세요.</p>
-        <div className="h-0.5 w-8 bg-union mt-3" />
       </div>
 
       <Card className="animate-fade-up delay-1 border-border/60">

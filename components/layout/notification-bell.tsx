@@ -71,10 +71,10 @@ export function NotificationBell() {
           ) : (
             <>
               {unread.map((n) => (
-                <div key={n.id} className="px-3 py-2.5 bg-union/[0.03] border-l-2 border-union">
+                <div key={n.id} className="px-3 py-2.5 bg-muted/40 border-l-2 border-border">
                   <div className="flex items-start gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-union/10 shrink-0 mt-0.5">
-                      <Layers className="h-3.5 w-3.5 text-union" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/60 shrink-0 mt-0.5">
+                      <Layers className="h-3.5 w-3.5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold">{n.title}</p>

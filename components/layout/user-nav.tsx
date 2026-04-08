@@ -33,8 +33,8 @@ export function UserNav() {
       <DropdownMenuTrigger
         render={
           <button className="flex items-center gap-2 rounded-full outline-none ring-offset-background transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-            <Avatar className="h-8 w-8 border-2 border-union/20">
-              <AvatarFallback className="text-xs bg-union/10 text-union font-semibold">
+            <Avatar className="h-8 w-8 border border-border">
+              <AvatarFallback className="text-xs bg-muted text-foreground font-medium">
                 {initials}
               </AvatarFallback>
             </Avatar>

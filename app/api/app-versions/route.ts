@@ -18,6 +18,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "입력값이 올바르지 않습니다." }, { status: 400 });
     }
 
+    console.log("parsed.data", parsed.data);
+    console.log("session", session);
+
     const result = await springFetch<CreateVersionResponse>("/app-versions", session, {
       method: "POST",
       body: parsed.data,

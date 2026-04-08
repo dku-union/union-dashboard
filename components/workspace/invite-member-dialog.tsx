@@ -72,8 +72,8 @@ export function InviteMemberDialog({ open, onOpenChange, workspaceId, onInvited 
       <DialogContent className="max-w-md border-border/60">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 heading-display">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-union/10">
-              <UserPlus className="h-4 w-4 text-union" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60">
+              <UserPlus className="h-4 w-4 text-muted-foreground" />
             </div>
             멤버 초대
           </DialogTitle>

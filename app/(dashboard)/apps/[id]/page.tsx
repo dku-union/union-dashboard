@@ -52,8 +52,8 @@ export default function AppDetailPage({
       {/* 상단 헤더 */}
       <div className="flex items-start justify-between animate-fade-up">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-            <AppWindow className="h-8 w-8 text-union/70" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/60 border border-border/40">
+            <AppWindow className="h-8 w-8 text-muted-foreground" />
           </div>
           <div>
             <h1 className="heading-display text-2xl tracking-tight">{app.name}</h1>

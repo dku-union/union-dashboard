@@ -11,7 +11,6 @@ export default function ReviewsPage() {
         <p className="text-sm text-muted-foreground mt-1">
           미니앱 심사 진행 상황을 한눈에 확인하세요.
         </p>
-        <div className="h-0.5 w-8 bg-union mt-3" />
       </div>
       <div className="animate-fade-up delay-2">
         <ReviewStatusBoard reviews={mockReviews} />

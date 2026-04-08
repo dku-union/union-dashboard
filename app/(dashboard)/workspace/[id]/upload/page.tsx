@@ -138,7 +138,6 @@ export default function UploadPage() {
           <p className="text-sm text-muted-foreground mt-0.5">
             {workspace?.name}
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
       </div>
 
@@ -290,14 +289,14 @@ export default function UploadPage() {
                   .unionapp 형식의 빌드 파일을 업로드해주세요
                 </p>
                 {buildFile ? (
-                  <div className="flex items-center gap-3 rounded-lg border border-sage/20 bg-sage/5 p-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sage/10">
-                      <FileArchive className="h-5 w-5 text-sage" />
+                  <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 p-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/60">
+                      <FileArchive className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
                         <p className="text-sm font-medium truncate">{buildFile.name}</p>
-                        <CheckCircle className="h-3.5 w-3.5 text-sage shrink-0" />
+                        <CheckCircle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       </div>
                       <p className="text-[11px] text-muted-foreground font-mono">
                         {(buildFile.size / (1024 * 1024)).toFixed(2)} MB
@@ -367,8 +366,8 @@ export default function UploadPage() {
       {flowStep === "uploading" && (
         <Card className="border-border/60 animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-union/10">
-              <Loader2 className="h-8 w-8 text-union animate-spin" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/60">
+              <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold">
@@ -391,8 +390,8 @@ export default function UploadPage() {
       {flowStep === "done" && (
         <Card className="border-border/60 animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-sage/10">
-              <CheckCircle className="h-8 w-8 text-sage" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/60">
+              <CheckCircle className="h-8 w-8 text-muted-foreground" />
             </div>
             <div className="text-center">
               <p className="heading-display text-lg">업로드 완료</p>

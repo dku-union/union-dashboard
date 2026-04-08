@@ -134,8 +134,8 @@ export default function NewWorkspacePage() {
         <Card className="w-full max-w-lg border-border/60">
           <CardContent className="p-8">
             <div className="text-center mb-6">
-              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-union/10 mb-4">
-                <Users className="h-7 w-7 text-union" />
+              <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60 mb-4">
+                <Users className="h-7 w-7 text-muted-foreground" />
               </div>
               <h1 className="heading-display text-2xl tracking-tight">워크스페이스 초대</h1>
               <p className="text-sm text-muted-foreground mt-2">
@@ -148,8 +148,8 @@ export default function NewWorkspacePage() {
                 <Card key={inv.id} className="border-border/60">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-union/10 shrink-0 mt-0.5">
-                        <Layers className="h-4 w-4 text-union" />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted/60 shrink-0 mt-0.5">
+                        <Layers className="h-4 w-4 text-muted-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm leading-relaxed">{inv.message}</p>

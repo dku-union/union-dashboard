@@ -17,8 +17,8 @@ export function AppCard({ app }: { app: MiniAppWithWorkspace }) {
   return (
     <Card className="card-hover accent-line overflow-hidden border-border/60 group">
       <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-          <AppWindow className="h-5 w-5 text-union/70" />
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+          <AppWindow className="h-5 w-5 text-muted-foreground" />
         </div>
         <div className="flex-1 space-y-1 min-w-0">
           <div className="flex items-center justify-between">

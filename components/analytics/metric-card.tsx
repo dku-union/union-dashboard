@@ -16,7 +16,7 @@ export function MetricCard({ title, subtitle, data, icon }: MetricCardProps) {
     data.trend === "up" ? TrendingUp : data.trend === "down" ? TrendingDown : Minus;
 
   const trendColor =
-    data.trend === "up" ? "text-sage" : data.trend === "down" ? "text-union" : "text-muted-foreground";
+    data.trend === "up" ? "text-union" : data.trend === "down" ? "text-destructive" : "text-muted-foreground";
 
   return (
     <Card className="border-border/60 overflow-hidden">

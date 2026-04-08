@@ -145,8 +145,8 @@ export default function WorkspaceDetailPage() {
         <Card className="border-border/60 card-hover">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-                <Users className="h-5 w-5 text-union/70" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+                <Users className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
                 <p className="heading-display text-2xl">{members.length}</p>
@@ -158,8 +158,8 @@ export default function WorkspaceDetailPage() {
         <Card className="border-border/60 card-hover">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-                <AppWindow className="h-5 w-5 text-union/70" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+                <AppWindow className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
                 <p className="heading-display text-2xl">{appsLoading ? "-" : miniApps.length}</p>
@@ -171,8 +171,8 @@ export default function WorkspaceDetailPage() {
         <Card className="border-border/60 card-hover">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sage/10 to-sage/5 border border-sage/10">
-                <Settings className="h-5 w-5 text-sage/70" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+                <Settings className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
                 <p className="heading-display text-2xl">{roleStats.developer}</p>
@@ -184,8 +184,8 @@ export default function WorkspaceDetailPage() {
         <Card className="border-border/60 card-hover">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold/10 to-gold/5 border border-gold/10">
-                <Users className="h-5 w-5 text-gold/70" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+                <Users className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
                 <p className="heading-display text-2xl">{roleStats.admin + roleStats.viewer}</p>
@@ -284,8 +284,8 @@ export default function WorkspaceDetailPage() {
               {miniApps.map((app) => (
                 <Card key={app.id} className="border-border/60 card-hover">
                   <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-union/10 to-union/5 border border-union/10 shrink-0">
-                      <AppWindow className="h-4 w-4 text-union/70" />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted/60 border border-border/40 shrink-0">
+                      <AppWindow className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{app.name}</p>

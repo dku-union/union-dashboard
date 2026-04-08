@@ -92,16 +92,19 @@ export const useCases = [
     title: "학생회 운영 허브",
     description: "투표, 공지, 행사 신청을 하나의 미니앱 묶음으로 제공해 학생 참여를 높입니다.",
     image: "/landing/student-council.webp",
+    emoji: "🏛️",
   },
   {
     title: "캠퍼스 서비스 런칭",
     description: "새로운 생활 편의 서비스나 정보 서비스를 아이디어 단계에서 바로 검증할 수 있습니다.",
     image: "/landing/easy-launch.webp",
+    emoji: "🚀",
   },
   {
     title: "기존 운영 방식 전환",
     description: "폼, 메신저, 게시판에 흩어진 캠퍼스 운영 절차를 미니앱 흐름으로 정리합니다.",
     image: "/landing/compare-stores.webp",
+    emoji: "🔄",
   },
 ];
 
