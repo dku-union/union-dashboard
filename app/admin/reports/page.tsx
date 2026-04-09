@@ -11,6 +11,7 @@ export default function AdminReportsPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           신고 도메인은 별도 데이터 모델 설계 후 실데이터로 연결할 예정입니다.
         </p>
+        <div className="mt-3 h-0.5 w-8 bg-union" />
       </div>
       <Card className="border-dashed border-border/60">
         <CardHeader>
