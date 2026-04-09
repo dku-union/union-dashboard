@@ -1,4 +1,32 @@
 import type { VersionStatus } from "@/types/app-version";
+import type { MiniAppCategory, MiniAppStatus, PermissionScope } from "@/types/mini-app";
+
+export interface AdminReviewScanSummary {
+  security: "pass" | "warning";
+  performance: "pass" | "warning";
+  notes: string[];
+}
+
+export interface AdminReviewRecord {
+  id: string;
+  appId: string;
+  appName: string;
+  publisherId: string;
+  publisherName: string;
+  publisherEmail: string;
+  contactEmail: string;
+  category: MiniAppCategory;
+  shortDescription: string;
+  version: string;
+  status: MiniAppStatus;
+  submittedAt: string;
+  reviewedAt?: string;
+  releaseNote: string;
+  reviewerNote?: string;
+  rejectionReasons?: string[];
+  permissions: PermissionScope[];
+  autoScanSummary: AdminReviewScanSummary;
+}
 
 export type AdminPublisherStatus = "ACTIVE" | "SUSPENDED" | "PENDING";
 export type AdminPublisherRole = "ROLE_USER" | "ROLE_ADMIN";
@@ -110,4 +138,3 @@ export interface AdminUserStatusUpdateResponse {
   status: AdminPublisherStatus;
   updatedAt: string;
 }
-
