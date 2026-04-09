@@ -43,9 +43,7 @@ export const mockAdminReviews: AdminReviewRecord[] = [
     autoScanSummary: {
       security: "warning",
       performance: "pass",
-      notes: [
-        "위치 권한 요청 문구가 사용자 이해 관점에서 더 구체적이어야 합니다.",
-      ],
+      notes: ["위치 권한 요청 문구가 사용자 이해 관점에서 더 구체적이어야 합니다."],
     },
   },
   {
@@ -72,9 +70,7 @@ export const mockAdminReviews: AdminReviewRecord[] = [
     autoScanSummary: {
       security: "warning",
       performance: "pass",
-      notes: [
-        "결제 관련 보안 검사에서 위험 패턴이 감지되었습니다.",
-      ],
+      notes: ["결제 관련 보안 검사에서 위험 패턴이 감지되었습니다."],
     },
   },
   {
@@ -97,9 +93,7 @@ export const mockAdminReviews: AdminReviewRecord[] = [
     autoScanSummary: {
       security: "pass",
       performance: "pass",
-      notes: [
-        "자동 점검 항목이 모두 통과되었습니다.",
-      ],
+      notes: ["자동 점검 항목이 모두 통과되었습니다."],
     },
   },
 ];

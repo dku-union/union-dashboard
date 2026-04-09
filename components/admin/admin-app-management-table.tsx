@@ -36,19 +36,19 @@ export function AdminAppManagementTable({ initialApps }: { initialApps: AdminMan
 
   const filteredApps = useMemo(() => {
     return apps.filter((app) => {
-      const matchesFilter = filter === "all" || app.status === filter;
+      const matchesFilter = filter === "all" || getLegacyStatus(app.status) === filter;
       const normalizedQuery = query.trim().toLowerCase();
       const matchesQuery =
         normalizedQuery.length === 0 ||
         app.name.toLowerCase().includes(normalizedQuery) ||
-        app.publisherName.toLowerCase().includes(normalizedQuery) ||
-        app.publisherEmail.toLowerCase().includes(normalizedQuery);
+        (app.publisherName ?? "").toLowerCase().includes(normalizedQuery) ||
+        (app.publisherEmail ?? "").toLowerCase().includes(normalizedQuery);
 
       return matchesFilter && matchesQuery;
     });
   }, [apps, filter, query]);
 
-  const updateStatus = (appId: string, status: MiniAppStatus, message: string) => {
+  const updateStatus = (appId: string | number, status: MiniAppStatus, message: string) => {
     setApps((current) =>
       current.map((app) =>
         app.id === appId ? { ...app, status, forcedActionNote: message } : app,
@@ -121,7 +121,7 @@ export function AdminAppManagementTable({ initialApps }: { initialApps: AdminMan
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{app.name}</p>
                       <Badge variant="outline" className="border-border/60 bg-background">
-                        {CATEGORY_LABELS[app.category]}
+                        {app.category ? CATEGORY_LABELS[app.category] : "-"}
                       </Badge>
                     </div>
                     <p className="text-xs font-mono text-muted-foreground/70">v{app.currentVersion}</p>
@@ -132,18 +132,18 @@ export function AdminAppManagementTable({ initialApps }: { initialApps: AdminMan
                 </TableCell>
                 <TableCell>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">{app.publisherName}</p>
-                    <p className="text-xs text-muted-foreground">{app.publisherEmail}</p>
+                    <p className="text-sm font-medium">{app.publisherName ?? "-"}</p>
+                    <p className="text-xs text-muted-foreground">{app.publisherEmail ?? "-"}</p>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <StatusBadge status={app.status} />
+                  <StatusBadge status={getLegacyStatus(app.status)} />
                 </TableCell>
                 <TableCell>
-                  {app.reportCount > 0 ? (
+                  {(app.reportCount ?? 0) > 0 ? (
                     <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive">
                       <AlertTriangle className="h-3 w-3" />
-                      {app.reportCount}건
+                      {app.reportCount ?? 0}건
                     </Badge>
                   ) : (
                     <span className="text-xs text-muted-foreground">없음</span>
@@ -152,7 +152,7 @@ export function AdminAppManagementTable({ initialApps }: { initialApps: AdminMan
                 <TableCell className="text-sm">{app.updatedAt}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    {app.status === "suspended" ? (
+                    {getLegacyStatus(app.status) === "suspended" ? (
                       <Button variant="outline" size="sm" onClick={() => handleResume(app)}>
                         <PlayCircle className="mr-1 h-3.5 w-3.5" />
                         재개
@@ -177,3 +177,6 @@ export function AdminAppManagementTable({ initialApps }: { initialApps: AdminMan
     </Card>
   );
 }
+
+const getLegacyStatus = (status: AdminManagedAppRecord["status"]): MiniAppStatus =>
+  status as MiniAppStatus;
