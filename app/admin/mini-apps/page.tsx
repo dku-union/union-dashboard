@@ -1,7 +1,6 @@
 "use client";
 
 import { AdminAppManagementTable } from "@/components/admin/admin-app-management-table";
-import { mockAdminManagedApps } from "@/data/admin-apps";
 
 export default function AdminMiniAppsPage() {
   return (
@@ -9,11 +8,11 @@ export default function AdminMiniAppsPage() {
       <div className="animate-fade-up">
         <h1 className="heading-display text-2xl tracking-tight">미니앱 운영 관리</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          전체 미니앱 상태를 확인하고 강제 중지, 재개, 삭제를 수행하세요.
+          전체 미니앱 상태와 최신 버전 상태를 실데이터로 확인합니다.
         </p>
       </div>
       <div className="animate-fade-up delay-2">
-        <AdminAppManagementTable initialApps={mockAdminManagedApps} />
+        <AdminAppManagementTable />
       </div>
     </div>
   );
