@@ -109,5 +109,20 @@ export const adminRejectReviewSchema = z.object({
     .max(2000, "반려 사유는 2000자 이하여야 합니다."),
 });
 
+export const adminPublisherStatusSchema = z.object({
+  status: z.enum(["ACTIVE", "SUSPENDED", "PENDING"]),
+});
+
+export const adminMiniAppStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED"]),
+});
+
+export const adminUserStatusSchema = z.object({
+  status: z.enum(["ACTIVE", "SUSPENDED", "PENDING"]),
+});
+
 export type AdminReviewListQuery = z.infer<typeof adminReviewListQuerySchema>;
 export type AdminRejectReviewFormValues = z.infer<typeof adminRejectReviewSchema>;
+export type AdminPublisherStatusFormValues = z.infer<typeof adminPublisherStatusSchema>;
+export type AdminMiniAppStatusFormValues = z.infer<typeof adminMiniAppStatusSchema>;
+export type AdminUserStatusFormValues = z.infer<typeof adminUserStatusSchema>;

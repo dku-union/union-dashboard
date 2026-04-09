@@ -1,98 +1,94 @@
-import { MiniAppCategory, MiniAppStatus, PermissionScope } from "@/types/mini-app";
+import type { VersionStatus } from "@/types/app-version";
 
-export interface AdminReviewScanSummary {
-  security: "pass" | "warning";
-  performance: "pass" | "warning";
-  notes: string[];
+export type AdminPublisherStatus = "ACTIVE" | "SUSPENDED" | "PENDING";
+export type AdminPublisherRole = "ROLE_USER" | "ROLE_ADMIN";
+
+export interface AdminDashboardStat {
+  label: string;
+  value: number;
 }
 
-export interface AdminReviewRecord {
-  id: string;
-  appId: string;
-  appName: string;
-  publisherId: string;
-  publisherName: string;
-  publisherEmail: string;
-  contactEmail: string;
-  category: MiniAppCategory;
-  shortDescription: string;
-  version: string;
-  status: MiniAppStatus;
+export interface AdminDashboardReviewItem {
+  versionId: string;
+  miniAppName: string;
+  publisherName: string | null;
+  versionNumber: string;
   submittedAt: string;
-  reviewedAt?: string;
-  releaseNote: string;
-  reviewerNote?: string;
-  rejectionReasons?: string[];
-  permissions: PermissionScope[];
-  autoScanSummary: AdminReviewScanSummary;
+  reviewedAt: string | null;
+  reviewReason: string | null;
 }
 
-export interface AdminPublisherRecord {
+export interface AdminDashboardPublisherItem {
+  id: string;
+  name: string;
+  email: string;
+  status: AdminPublisherStatus;
+  inReviewAppCount: number;
+}
+
+export interface AdminDashboardData {
+  stats: AdminDashboardStat[];
+  recentReviews: AdminDashboardReviewItem[];
+  rejectedReviews: AdminDashboardReviewItem[];
+  attentionPublishers: AdminDashboardPublisherItem[];
+}
+
+export interface AdminPublisherRecentApp {
+  id: string;
+  name: string;
+  versionId: string | null;
+  version: string | null;
+  versionStatus: VersionStatus | null;
+}
+
+export interface AdminPublisherListItem {
   id: string;
   email: string;
   name: string;
-  contactEmail?: string;
-  status: "ACTIVE" | "SUSPENDED" | "PENDING";
+  contactEmail: string | null;
+  status: AdminPublisherStatus;
   createdAt: string;
   appCount: number;
   publishedAppCount: number;
   inReviewAppCount: number;
-  role: "ROLE_USER" | "ROLE_ADMIN";
-  recentApps: {
-    id: string;
-    name: string;
-    status: MiniAppStatus;
-    version: string;
-  }[];
+  role: AdminPublisherRole;
+}
+
+export interface AdminPublisherDetail extends AdminPublisherListItem {
+  recentApps: AdminPublisherRecentApp[];
+}
+
+export interface AdminPublisherStatusUpdateResponse {
+  publisherId: string;
+  status: AdminPublisherStatus;
+  updatedAt: string;
 }
 
 export interface AdminManagedAppRecord {
-  id: string;
+  id: number;
   name: string;
-  publisherName: string;
-  publisherEmail: string;
-  category: MiniAppCategory;
-  status: MiniAppStatus;
-  currentVersion: string;
+  publisherId: string | null;
+  publisherName: string | null;
+  publisherEmail: string | null;
+  status: "PENDING" | "APPROVED";
+  currentVersion: string | null;
+  currentVersionStatus: VersionStatus | null;
   updatedAt: string;
-  reportCount: number;
-  forcedActionNote?: string;
 }
 
-export interface AdminReportRecord {
-  id: string;
-  targetType: "miniapp" | "review";
-  targetName: string;
-  reporterName: string;
-  reporterEmail: string;
-  reason: string;
-  detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
-  createdAt: string;
-  actionTaken?: "warning" | "suspend" | "delete";
-}
-
-export interface AdminUserReportRecord {
-  id: string;
-  reportedUserName: string;
-  reportedUserEmail: string;
-  reporterName: string;
-  reporterEmail: string;
-  reason: string;
-  detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
-  createdAt: string;
-  actionTaken?: "warning" | "suspend" | "dismiss";
+export interface AdminMiniAppStatusUpdateResponse {
+  miniAppId: number;
+  status: "PENDING" | "APPROVED";
+  updatedAt: string;
 }
 
 export interface AdminUserRecord {
   id: string;
   name: string;
   email: string;
-  university: string;
   verified: boolean;
-  status: "ACTIVE" | "SUSPENDED";
-  role: "USER" | "PUBLISHER" | "ADMIN";
+  status: AdminPublisherStatus;
+  role: AdminPublisherRole;
   createdAt: string;
 }
 
@@ -100,6 +96,18 @@ export interface AdminRoleRecord {
   id: string;
   name: string;
   email: string;
-  adminRole: "SUPER_ADMIN" | "REVIEW_ADMIN";
+  adminRole: "ROLE_ADMIN";
   assignedAt: string;
 }
+
+export interface AdminUserListResponse {
+  users: AdminUserRecord[];
+  admins: AdminRoleRecord[];
+}
+
+export interface AdminUserStatusUpdateResponse {
+  userId: string;
+  status: AdminPublisherStatus;
+  updatedAt: string;
+}
+
