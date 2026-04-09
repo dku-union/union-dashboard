@@ -40,8 +40,8 @@ export default function DocsPage() {
       </aside>
       <div className="flex-1 space-y-8">
         <div className="animate-fade-up">
-          <h1 className="heading-display text-2xl tracking-tight">개발 문서</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-heading-1">개발 문서</h1>
+          <p className="text-body-sm text-muted-foreground mt-1">
             Union 미니앱 개발에 필요한 모든 문서를 확인하세요.
           </p>
         </div>
@@ -54,13 +54,13 @@ export default function DocsPage() {
                   <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${section.accent} border mb-3`}>
                     <section.icon className={`h-6 w-6 ${section.iconColor}`} />
                   </div>
-                  <CardTitle className="heading-display text-base flex items-center gap-2">
+                  <CardTitle className="text-heading-3 flex items-center gap-2">
                     {section.title}
                     <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body-sm text-muted-foreground leading-relaxed">
                     {section.description}
                   </p>
                 </CardContent>
@@ -71,7 +71,7 @@ export default function DocsPage() {
 
         <Card className="animate-fade-up delay-4 border-border/60">
           <CardHeader>
-            <CardTitle className="heading-display text-base">시작하기</CardTitle>
+            <CardTitle className="text-heading-3">시작하기</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>

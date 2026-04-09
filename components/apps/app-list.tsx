@@ -53,12 +53,12 @@ export function AppList({ apps, isLoading }: AppListProps) {
       </Tabs>
 
       {filteredApps.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-up">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/50 mb-4">
-            <AppWindow className="h-8 w-8 text-muted-foreground/40" />
+        <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-up max-w-xs mx-auto">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/50 mb-4">
+            <AppWindow className="h-12 w-12 text-muted-foreground/50" />
           </div>
-          <h3 className="heading-display text-lg">앱이 없습니다</h3>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h3 className="text-heading-3">앱이 없습니다</h3>
+          <p className="text-body-sm text-muted-foreground mt-1">
             {filter === "all"
               ? "워크스페이스에서 미니앱을 등록해보세요."
               : `'${statusFilters.find((s) => s.value === filter)?.label}' 상태의 앱이 없습니다.`}

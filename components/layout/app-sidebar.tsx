@@ -22,6 +22,7 @@ import {
   Settings,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -88,14 +89,12 @@ export function AppSidebar() {
       {/* Header — h-14 to align with DashboardHeader */}
       <SidebarHeader className="h-14 px-4 flex items-center border-b border-sidebar-border" style={{ flexDirection: "row" }}>
         <div className="flex items-center gap-2.5">
-          <div className="flex h-[26px] w-[26px] items-center justify-center rounded-[5px] bg-sidebar-accent-foreground shrink-0">
-            <span className="text-[11px] font-bold text-sidebar leading-none">U</span>
-          </div>
+          <Image src="/logo.svg" alt="Union" width={26} height={26} className="shrink-0" />
           <div>
             <p className="text-[13px] font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
               Union
             </p>
-            <p className="text-[10px] text-sidebar-foreground/40 tracking-[0.1em] uppercase mt-[3px]">
+            <p className="text-[10px] text-sidebar-foreground/60 tracking-[0.1em] uppercase mt-[3px]">
               Publisher
             </p>
           </div>
@@ -111,7 +110,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup className="px-2 py-1 mt-2">
-          <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/35 px-2 mb-0.5 h-auto">
+          <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/50 px-2 mb-0.5 h-auto">
             팀
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -120,7 +119,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup className="px-2 py-1 mt-2">
-          <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/35 px-2 mb-0.5 h-auto">
+          <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/50 px-2 mb-0.5 h-auto">
             리소스
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -134,7 +133,7 @@ export function AppSidebar() {
         <SidebarSeparator className="mx-0 mb-1" />
         {renderMenu(bottomItems)}
         <div className="px-2 pt-3">
-          <span className="text-[10px] text-sidebar-foreground/25 tabular-nums">
+          <span className="text-[10px] text-sidebar-foreground/40 tabular-nums">
             v1.0.0
           </span>
         </div>

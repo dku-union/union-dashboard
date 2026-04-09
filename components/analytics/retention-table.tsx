@@ -25,7 +25,7 @@ export function RetentionTable({ data }: { data: RetentionCohort[] }) {
   return (
     <Card className="border-border/60">
       <CardHeader className="pb-2">
-        <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+        <CardTitle className="text-label uppercase tracking-wider text-muted-foreground">
           코호트 리텐션
         </CardTitle>
       </CardHeader>

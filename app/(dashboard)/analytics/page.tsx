@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="heading-display text-2xl tracking-tight">분석</h1>
-          <p className="text-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
+          <h1 className="text-heading-1">분석</h1>
+          <p className="text-body-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -33,8 +33,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-fade-up">
-        <h1 className="heading-display text-2xl tracking-tight">분석</h1>
-        <p className="text-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
+        <h1 className="text-heading-1">분석</h1>
+        <p className="text-body-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

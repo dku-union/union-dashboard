@@ -82,10 +82,10 @@ export default function DashboardHome() {
   return (
     <div className="max-w-6xl space-y-8">
       <div className="animate-fade-up">
-        <h1 className="heading-display text-3xl tracking-tight">
+        <h1 className="text-heading-1">
           안녕하세요, <span className="union-underline">{user?.name}</span>님
         </h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-body-sm text-muted-foreground">
           Union Publisher Dashboard에 오신 것을 환영합니다.
         </p>
       </div>
@@ -96,10 +96,10 @@ export default function DashboardHome() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                  <p className="mb-2 text-caption uppercase tracking-wider text-muted-foreground">
                     {stat.label}
                   </p>
-                  <p className="heading-display text-3xl">{stat.value}</p>
+                  <p className="text-heading-2">{stat.value}</p>
                 </div>
                 <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.bg}`}>
                   <stat.icon className={`h-5 w-5 ${stat.color}`} />
@@ -112,7 +112,7 @@ export default function DashboardHome() {
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-3 lg:col-span-2">
-          <h2 className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-label uppercase tracking-wider text-muted-foreground">
             빠른 작업
           </h2>
           <div className="space-y-2">
@@ -142,7 +142,7 @@ export default function DashboardHome() {
         <Card className="animate-fade-up delay-6 border-border/60 lg:col-span-3">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+              <CardTitle className="text-label uppercase tracking-wider text-muted-foreground">
                 최근 심사 현황
               </CardTitle>
               <div className="h-0.5 w-6 bg-union" />

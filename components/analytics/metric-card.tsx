@@ -16,14 +16,14 @@ export function MetricCard({ title, subtitle, data, icon }: MetricCardProps) {
     data.trend === "up" ? TrendingUp : data.trend === "down" ? TrendingDown : Minus;
 
   const trendColor =
-    data.trend === "up" ? "text-union" : data.trend === "down" ? "text-destructive" : "text-muted-foreground";
+    data.trend === "up" ? "text-sage" : data.trend === "down" ? "text-destructive" : "text-muted-foreground";
 
   return (
     <Card className="border-border/60 overflow-hidden">
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="heading-display text-xs uppercase tracking-wider text-muted-foreground">
+            <p className="text-label uppercase tracking-wider text-muted-foreground">
               {title}
             </p>
             {subtitle && (
@@ -34,7 +34,7 @@ export function MetricCard({ title, subtitle, data, icon }: MetricCardProps) {
             {icon}
           </div>
         </div>
-        <p className="heading-display text-3xl tracking-tight">
+        <p className="text-heading-2">
           {data.value.toLocaleString()}
         </p>
         <div className={`flex items-center gap-1 mt-2 text-xs ${trendColor}`}>
