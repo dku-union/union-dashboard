@@ -1,5 +1,20 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  AppWindow,
+  LayoutDashboard,
+  Settings,
+  Shield,
+  ShieldAlert,
+  UserRound,
+  Users,
+} from "lucide-react";
+import { useAuth } from "@/components/providers/auth-provider";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { UserNav } from "@/components/layout/user-nav";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -13,39 +28,20 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarSeparator,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/components/providers/auth-provider";
-import {
-  LayoutDashboard,
-  Users,
-  AppWindow,
-  ShieldAlert,
-  UserRound,
-  Settings,
-  Shield,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { UserNav } from "@/components/layout/user-nav";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 
 const adminNavItems = [
-  { title: "관리 대시보드", href: "/admin", icon: LayoutDashboard },
+  { title: "관리자 대시보드", href: "/admin", icon: LayoutDashboard },
   { title: "퍼블리셔 관리", href: "/admin/publishers", icon: Users },
   { title: "앱 심사", href: "/admin/apps", icon: AppWindow },
   { title: "미니앱 운영", href: "/admin/mini-apps", icon: Shield },
   { title: "신고 관리", href: "/admin/reports", icon: ShieldAlert },
-  { title: "사용자 관리", href: "/admin/users", icon: UserRound },
+  { title: "플랫폼 계정", href: "/admin/users", icon: UserRound },
   { title: "설정", href: "/admin/settings", icon: Settings },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isLoading } = useAuth();
   const pathname = usePathname();
 
@@ -57,12 +53,12 @@ export default function AdminLayout({
   if (isLoading) {
     return (
       <div className="flex h-svh items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4 animate-fade-up">
+        <div className="flex animate-fade-up flex-col items-center gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-union">
-            <span className="text-white font-bold text-sm">U</span>
+            <span className="text-sm font-bold text-white">U</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-union animate-pulse" />
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-union" />
             <span className="text-sm text-muted-foreground">로딩 중...</span>
           </div>
         </div>
@@ -75,14 +71,18 @@ export default function AdminLayout({
       <Sidebar className="border-r border-sidebar-border">
         <SidebarHeader>
           <div className="flex items-center gap-3 px-3 py-4">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-white heading-display text-sm font-bold">
+            <div className="heading-display flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sm font-bold text-white">
               U
             </div>
             <div>
-              <p className="heading-display text-sm font-semibold text-sidebar-accent-foreground">Union</p>
+              <p className="heading-display text-sm font-semibold text-sidebar-accent-foreground">
+                Union
+              </p>
               <div className="flex items-center gap-1">
                 <Shield className="h-3 w-3 text-sidebar-foreground/70" />
-                <p className="text-[10px] uppercase tracking-[0.15em] text-sidebar-foreground/70">Admin</p>
+                <p className="text-[10px] uppercase tracking-[0.15em] text-sidebar-foreground/70">
+                  Admin
+                </p>
               </div>
             </div>
           </div>
@@ -102,10 +102,22 @@ export default function AdminLayout({
                       className="group relative transition-all duration-200"
                     >
                       {isActive(item.href) && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-sidebar-primary rounded-r-full" />
+                        <div className="absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-r-full bg-sidebar-primary" />
                       )}
-                      <item.icon className={`h-4 w-4 transition-colors ${isActive(item.href) ? "text-sidebar-primary" : "text-sidebar-foreground/70"}`} />
-                      <span className={`text-[13px] ${isActive(item.href) ? "font-semibold text-sidebar-accent-foreground" : "font-normal text-sidebar-foreground"}`}>
+                      <item.icon
+                        className={`h-4 w-4 transition-colors ${
+                          isActive(item.href)
+                            ? "text-sidebar-primary"
+                            : "text-sidebar-foreground/70"
+                        }`}
+                      />
+                      <span
+                        className={`text-[13px] ${
+                          isActive(item.href)
+                            ? "font-semibold text-sidebar-accent-foreground"
+                            : "font-normal text-sidebar-foreground"
+                        }`}
+                      >
                         {item.title}
                       </span>
                     </SidebarMenuButton>
@@ -125,12 +137,14 @@ export default function AdminLayout({
                 className="group relative transition-all duration-200"
               >
                 <LayoutDashboard className="h-4 w-4 text-sidebar-foreground/70" />
-                <span className="text-[13px] font-normal text-sidebar-foreground">퍼블리셔 대시보드</span>
+                <span className="text-[13px] font-normal text-sidebar-foreground">
+                  퍼블리셔 대시보드
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
           <div className="px-3 py-3">
-            <p className="text-[10px] text-sidebar-foreground/40 tracking-wider">
+            <p className="text-[10px] tracking-wider text-sidebar-foreground/40">
               Union Admin v1.0
             </p>
           </div>
@@ -144,7 +158,7 @@ export default function AdminLayout({
           <ThemeToggle />
           <UserNav />
         </header>
-        <main className="flex-1 p-6 blue-atmosphere">
+        <main className="blue-atmosphere flex-1 p-6">
           <div className="relative z-[1]">{children}</div>
         </main>
       </SidebarInset>
