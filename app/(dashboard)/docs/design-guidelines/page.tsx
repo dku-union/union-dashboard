@@ -16,7 +16,6 @@ export default function DesignGuidelinesPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Union 플랫폼에서 일관된 사용자 경험을 제공하기 위한 디자인 원칙
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
 
         {[

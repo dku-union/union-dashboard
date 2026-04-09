@@ -42,108 +42,146 @@
   --color-union: var(--union);
   --color-sage: var(--sage);
   --color-gold: var(--gold);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.333);
+  --radius-md: calc(var(--radius) * 0.667);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: calc(var(--radius) * 1.333);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Shadow system (DESIGN.md) */
+  --shadow-sm:  0 1px 2px rgba(38,39,37,0.05);
+  --shadow-md:  0 2px 8px rgba(38,39,37,0.08);
+  --shadow-lg:  0 4px 16px rgba(38,39,37,0.10);
+  --shadow-xl:  0 8px 32px rgba(38,39,37,0.12);
+
+  /* Transition tokens (DESIGN.md) */
+  --transition-fast:   150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow:   300ms ease;
+
+  /* Marquee ribbon animations */
+  --animate-marquee-left:  marquee-left  30s linear infinite;
+  --animate-marquee-right: marquee-right 30s linear infinite;
 }
 
 /* ═══════════════════════════════════════════
    UNION — Light Theme
-   Blue-tinted surfaces + deep navy sidebar + vivid blue accents
+   Ice surfaces + Charcoal dark + Union Red accent
+   Palette: #EDF2FA / #262725 / #E83A33
    ═══════════════════════════════════════════ */
 :root {
   --font-display: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --background: #EDF2FF;
-  --foreground: #1A2744;
-  --card: #FFFFFF;
-  --card-foreground: #1A2744;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A2744;
-  --primary: #1A2744;
-  --primary-foreground: #EDF2FF;
-  --secondary: #DBEAFE;
-  --secondary-foreground: #1A2744;
-  --muted: #DFE8FF;
-  --muted-foreground: #5B7294;
-  --accent: #D4E4FF;
-  --accent-foreground: #1A2744;
-  --destructive: #EF4444;
-  --border: #C1D2EE;
-  --input: #C1D2EE;
-  --ring: #3B82F6;
+  --font-geist-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-  /* Brand colors */
-  --union: #2563EB;
-  --sage: #10B981;
-  --gold: #F59E0B;
+  /* Surfaces — Ice family */
+  --background: #EDF2FA;
+  --foreground: #262725;
+  --card: #FFFFFF;
+  --card-foreground: #262725;
+  --popover: #FFFFFF;
+  --popover-foreground: #262725;
+
+  /* Interactive — Union Red */
+  --primary: #E83A33;
+  --primary-foreground: #FFFFFF;
+  --secondary: #DCE4F2;
+  --secondary-foreground: #262725;
+  --muted: #DCE4F2;
+  --muted-foreground: #6B6D6B;
+  --accent: #FDE8E7;
+  --accent-foreground: #262725;
+  --destructive: #E83A33;
+  --border: #DCE4F2;
+  --input: #B0B2B0;
+  --ring: #E83A33;
+
+  /* Brand */
+  --union: #E83A33;
+  --sage: #2D8A4E;
+  --gold: #D4860A;
 
   /* Charts */
-  --chart-1: #3B82F6;
-  --chart-2: #6366F1;
-  --chart-3: #10B981;
-  --chart-4: #F59E0B;
-  --chart-5: #94A3B8;
+  --chart-1: #E83A33;
+  --chart-2: #262725;
+  --chart-3: #2D8A4E;
+  --chart-4: #D4860A;
+  --chart-5: #8E908E;
 
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  /* Sidebar — deep navy */
-  --sidebar: #0F1B2E;
-  --sidebar-foreground: #8BA3C7;
-  --sidebar-primary: #60A5FA;
+  /* Sidebar — White / Ice (DESIGN.md spec) */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #6B6D6B;
+  --sidebar-primary: #E83A33;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #172744;
-  --sidebar-accent-foreground: #E2E8F0;
-  --sidebar-border: #1E3050;
-  --sidebar-ring: #3B82F6;
+  --sidebar-accent: #FDE8E7;
+  --sidebar-accent-foreground: #262725;
+  --sidebar-border: #DCE4F2;
+  --sidebar-ring: #E83A33;
 }
 
 /* ═══════════════════════════════════════════
    UNION — Dark Theme
-   Deep blue-black + muted blue + vivid blue accents
+   Deep Charcoal surfaces + lighter Red accent
    ═══════════════════════════════════════════ */
 .dark {
-  --background: #0B1120;
-  --foreground: #E2E8F0;
-  --card: #131B2E;
-  --card-foreground: #E2E8F0;
-  --popover: #131B2E;
-  --popover-foreground: #E2E8F0;
-  --primary: #E2E8F0;
-  --primary-foreground: #0B1120;
-  --secondary: #1A2540;
-  --secondary-foreground: #E2E8F0;
-  --muted: #1A2540;
-  --muted-foreground: #94A3B8;
-  --accent: #1A2540;
-  --accent-foreground: #E2E8F0;
-  --destructive: #F87171;
-  --border: #243352;
-  --input: #243352;
-  --ring: #60A5FA;
+  /* Surfaces — Charcoal family */
+  --background: #1A1B1A;
+  --foreground: #EDF2FA;
+  --card: #262725;
+  --card-foreground: #EDF2FA;
+  --popover: #262725;
+  --popover-foreground: #EDF2FA;
 
-  --union: #60A5FA;
-  --sage: #34D399;
-  --gold: #FBBF24;
+  /* Interactive — lighter Red */
+  --primary: #EF6560;
+  --primary-foreground: #1A1B1A;
+  --secondary: #363836;
+  --secondary-foreground: #EDF2FA;
+  --muted: #363836;
+  --muted-foreground: #8E908E;
+  --accent: #363836;
+  --accent-foreground: #EDF2FA;
+  --destructive: #EF6560;
+  --border: #363836;
+  --input: #363836;
+  --ring: #EF6560;
 
-  --chart-1: #60A5FA;
-  --chart-2: #818CF8;
-  --chart-3: #34D399;
-  --chart-4: #FBBF24;
-  --chart-5: #94A3B8;
+  /* Brand */
+  --union: #EF6560;
+  --sage: #3DB86E;
+  --gold: #E8A020;
 
-  --sidebar: #080E1A;
-  --sidebar-foreground: #8BA3C7;
-  --sidebar-primary: #60A5FA;
+  /* Charts */
+  --chart-1: #EF6560;
+  --chart-2: #B0B2B0;
+  --chart-3: #3DB86E;
+  --chart-4: #E8A020;
+  --chart-5: #8E908E;
+
+  /* Sidebar — deeper Charcoal */
+  --sidebar: #141514;
+  --sidebar-foreground: #8E908E;
+  --sidebar-primary: #EF6560;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #121D32;
-  --sidebar-accent-foreground: #E2E8F0;
-  --sidebar-border: #1A2744;
-  --sidebar-ring: #60A5FA;
+  --sidebar-accent: #262725;
+  --sidebar-accent-foreground: #EDF2FA;
+  --sidebar-border: #363836;
+  --sidebar-ring: #EF6560;
+}
+
+/* ═══════════════════════════════════════════
+   Marquee Keyframes
+   ═══════════════════════════════════════════ */
+@keyframes marquee-left {
+  from { transform: translateX(0%); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0%); }
 }
 
 /* ═══════════════════════════════════════════
@@ -151,7 +189,7 @@
    ═══════════════════════════════════════════ */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/15;
   }
   body {
     @apply bg-background text-foreground;
@@ -231,8 +269,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(37, 99, 235, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 58, 51, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(232, 58, 51, 0.20); }
 }
 
 @keyframes grain {
@@ -279,6 +317,36 @@
 .delay-7 { animation-delay: 0.35s; }
 .delay-8 { animation-delay: 0.4s; }
 
+/* ── Marquee ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.animate-marquee {
+  display: inline-flex;
+  width: max-content;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.animate-marquee-reverse {
+  display: inline-flex;
+  width: max-content;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  animation: marquee-reverse 28s linear infinite;
+  will-change: transform;
+}
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
 /* ═══════════════════════════════════════════
    Grain Texture Overlay
    ═══════════════════════════════════════════ */
@@ -306,11 +374,11 @@
 }
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px -8px rgba(37, 99, 235, 0.18), 0 2px 8px -2px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 8px 30px -8px rgba(232, 58, 51, 0.18), 0 2px 8px -2px rgba(232, 58, 51, 0.08);
   border-color: var(--union);
 }
 .dark .card-hover:hover {
-  box-shadow: 0 8px 30px -8px rgba(59, 130, 246, 0.2), 0 2px 8px -2px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 8px 30px -8px rgba(239, 101, 96, 0.20), 0 2px 8px -2px rgba(239, 101, 96, 0.10);
 }
 
 /* Union accent line on cards */
@@ -337,19 +405,19 @@
 .auth-bg {
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.14) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(96, 165, 250, 0.10) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(232, 58, 51, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(197, 209, 232, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(232, 58, 51, 0.05) 0%, transparent 50%);
 }
 .dark .auth-bg {
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(129, 140, 248, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(37, 99, 235, 0.06) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(239, 101, 96, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(54, 56, 54, 0.30) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(239, 101, 96, 0.04) 0%, transparent 50%);
 }
 
 /* ═══════════════════════════════════════════
-   Blue Atmosphere — gradient mesh for content area
+   Ice Atmosphere — gradient mesh for content area
    ═══════════════════════════════════════════ */
 .blue-atmosphere {
   position: relative;
@@ -361,15 +429,15 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse at 0% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(96, 165, 250, 0.05) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 0% 0%, rgba(197, 209, 232, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(220, 228, 242, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(232, 58, 51, 0.03) 0%, transparent 50%);
 }
 .dark .blue-atmosphere::before {
   background:
-    radial-gradient(ellipse at 0% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(96, 165, 250, 0.03) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.02) 0%, transparent 50%);
+    radial-gradient(ellipse at 0% 0%, rgba(54, 56, 54, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(54, 56, 54, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(239, 101, 96, 0.02) 0%, transparent 50%);
 }
 
 /* ═══════════════════════════════════════════
@@ -422,34 +490,97 @@
 }
 
 /* ═══════════════════════════════════════════
-   Landing Page
+   Typography Scale (DESIGN.md)
+   ═══════════════════════════════════════════ */
+.text-display-xl {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+@media (max-width: 768px) {
+  .text-display-xl { font-size: 2.25rem; }
+}
+
+.text-display {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+@media (max-width: 768px) {
+  .text-display { font-size: 1.75rem; }
+}
+
+.text-heading-1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+@media (max-width: 768px) {
+  .text-heading-1 { font-size: 1.5rem; }
+}
+
+.text-heading-2 {
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+@media (max-width: 768px) {
+  .text-heading-2 { font-size: 1.25rem; }
+}
+
+.text-heading-3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.text-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════
+   Skeleton Pulse (DESIGN.md: 1.5s)
+   ═══════════════════════════════════════════ */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.animate-skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════
+   Landing Page — Ice theme utilities
    ═══════════════════════════════════════════ */
 .landing-page {
-  --landing-surface: rgba(255, 255, 255, 0.78);
-  --landing-stroke: rgba(148, 163, 184, 0.22);
-}
-
-.landing-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at top, rgba(96, 165, 250, 0.16), transparent 34%),
-    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18), transparent 22%),
-    radial-gradient(circle at 80% 18%, rgba(129, 140, 248, 0.18), transparent 18%),
-    linear-gradient(180deg, rgba(3, 7, 18, 0.35), rgba(3, 7, 18, 0));
-  pointer-events: none;
-}
-
-.landing-hero__aurora {
-  position: absolute;
-  inset: 8% 12% auto;
-  height: 60%;
-  border-radius: 9999px;
-  background:
-    radial-gradient(circle at center, rgba(59, 130, 246, 0.38), transparent 42%),
-    radial-gradient(circle at center, rgba(125, 211, 252, 0.18), transparent 60%);
-  filter: blur(64px);
-  opacity: 0.9;
-  pointer-events: none;
+  --landing-surface: #FFFFFF;
+  --landing-stroke: #DCE4F2;
 }

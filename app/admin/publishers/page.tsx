@@ -11,7 +11,6 @@ export default function AdminPublishersPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           퍼블리셔 계정 상태와 등록 앱 현황을 한눈에 확인하세요.
         </p>
-        <div className="mt-3 h-0.5 w-8 bg-union" />
       </div>
 
       <div className="animate-fade-up delay-2">

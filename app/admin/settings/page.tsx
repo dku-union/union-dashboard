@@ -23,7 +23,6 @@ export default function AdminSettingsPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           관리자 프로필과 보안 관련 설정을 확인합니다.
         </p>
-        <div className="mt-3 h-0.5 w-8 bg-union" />
       </div>
 
       <Card className="animate-fade-up delay-1 border-border/60">

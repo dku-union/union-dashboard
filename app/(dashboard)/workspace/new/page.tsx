@@ -122,7 +122,7 @@ export default function NewWorkspacePage() {
   if (invitesLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }

@@ -45,14 +45,14 @@ export function ReviewStatusBoard({ reviews }: { reviews: ReviewRecord[] }) {
             <div key={status} className={`space-y-3 animate-fade-up delay-${colIdx + 1}`}>
               <div className="flex items-center gap-2 pb-2 border-b border-border/40">
                 <div className={`h-2 w-2 rounded-full ${dotColor}`} />
-                <h3 className="heading-display text-xs uppercase tracking-wider">{title}</h3>
+                <h3 className="text-label uppercase tracking-wider">{title}</h3>
                 <span className="text-[11px] text-muted-foreground font-mono">
                   {columnReviews.length}
                 </span>
               </div>
               <div className="space-y-2 min-h-[100px]">
                 {columnReviews.length === 0 ? (
-                  <p className="text-xs text-muted-foreground/50 py-8 text-center">
+                  <p className="text-caption text-muted-foreground/50 py-8 text-center">
                     항목 없음
                   </p>
                 ) : (

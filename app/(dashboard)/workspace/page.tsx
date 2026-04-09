@@ -17,11 +17,10 @@ export default function WorkspaceListPage() {
       {/* Header */}
       <div className="flex items-start justify-between animate-fade-up">
         <div>
-          <h1 className="heading-display text-2xl tracking-tight">워크스페이스</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-heading-1">워크스페이스</h1>
+          <p className="text-body-sm text-muted-foreground mt-1">
             소속된 워크스페이스를 관리하고 새로 만드세요.
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
         <Button onClick={() => setCreateOpen(true)} className="bg-union text-white hover:bg-union/90">
           <Plus className="mr-2 h-4 w-4" />
@@ -31,7 +30,7 @@ export default function WorkspaceListPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

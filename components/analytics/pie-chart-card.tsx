@@ -11,11 +11,11 @@ import {
 } from "recharts";
 
 const COLORS = [
-  "var(--union)",
-  "var(--gold)",
-  "var(--sage)",
+  "var(--chart-1)",
+  "var(--chart-4)",
+  "var(--chart-3)",
   "var(--chart-2)",
-  "var(--muted-foreground)",
+  "var(--chart-5)",
 ];
 
 interface PieChartCardProps {
@@ -27,7 +27,7 @@ export function PieChartCard({ title, data }: PieChartCardProps) {
   return (
     <Card className="border-border/60">
       <CardHeader className="pb-2">
-        <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+        <CardTitle className="text-label uppercase tracking-wider text-muted-foreground">
           {title}
         </CardTitle>
       </CardHeader>
@@ -58,7 +58,7 @@ export function PieChartCard({ title, data }: PieChartCardProps) {
                   border: "1px solid var(--border)",
                   borderRadius: "8px",
                   fontSize: "12px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  boxShadow: "var(--shadow-lg, 0 4px 16px rgba(38,39,37,0.10))",
                 }}
               />
               <Legend

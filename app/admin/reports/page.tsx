@@ -11,7 +11,6 @@ export default function AdminReportsPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           접수된 신고를 검토하고 경고, 중지, 삭제 조치를 수행하세요.
         </p>
-        <div className="mt-3 h-0.5 w-8 bg-union" />
       </div>
       <div className="animate-fade-up delay-2">
         <AdminReportTable

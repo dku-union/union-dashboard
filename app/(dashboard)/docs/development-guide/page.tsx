@@ -96,7 +96,6 @@ export default function DevelopmentGuidePage() {
           <p className="text-sm text-muted-foreground mt-1">
             미니앱 개발 환경 설정부터 배포까지의 전체 프로세스
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
 
         {sections.map((section, i) => (

@@ -20,12 +20,12 @@ interface BarChartCardProps {
 export function BarChartCard({
   title,
   data,
-  color = "var(--union)",
+  color = "var(--chart-1)",
 }: BarChartCardProps) {
   return (
     <Card className="border-border/60">
       <CardHeader className="pb-2">
-        <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+        <CardTitle className="text-label uppercase tracking-wider text-muted-foreground">
           {title}
         </CardTitle>
       </CardHeader>
@@ -51,7 +51,7 @@ export function BarChartCard({
                   border: "1px solid var(--border)",
                   borderRadius: "8px",
                   fontSize: "12px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  boxShadow: "var(--shadow-lg, 0 4px 16px rgba(38,39,37,0.10))",
                 }}
               />
               <Bar dataKey="value" fill={color} radius={[4, 4, 0, 0]} opacity={0.85} />

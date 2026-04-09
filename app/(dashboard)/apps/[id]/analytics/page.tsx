@@ -60,12 +60,12 @@ export default function AppAnalyticsPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 animate-fade-up">
-        <Button variant="ghost" size="icon" className="hover:text-union" render={<Link href={`/apps/${id}`} />}>
+        <Button variant="ghost" size="icon" render={<Link href={`/apps/${id}`} />}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-            <BarChart3 className="h-5 w-5 text-union/70" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/60 border border-border/40">
+            <BarChart3 className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
             <h1 className="heading-display text-2xl tracking-tight">
@@ -83,19 +83,19 @@ export default function AppAnalyticsPage({
             <Card key={metric.title} className={`animate-fade-up delay-${i + 1} border-border/60 card-hover`}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">{metric.title}</CardTitle>
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-union/10 to-union/5">
-                  <Icon className="h-4 w-4 text-union/70" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="heading-display text-2xl">{metric.value}</div>
                 <div className="flex items-center gap-1 mt-1">
                   {metric.trend === "up" ? (
-                    <TrendingUp className="h-3 w-3 text-sage" />
+                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
                   ) : (
-                    <TrendingDown className="h-3 w-3 text-union" />
+                    <TrendingDown className="h-3 w-3 text-destructive" />
                   )}
-                  <span className={`text-xs font-medium ${metric.trend === "up" ? "text-sage" : "text-union"}`}>
+                  <span className={`text-xs font-medium ${metric.trend === "up" ? "text-muted-foreground" : "text-destructive"}`}>
                     {metric.change}
                   </span>
                   <span className="text-xs text-muted-foreground">{metric.subtitle}</span>

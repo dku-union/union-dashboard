@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="heading-display text-2xl tracking-tight">분석</h1>
-          <p className="text-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
+          <h1 className="text-heading-1">분석</h1>
+          <p className="text-body-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -33,9 +33,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-fade-up">
-        <h1 className="heading-display text-2xl tracking-tight">분석</h1>
-        <p className="text-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
-        <div className="h-0.5 w-8 bg-union mt-3" />
+        <h1 className="text-heading-1">분석</h1>
+        <p className="text-body-sm text-muted-foreground mt-1">전체 미니앱 사용 통계</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -44,7 +43,7 @@ export default function AnalyticsPage() {
             title="DAU"
             subtitle="일간 활성 사용자"
             data={overview.dau}
-            icon={<Users className="h-5 w-5 text-union" />}
+            icon={<Users className="h-5 w-5 text-muted-foreground" />}
           />
         </div>
         <div className="animate-fade-up delay-2">
@@ -52,7 +51,7 @@ export default function AnalyticsPage() {
             title="WAU"
             subtitle="주간 활성 사용자"
             data={overview.wau}
-            icon={<UserCheck className="h-5 w-5 text-gold" />}
+            icon={<UserCheck className="h-5 w-5 text-muted-foreground" />}
           />
         </div>
         <div className="animate-fade-up delay-3">
@@ -60,7 +59,7 @@ export default function AnalyticsPage() {
             title="MAU"
             subtitle="월간 활성 사용자"
             data={overview.mau}
-            icon={<UserPlus className="h-5 w-5 text-sage" />}
+            icon={<UserPlus className="h-5 w-5 text-muted-foreground" />}
           />
         </div>
       </div>

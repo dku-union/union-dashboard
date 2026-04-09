@@ -154,3 +154,4 @@ export const notifications = pgTable("notifications", {
   referenceId: varchar("reference_id", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
+

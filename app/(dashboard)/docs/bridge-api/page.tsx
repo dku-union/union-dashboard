@@ -98,7 +98,6 @@ export default function BridgeApiPage() {
           <p className="text-sm text-muted-foreground mt-1">
             Union 플랫폼과 미니앱 간 통신을 위한 API 레퍼런스
           </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
         </div>
 
         <div className="rounded-xl border border-border/60 p-4 bg-muted/30 animate-fade-up delay-1">
