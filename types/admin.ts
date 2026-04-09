@@ -86,6 +86,25 @@ export interface AdminPublisherDetail extends AdminPublisherListItem {
   recentApps: AdminPublisherRecentApp[];
 }
 
+export interface AdminPublisherRecord {
+  id: string;
+  email: string;
+  name: string;
+  contactEmail?: string | null;
+  status: AdminPublisherStatus;
+  createdAt: string;
+  appCount: number;
+  publishedAppCount: number;
+  inReviewAppCount: number;
+  role: AdminPublisherRole;
+  recentApps: {
+    id: string;
+    name: string;
+    status: MiniAppStatus;
+    version: string;
+  }[];
+}
+
 export interface AdminPublisherStatusUpdateResponse {
   publisherId: string;
   status: AdminPublisherStatus;
@@ -93,15 +112,18 @@ export interface AdminPublisherStatusUpdateResponse {
 }
 
 export interface AdminManagedAppRecord {
-  id: number;
+  id: number | string;
   name: string;
-  publisherId: string | null;
+  publisherId?: string | null;
   publisherName: string | null;
   publisherEmail: string | null;
-  status: "PENDING" | "APPROVED";
+  category?: MiniAppCategory;
+  status: "PENDING" | "APPROVED" | MiniAppStatus;
   currentVersion: string | null;
-  currentVersionStatus: VersionStatus | null;
+  currentVersionStatus?: VersionStatus | null;
   updatedAt: string;
+  reportCount?: number;
+  forcedActionNote?: string;
 }
 
 export interface AdminMiniAppStatusUpdateResponse {
@@ -114,9 +136,10 @@ export interface AdminUserRecord {
   id: string;
   name: string;
   email: string;
+  university?: string;
   verified: boolean;
   status: AdminPublisherStatus;
-  role: AdminPublisherRole;
+  role: AdminPublisherRole | "USER" | "PUBLISHER" | "ADMIN";
   createdAt: string;
 }
 
@@ -124,7 +147,7 @@ export interface AdminRoleRecord {
   id: string;
   name: string;
   email: string;
-  adminRole: "ROLE_ADMIN";
+  adminRole: "ROLE_ADMIN" | "SUPER_ADMIN" | "REVIEW_ADMIN";
   assignedAt: string;
 }
 
@@ -137,4 +160,30 @@ export interface AdminUserStatusUpdateResponse {
   userId: string;
   status: AdminPublisherStatus;
   updatedAt: string;
+}
+
+export interface AdminReportRecord {
+  id: string;
+  targetType: "miniapp" | "review";
+  targetName: string;
+  reporterName: string;
+  reporterEmail: string;
+  reason: string;
+  detail: string;
+  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
+  createdAt: string;
+  actionTaken?: "warning" | "suspend" | "delete";
+}
+
+export interface AdminUserReportRecord {
+  id: string;
+  reportedUserName: string;
+  reportedUserEmail: string;
+  reporterName: string;
+  reporterEmail: string;
+  reason: string;
+  detail: string;
+  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
+  createdAt: string;
+  actionTaken?: "warning" | "suspend" | "dismiss";
 }
