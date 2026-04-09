@@ -43,7 +43,7 @@ export function AdminUserTable({
         normalizedQuery.length === 0 ||
         user.name.toLowerCase().includes(normalizedQuery) ||
         user.email.toLowerCase().includes(normalizedQuery) ||
-        user.university.toLowerCase().includes(normalizedQuery);
+        (user.university ?? "").toLowerCase().includes(normalizedQuery);
       return matchesFilter && matchesQuery;
     });
   }, [filter, query, users]);
@@ -109,7 +109,7 @@ export function AdminUserTable({
                     <div className="space-y-1">
                       <p className="font-medium">{user.name}</p>
                       <p className="text-xs text-muted-foreground">{user.email}</p>
-                      <p className="text-xs text-muted-foreground">{user.university}</p>
+                      <p className="text-xs text-muted-foreground">{user.university ?? "-"}</p>
                     </div>
                   </TableCell>
                   <TableCell>
