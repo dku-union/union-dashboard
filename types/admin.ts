@@ -1,5 +1,12 @@
-import type { VersionStatus } from "@/types/app-version";
-import type { MiniAppCategory, MiniAppStatus, PermissionScope } from "@/types/mini-app";
+import type {
+  VersionStatus,
+  MiniAppStatus as RealMiniAppStatus,
+} from "@/types/app-version";
+import type {
+  MiniAppCategory,
+  MiniAppStatus as LegacyMiniAppStatus,
+  PermissionScope,
+} from "@/types/mini-app";
 
 export interface AdminReviewScanSummary {
   security: "pass" | "warning";
@@ -18,7 +25,7 @@ export interface AdminReviewRecord {
   category: MiniAppCategory;
   shortDescription: string;
   version: string;
-  status: MiniAppStatus;
+  status: LegacyMiniAppStatus;
   submittedAt: string;
   reviewedAt?: string;
   releaseNote: string;
@@ -100,7 +107,7 @@ export interface AdminPublisherRecord {
   recentApps: {
     id: string;
     name: string;
-    status: MiniAppStatus;
+    status: LegacyMiniAppStatus;
     version: string;
   }[];
 }
@@ -112,13 +119,13 @@ export interface AdminPublisherStatusUpdateResponse {
 }
 
 export interface AdminManagedAppRecord {
-  id: number | string;
+  id: number;
   name: string;
   publisherId?: string | null;
   publisherName: string | null;
   publisherEmail: string | null;
   category?: MiniAppCategory;
-  status: "PENDING" | "APPROVED" | MiniAppStatus;
+  status: RealMiniAppStatus;
   currentVersion: string | null;
   currentVersionStatus?: VersionStatus | null;
   updatedAt: string;
@@ -128,7 +135,7 @@ export interface AdminManagedAppRecord {
 
 export interface AdminMiniAppStatusUpdateResponse {
   miniAppId: number;
-  status: "PENDING" | "APPROVED";
+  status: RealMiniAppStatus;
   updatedAt: string;
 }
 
