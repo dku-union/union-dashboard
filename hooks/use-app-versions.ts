@@ -120,8 +120,8 @@ export function useCreateMiniApp() {
   return { createMiniApp, isCreating };
 }
 
-// 미니앱별 버전 목록
-export function useAppVersions(miniAppId: number | null) {
+// 미니앱별 버전 목록 (UPLOADED 상태가 있으면 polling)
+export function useAppVersions(miniAppId: number | null, pollInterval = 0) {
   const [versions, setVersions] = useState<AppVersion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -145,7 +145,44 @@ export function useAppVersions(miniAppId: number | null) {
     fetchVersions();
   }, [fetchVersions]);
 
+  // UPLOADED && testedAt 없는 버전이 있으면 polling
+  useEffect(() => {
+    if (pollInterval <= 0) return;
+    const hasUntested = versions.some(
+      (v) => v.status === "UPLOADED" && !v.testedAt,
+    );
+    if (!hasUntested) return;
+
+    const timer = setInterval(fetchVersions, pollInterval);
+    return () => clearInterval(timer);
+  }, [versions, pollInterval, fetchVersions]);
+
   return { versions, isLoading, refetch: fetchVersions };
+}
+
+// 번들 URL 조회 (테스트 QR용)
+export function useBundleUrl() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getBundleUrl = async (versionId: string): Promise<string | null> => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/app-versions/${versionId}/bundle`);
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "번들 URL을 가져오지 못했습니다.");
+        return null;
+      }
+      return data.downloadUrl;
+    } catch {
+      toast.error("번들 URL 조회 중 오류가 발생했습니다.");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { getBundleUrl, isLoading };
 }
 
 // 버전 생성 → GCS 업로드 → 확인 (전체 업로드 플로우)

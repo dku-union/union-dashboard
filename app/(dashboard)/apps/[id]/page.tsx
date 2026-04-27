@@ -1,15 +1,18 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useMiniAppDetail, useAppVersions, useSubmitReview } from "@/hooks/use-app-versions";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
+import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AppWindow, History, Upload, Send } from "lucide-react";
+import { AppWindow, History, Upload, QrCode, CheckCircle, Send } from "lucide-react";
 import Link from "next/link";
+
+const POLL_INTERVAL = 15_000;
 
 export default function AppDetailPage({
   params,
@@ -19,8 +22,13 @@ export default function AppDetailPage({
   const { id } = use(params);
   const numId = Number(id);
   const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId);
+  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId, POLL_INTERVAL);
   const { submitReview, isSubmitting } = useSubmitReview();
+
+  const [testModalVersion, setTestModalVersion] = useState<{
+    id: string;
+    versionNumber: string;
+  } | null>(null);
 
   if (appLoading) {
     return (
@@ -142,22 +150,41 @@ export default function AppDetailPage({
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono font-medium">v{v.versionNumber}</span>
                       <VersionStatusBadge status={v.status} />
+                      {v.testedAt && (
+                        <CheckCircle className="h-3 w-3 text-sage" />
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {v.status === "UPLOADED" && (
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          className="border-union/30 text-union hover:bg-union/10"
-                          disabled={isSubmitting}
-                          onClick={async () => {
-                            const result = await submitReview(v.id);
-                            if (result) refetchVersions();
-                          }}
-                        >
-                          <Send className="mr-1 h-3 w-3" />
-                          심사 요청
-                        </Button>
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-6 text-[11px] px-2 border-border/60"
+                            onClick={() =>
+                              setTestModalVersion({
+                                id: v.id,
+                                versionNumber: v.versionNumber,
+                              })
+                            }
+                          >
+                            <QrCode className="mr-1 h-3 w-3" />
+                            테스트
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            className="border-union/30 text-union hover:bg-union/10"
+                            disabled={isSubmitting}
+                            onClick={async () => {
+                              const result = await submitReview(v.id);
+                              if (result) refetchVersions();
+                            }}
+                          >
+                            <Send className="mr-1 h-3 w-3" />
+                            심사 요청
+                          </Button>
+                        </>
                       )}
                       <span className="text-xs text-muted-foreground">
                         {new Date(v.createdAt).toLocaleDateString("ko-KR")}
@@ -178,6 +205,17 @@ export default function AppDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      {testModalVersion && (
+        <VersionTestModal
+          versionId={testModalVersion.id}
+          versionNumber={testModalVersion.versionNumber}
+          open={!!testModalVersion}
+          onOpenChange={(open) => {
+            if (!open) setTestModalVersion(null);
+          }}
+        />
+      )}
     </div>
   );
 }

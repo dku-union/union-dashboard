@@ -1,13 +1,16 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useMiniAppDetail, useAppVersions, useSubmitReview } from "@/hooks/use-app-versions";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
+import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AppWindow, ArrowLeft, Upload, Send } from "lucide-react";
+import { AppWindow, ArrowLeft, Upload, QrCode, CheckCircle, Send } from "lucide-react";
 import Link from "next/link";
+
+const POLL_INTERVAL = 15_000;
 
 export default function VersionsPage({
   params,
@@ -17,8 +20,13 @@ export default function VersionsPage({
   const { id } = use(params);
   const numId = Number(id);
   const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId);
+  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId, POLL_INTERVAL);
   const { submitReview, isSubmitting } = useSubmitReview();
+
+  const [testModalVersion, setTestModalVersion] = useState<{
+    id: string;
+    versionNumber: string;
+  } | null>(null);
 
   const isLoading = appLoading || versionsLoading;
 
@@ -84,29 +92,53 @@ export default function VersionsPage({
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-mono font-semibold">v{v.versionNumber}</span>
                     <VersionStatusBadge status={v.status} />
+                    {v.testedAt && (
+                      <span className="flex items-center gap-1 text-[11px] text-sage">
+                        <CheckCircle className="h-3 w-3" />
+                        테스트 완료
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {v.releaseNotes && (
-                      <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
-                    )}
+                  <div className="flex items-center gap-3">
                     {v.status === "UPLOADED" && (
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        className="border-union/30 text-union hover:bg-union/10"
-                        disabled={isSubmitting}
-                        onClick={async () => {
-                          const result = await submitReview(v.id);
-                          if (result) refetchVersions();
-                        }}
-                      >
-                        <Send className="mr-1 h-3 w-3" />
-                        심사 요청
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs border-border/60"
+                          onClick={() =>
+                            setTestModalVersion({
+                              id: v.id,
+                              versionNumber: v.versionNumber,
+                            })
+                          }
+                        >
+                          <QrCode className="mr-1 h-3 w-3" />
+                          테스트
+                        </Button>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="border-union/30 text-union hover:bg-union/10"
+                          disabled={isSubmitting}
+                          onClick={async () => {
+                            const result = await submitReview(v.id);
+                            if (result) refetchVersions();
+                          }}
+                        >
+                          <Send className="mr-1 h-3 w-3" />
+                          심사 요청
+                        </Button>
+                      </>
                     )}
-                    <span className="font-mono">
-                      {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                    </span>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      {v.releaseNotes && (
+                        <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
+                      )}
+                      <span className="font-mono">
+                        {new Date(v.createdAt).toLocaleDateString("ko-KR")}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -114,6 +146,17 @@ export default function VersionsPage({
           )}
         </CardContent>
       </Card>
+
+      {testModalVersion && (
+        <VersionTestModal
+          versionId={testModalVersion.id}
+          versionNumber={testModalVersion.versionNumber}
+          open={!!testModalVersion}
+          onOpenChange={(open) => {
+            if (!open) setTestModalVersion(null);
+          }}
+        />
+      )}
     </div>
   );
 }
