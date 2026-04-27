@@ -282,22 +282,24 @@ export default function WorkspaceDetailPage() {
           ) : (
             <div className="space-y-2">
               {miniApps.map((app) => (
-                <Card key={app.id} className="border-border/60 card-hover">
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-union/10 to-union/5 border border-union/10 shrink-0">
-                      <AppWindow className="h-4 w-4 text-union/70" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{app.name}</p>
-                      {app.description && (
-                        <p className="text-[11px] text-muted-foreground truncate">{app.description}</p>
-                      )}
-                    </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0">
-                      {app.status}
-                    </Badge>
-                  </CardContent>
-                </Card>
+                <Link key={app.id} href={`/apps/${app.id}`}>
+                  <Card className="border-border/60 card-hover cursor-pointer">
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-union/10 to-union/5 border border-union/10 shrink-0">
+                        <AppWindow className="h-4 w-4 text-union/70" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{app.name}</p>
+                        {app.description && (
+                          <p className="text-[11px] text-muted-foreground truncate">{app.description}</p>
+                        )}
+                      </div>
+                      <Badge variant="outline" className="text-[10px] shrink-0">
+                        {app.status}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}

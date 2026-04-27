@@ -1,13 +1,16 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useMiniAppDetail, useAppVersions } from "@/hooks/use-app-versions";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
+import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AppWindow, ArrowLeft, Upload } from "lucide-react";
+import { AppWindow, ArrowLeft, Upload, QrCode, CheckCircle } from "lucide-react";
 import Link from "next/link";
+
+const POLL_INTERVAL = 15_000;
 
 export default function VersionsPage({
   params,
@@ -17,7 +20,12 @@ export default function VersionsPage({
   const { id } = use(params);
   const numId = Number(id);
   const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading } = useAppVersions(numId);
+  const { versions, isLoading: versionsLoading } = useAppVersions(numId, POLL_INTERVAL);
+
+  const [testModalVersion, setTestModalVersion] = useState<{
+    id: string;
+    versionNumber: string;
+  } | null>(null);
 
   const isLoading = appLoading || versionsLoading;
 
@@ -83,14 +91,38 @@ export default function VersionsPage({
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-mono font-semibold">v{v.versionNumber}</span>
                     <VersionStatusBadge status={v.status} />
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    {v.releaseNotes && (
-                      <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
+                    {v.testedAt && (
+                      <span className="flex items-center gap-1 text-[11px] text-sage">
+                        <CheckCircle className="h-3 w-3" />
+                        테스트 완료
+                      </span>
                     )}
-                    <span className="font-mono">
-                      {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {v.status === "UPLOADED" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs border-border/60"
+                        onClick={() =>
+                          setTestModalVersion({
+                            id: v.id,
+                            versionNumber: v.versionNumber,
+                          })
+                        }
+                      >
+                        <QrCode className="mr-1 h-3 w-3" />
+                        테스트
+                      </Button>
+                    )}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      {v.releaseNotes && (
+                        <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
+                      )}
+                      <span className="font-mono">
+                        {new Date(v.createdAt).toLocaleDateString("ko-KR")}
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -98,6 +130,17 @@ export default function VersionsPage({
           )}
         </CardContent>
       </Card>
+
+      {testModalVersion && (
+        <VersionTestModal
+          versionId={testModalVersion.id}
+          versionNumber={testModalVersion.versionNumber}
+          open={!!testModalVersion}
+          onOpenChange={(open) => {
+            if (!open) setTestModalVersion(null);
+          }}
+        />
+      )}
     </div>
   );
 }
