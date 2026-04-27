@@ -1,14 +1,14 @@
 "use client";
 
 import { use } from "react";
-import { useMiniAppDetail, useAppVersions } from "@/hooks/use-app-versions";
+import { useMiniAppDetail, useAppVersions, useSubmitReview } from "@/hooks/use-app-versions";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AppWindow, History, Upload } from "lucide-react";
+import { AppWindow, History, Upload, Send } from "lucide-react";
 import Link from "next/link";
 
 export default function AppDetailPage({
@@ -19,7 +19,8 @@ export default function AppDetailPage({
   const { id } = use(params);
   const numId = Number(id);
   const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading } = useAppVersions(numId);
+  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId);
+  const { submitReview, isSubmitting } = useSubmitReview();
 
   if (appLoading) {
     return (
@@ -142,9 +143,26 @@ export default function AppDetailPage({
                       <span className="text-sm font-mono font-medium">v{v.versionNumber}</span>
                       <VersionStatusBadge status={v.status} />
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {v.status === "UPLOADED" && (
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="border-union/30 text-union hover:bg-union/10"
+                          disabled={isSubmitting}
+                          onClick={async () => {
+                            const result = await submitReview(v.id);
+                            if (result) refetchVersions();
+                          }}
+                        >
+                          <Send className="mr-1 h-3 w-3" />
+                          심사 요청
+                        </Button>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(v.createdAt).toLocaleDateString("ko-KR")}
+                      </span>
+                    </div>
                   </div>
                 ))}
                 {versions.length > 5 && (

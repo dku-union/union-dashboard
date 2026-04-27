@@ -7,6 +7,7 @@ import type {
   CreateVersionResponse,
   MiniAppRecord,
   MiniAppWithWorkspace,
+  Review,
 } from "@/types/app-version";
 
 // 내 전체 미니앱 조회 (모든 워크스페이스)
@@ -210,6 +211,60 @@ export function useUploadVersion() {
   };
 
   return { upload, step, uploadProgress, versionId, reset };
+}
+
+// 심사 요청 제출
+export function useSubmitReview() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const submitReview = async (versionId: string) => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ versionId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "심사 요청에 실패했습니다.");
+        return null;
+      }
+      toast.success("심사가 요청되었습니다.");
+      return data as Review;
+    } catch {
+      toast.error("심사 요청 중 오류가 발생했습니다.");
+      return null;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return { submitReview, isSubmitting };
+}
+
+// 내 심사 목록 조회
+export function useMyReviews() {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchReviews = useCallback(async () => {
+    try {
+      const res = await fetch("/api/reviews/mine");
+      if (!res.ok) throw new Error();
+      setReviews(await res.json());
+    } catch {
+      toast.error("심사 목록을 불러오지 못했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  return { reviews, isLoading, refetch: fetchReviews };
 }
 
 // GCS Signed URL로 직접 PUT 업로드 (XMLHttpRequest for progress)

@@ -1,12 +1,12 @@
 "use client";
 
 import { use } from "react";
-import { useMiniAppDetail, useAppVersions } from "@/hooks/use-app-versions";
+import { useMiniAppDetail, useAppVersions, useSubmitReview } from "@/hooks/use-app-versions";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AppWindow, ArrowLeft, Upload } from "lucide-react";
+import { AppWindow, ArrowLeft, Upload, Send } from "lucide-react";
 import Link from "next/link";
 
 export default function VersionsPage({
@@ -17,7 +17,8 @@ export default function VersionsPage({
   const { id } = use(params);
   const numId = Number(id);
   const { app, isLoading: appLoading } = useMiniAppDetail(numId);
-  const { versions, isLoading: versionsLoading } = useAppVersions(numId);
+  const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId);
+  const { submitReview, isSubmitting } = useSubmitReview();
 
   const isLoading = appLoading || versionsLoading;
 
@@ -87,6 +88,21 @@ export default function VersionsPage({
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     {v.releaseNotes && (
                       <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
+                    )}
+                    {v.status === "UPLOADED" && (
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        className="border-union/30 text-union hover:bg-union/10"
+                        disabled={isSubmitting}
+                        onClick={async () => {
+                          const result = await submitReview(v.id);
+                          if (result) refetchVersions();
+                        }}
+                      >
+                        <Send className="mr-1 h-3 w-3" />
+                        심사 요청
+                      </Button>
                     )}
                     <span className="font-mono">
                       {new Date(v.createdAt).toLocaleDateString("ko-KR")}

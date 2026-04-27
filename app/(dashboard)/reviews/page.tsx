@@ -1,9 +1,21 @@
 "use client";
 
 import { ReviewStatusBoard } from "@/components/reviews/review-status-board";
-import { mockReviews } from "@/data/reviews";
+import { useMyReviews, useSubmitReview } from "@/hooks/use-app-versions";
 
 export default function ReviewsPage() {
+  const { reviews, isLoading, refetch } = useMyReviews();
+  const { submitReview, isSubmitting } = useSubmitReview();
+
+  const handleResubmit = async (versionId: string) => {
+    const result = await submitReview(versionId);
+    if (result) {
+      refetch();
+      return true;
+    }
+    return false;
+  };
+
   return (
     <div className="space-y-6">
       <div className="animate-fade-up">
@@ -13,7 +25,12 @@ export default function ReviewsPage() {
         </p>
       </div>
       <div className="animate-fade-up delay-2">
-        <ReviewStatusBoard reviews={mockReviews} />
+        <ReviewStatusBoard
+          reviews={reviews}
+          isLoading={isLoading}
+          onResubmit={handleResubmit}
+          isResubmitting={isSubmitting}
+        />
       </div>
     </div>
   );

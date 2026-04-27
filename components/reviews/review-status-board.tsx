@@ -1,48 +1,73 @@
 "use client";
 
 import { useState } from "react";
-import { ReviewRecord } from "@/types/review";
-import { MiniAppStatus } from "@/types/mini-app";
+import type { Review, Verdict } from "@/types/app-version";
 import { ReviewCard } from "./review-card";
 import { RejectionDetail } from "./rejection-detail";
 import { ResubmitDialog } from "./resubmit-dialog";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const columns: { status: MiniAppStatus; title: string; dotColor: string }[] = [
-  { status: "draft", title: "임시저장", dotColor: "bg-muted-foreground/40" },
-  { status: "in_review", title: "심사 중", dotColor: "bg-gold" },
-  { status: "rejected", title: "반려됨", dotColor: "bg-destructive" },
-  { status: "published", title: "게시됨", dotColor: "bg-sage" },
+const columns: { verdict: Verdict; title: string; dotColor: string }[] = [
+  { verdict: "PENDING", title: "심사 대기", dotColor: "bg-gold" },
+  { verdict: "ACCEPTED", title: "승인됨", dotColor: "bg-sage" },
+  { verdict: "REJECTED", title: "반려됨", dotColor: "bg-destructive" },
 ];
 
-export function ReviewStatusBoard({ reviews }: { reviews: ReviewRecord[] }) {
-  const [selectedReview, setSelectedReview] = useState<ReviewRecord | null>(null);
+interface ReviewStatusBoardProps {
+  reviews: Review[];
+  isLoading?: boolean;
+  onResubmit?: (versionId: string) => Promise<boolean>;
+  isResubmitting?: boolean;
+}
+
+export function ReviewStatusBoard({
+  reviews,
+  isLoading,
+  onResubmit,
+  isResubmitting,
+}: ReviewStatusBoardProps) {
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [rejectionOpen, setRejectionOpen] = useState(false);
   const [resubmitOpen, setResubmitOpen] = useState(false);
 
-  const handleCardClick = (review: ReviewRecord) => {
-    if (review.status === "rejected") {
+  const handleCardClick = (review: Review) => {
+    if (review.verdict === "REJECTED") {
       setSelectedReview(review);
       setRejectionOpen(true);
     }
   };
 
-  const handleResubmit = () => {
-    toast.success("재제출 완료", {
-      description: `${selectedReview?.appName}이(가) 심사에 다시 제출되었습니다.`,
-    });
-    setResubmitOpen(false);
+  const handleResubmit = async () => {
+    if (!selectedReview || !onResubmit) return;
+    const success = await onResubmit(selectedReview.versionId);
+    if (success) {
+      setResubmitOpen(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-6 md:grid-cols-3">
+        {columns.map(({ verdict }) => (
+          <div key={verdict} className="space-y-3">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {columns.map(({ status, title, dotColor }, colIdx) => {
-          const columnReviews = reviews.filter((r) => r.status === status);
+      <div className="grid gap-6 md:grid-cols-3">
+        {columns.map(({ verdict, title, dotColor }, colIdx) => {
+          const columnReviews = reviews.filter((r) => r.verdict === verdict);
           return (
-            <div key={status} className={`space-y-3 animate-fade-up delay-${colIdx + 1}`}>
+            <div key={verdict} className={`space-y-3 animate-fade-up delay-${colIdx + 1}`}>
               <div className="flex items-center gap-2 pb-2 border-b border-border/40">
                 <div className={`h-2 w-2 rounded-full ${dotColor}`} />
                 <h3 className="text-label uppercase tracking-wider">{title}</h3>
@@ -62,11 +87,12 @@ export function ReviewStatusBoard({ reviews }: { reviews: ReviewRecord[] }) {
                         review={review}
                         onClick={() => handleCardClick(review)}
                       />
-                      {review.status === "rejected" && (
+                      {review.verdict === "REJECTED" && onResubmit && (
                         <Button
                           variant="outline"
                           size="sm"
                           className="w-full mt-1 border-border/60 text-xs hover:border-union hover:text-union"
+                          disabled={isResubmitting}
                           onClick={() => {
                             setSelectedReview(review);
                             setResubmitOpen(true);
@@ -95,6 +121,7 @@ export function ReviewStatusBoard({ reviews }: { reviews: ReviewRecord[] }) {
         open={resubmitOpen}
         onOpenChange={setResubmitOpen}
         onConfirm={handleResubmit}
+        isLoading={isResubmitting}
       />
     </>
   );
