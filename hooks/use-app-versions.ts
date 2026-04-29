@@ -164,7 +164,7 @@ export function useAppVersions(miniAppId: number | null, pollInterval = 0) {
 export function useBundleUrl() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const getBundleUrl = async (versionId: string): Promise<string | null> => {
+  const getBundleUrl = useCallback(async (versionId: string): Promise<string | null> => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/app-versions/${versionId}/bundle`);
@@ -180,7 +180,7 @@ export function useBundleUrl() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   return { getBundleUrl, isLoading };
 }
