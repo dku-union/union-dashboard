@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { useBundleUrl } from "@/hooks/use-app-versions";
 import {
@@ -27,19 +27,17 @@ export function VersionTestModal({
   const { getBundleUrl, isLoading } = useBundleUrl();
   const [bundleUrl, setBundleUrl] = useState<string | null>(null);
 
-  const handleOpenChange = async (isOpen: boolean) => {
-    if (isOpen && !bundleUrl) {
-      const url = await getBundleUrl(versionId);
-      setBundleUrl(url);
+  useEffect(() => {
+    if (open && !bundleUrl) {
+      getBundleUrl(versionId).then(setBundleUrl);
     }
-    if (!isOpen) {
+    if (!open) {
       setBundleUrl(null);
     }
-    onOpenChange(isOpen);
-  };
+  }, [open, versionId, bundleUrl, getBundleUrl]);
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="heading-display text-lg">

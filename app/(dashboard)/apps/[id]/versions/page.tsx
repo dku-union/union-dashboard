@@ -120,7 +120,8 @@ export default function VersionsPage({
                           size="xs"
                           variant="outline"
                           className="border-union/30 text-union hover:bg-union/10"
-                          disabled={isSubmitting}
+                          disabled={!v.testedAt || isSubmitting}
+                          title={!v.testedAt ? "테스트 완료 후 활성화됩니다" : undefined}
                           onClick={async () => {
                             const result = await submitReview(v.id);
                             if (result) refetchVersions();
