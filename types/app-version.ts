@@ -34,10 +34,6 @@ export interface CreateVersionResponse {
   uploadUrl: string;
 }
 
-export interface BundleDownloadResponse {
-  downloadUrl: string;
-}
-
 export interface Review {
   id: string;
   versionId: string;
