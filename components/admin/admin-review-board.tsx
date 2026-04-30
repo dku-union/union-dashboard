@@ -160,15 +160,6 @@ export function AdminReviewBoard() {
     }
   };
 
-  const refreshSelectedReview = async (versionId: string) => {
-    const response = await fetch(`/api/admin/reviews/${versionId}`, { cache: "no-store" });
-    const data = await response.json();
-
-    if (response.ok) {
-      setSelectedReview(data.review);
-    }
-  };
-
   const handleApprove = async () => {
     if (!selectedReview || actionLoading) return;
 
@@ -184,23 +175,15 @@ export function AdminReviewBoard() {
         throw new Error(data.error || "승인 처리에 실패했습니다.");
       }
 
+      const updatedReview = data.review as AdminReviewDetail;
+
       setReviews((current) =>
         current.map((review) =>
-          review.versionId === selectedReview.versionId
-            ? {
-                ...review,
-                reviewId: data.reviewId,
-                versionStatus: data.versionStatus,
-                miniAppStatus: data.miniAppStatus,
-                reviewedAt: data.reviewedAt,
-                reviewVerdict: "ACCEPTED",
-                reviewReason: null,
-              }
-            : review,
+          review.versionId === updatedReview.versionId ? updatedReview : review,
         ),
       );
 
-      await refreshSelectedReview(selectedReview.versionId);
+      setSelectedReview(updatedReview);
 
       toast.success("승인 처리되었습니다.");
     } catch (actionError) {
@@ -239,22 +222,15 @@ export function AdminReviewBoard() {
         throw new Error(data.error || "반려 처리에 실패했습니다.");
       }
 
+      const updatedReview = data.review as AdminReviewDetail;
+
       setReviews((current) =>
         current.map((review) =>
-          review.versionId === selectedReview.versionId
-            ? {
-                ...review,
-                reviewId: data.reviewId,
-                versionStatus: data.versionStatus,
-                reviewedAt: data.reviewedAt,
-                reviewVerdict: "REJECTED",
-                reviewReason: data.reason,
-              }
-            : review,
+          review.versionId === updatedReview.versionId ? updatedReview : review,
         ),
       );
 
-      await refreshSelectedReview(selectedReview.versionId);
+      setSelectedReview(updatedReview);
       setRejectOpen(false);
       setRejectReason("");
 
