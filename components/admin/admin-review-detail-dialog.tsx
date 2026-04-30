@@ -1,6 +1,8 @@
 "use client";
 
-import { Download, Mail, ShieldCheck, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { Download, Loader2, Mail, ShieldCheck, Smartphone, XCircle } from "lucide-react";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +57,66 @@ export function AdminReviewDetailDialog({
   onStartReject,
   actionLoading,
 }: AdminReviewDetailDialogProps) {
+  const [testLinkState, setTestLinkState] = useState<{
+    versionId: string;
+    url: string | null;
+    status: "loaded" | "failed";
+  } | null>(null);
+  const [isTestLinkLoading, setIsTestLinkLoading] = useState(false);
+  const reviewVersionId = review?.versionId;
+  const shouldShowReviewQr = open && review?.versionStatus === "IN_REVIEW";
+  const currentTestLinkState =
+    reviewVersionId && testLinkState?.versionId === reviewVersionId ? testLinkState : null;
+  const testLink = currentTestLinkState?.url ?? null;
+  const isQrLoading = shouldShowReviewQr && !currentTestLinkState;
+  const isQrFailed = currentTestLinkState?.status === "failed";
+
+  useEffect(() => {
+    if (!shouldShowReviewQr || !reviewVersionId) {
+      return;
+    }
+
+    let ignore = false;
+    const versionId = reviewVersionId;
+
+    async function createTestSession() {
+      setIsTestLinkLoading(true);
+      try {
+        const response = await fetch(`/api/app-versions/${versionId}/test-session`, {
+          method: "POST",
+        });
+        const data = await response.json();
+        const url = response.ok ? data.testLink : null;
+
+        if (!ignore) {
+          setTestLinkState({
+            versionId,
+            url,
+            status: url ? "loaded" : "failed",
+          });
+        }
+      } catch {
+        if (!ignore) {
+          setTestLinkState({
+            versionId,
+            url: null,
+            status: "failed",
+          });
+        }
+      } finally {
+        if (!ignore) {
+          setIsTestLinkLoading(false);
+        }
+      }
+    }
+
+    void createTestSession();
+
+    return () => {
+      ignore = true;
+    };
+  }, [reviewVersionId, shouldShowReviewQr]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl p-0 sm:max-w-4xl">
@@ -154,6 +216,53 @@ export function AdminReviewDetailDialog({
           </Card>
 
           <div className="space-y-4">
+            {isLoading || !review ? null : review.versionStatus === "IN_REVIEW" ? (
+              <Card className="border-border/60 shadow-none">
+                <CardHeader>
+                  <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+                    Test QR
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col items-center gap-4">
+                    {isTestLinkLoading || isQrLoading ? (
+                      <div className="flex h-44 w-44 items-center justify-center rounded-lg border border-border/60 bg-muted/20">
+                        <Loader2 className="h-7 w-7 animate-spin text-union" />
+                      </div>
+                    ) : testLink ? (
+                      <>
+                        <div className="rounded-xl border border-border/60 bg-white p-3">
+                          <QRCodeSVG value={testLink} size={176} level="M" />
+                        </div>
+                        <div className="flex items-center justify-center gap-2 text-sm font-medium">
+                          <Smartphone className="h-4 w-4 text-union" />
+                          <span>Scan this QR with the mobile app.</span>
+                        </div>
+                      </>
+                    ) : isQrFailed ? (
+                      <p className="py-6 text-center text-sm text-muted-foreground">
+                        Test link could not be loaded.
+                      </p>
+                    ) : null}
+                    {isQrFailed && review.buildFileUrl ? (
+                      <a
+                        href={review.buildFileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                      >
+                        Open build file directly
+                      </a>
+                    ) : null}
+                    {isQrFailed && !review.buildFileUrl ? (
+                      <p className="text-center text-xs text-muted-foreground">
+                        This review version has no build file URL.
+                      </p>
+                    ) : null}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
             <Card className="border-border/60 shadow-none">
               <CardHeader>
                 <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
