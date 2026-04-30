@@ -160,29 +160,38 @@ export function useAppVersions(miniAppId: number | null, pollInterval = 0) {
   return { versions, isLoading, refetch: fetchVersions };
 }
 
-// 번들 URL 조회 (테스트 QR용)
-export function useBundleUrl() {
+// 테스트 세션 발급 (10분 유효 토큰형 QR 링크)
+//
+// 이전에 사용하던 useBundleUrl(영구 versionId 노출형)은 deprecate되어 제거됨.
+// 본 훅은 union-app://test-app?token=<uuid> 형태의 1회용 링크를 반환한다.
+export function useTestSession() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const getBundleUrl = useCallback(async (versionId: string): Promise<string | null> => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/app-versions/${versionId}/bundle`);
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || "번들 URL을 가져오지 못했습니다.");
+  const createTestSession = useCallback(
+    async (versionId: string): Promise<string | null> => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `/api/app-versions/${versionId}/test-session`,
+          { method: "POST" },
+        );
+        const data = await res.json();
+        if (!res.ok) {
+          toast.error(data.error || "테스트 링크를 발급하지 못했습니다.");
+          return null;
+        }
+        return data.testLink as string;
+      } catch {
+        toast.error("테스트 링크 발급 중 오류가 발생했습니다.");
         return null;
+      } finally {
+        setIsLoading(false);
       }
-      return data.downloadUrl;
-    } catch {
-      toast.error("번들 URL 조회 중 오류가 발생했습니다.");
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  return { getBundleUrl, isLoading };
+  return { createTestSession, isLoading };
 }
 
 // 버전 생성 → GCS 업로드 → 확인 (전체 업로드 플로우)
