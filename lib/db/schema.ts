@@ -138,7 +138,9 @@ export const reviews = pgTable("reviews", {
   verdict: varchar("verdict", { length: 20 }).notNull(),
   reason: text("reason"),
   decidedAt: timestamp("decided_at"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  // Spring 엔티티가 BaseEntity 의 createdAt 을 `submitted_at` 컬럼으로 override.
+  // 옛 `created_at` 컬럼은 drop 됨. 필드명은 createdAt 유지(사용처 호환).
+  createdAt: timestamp("submitted_at"),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
