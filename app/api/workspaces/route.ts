@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { workspaces, workspaceMembers, publishers } from "@/lib/db/schema";
+import { workspaces, workspaceMembers } from "@/lib/db/schema";
 import { getSession, createSession } from "@/lib/auth/session";
 import { createWorkspaceSchema } from "@/lib/validations";
 import { eq, sql } from "drizzle-orm";

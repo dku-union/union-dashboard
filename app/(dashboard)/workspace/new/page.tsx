@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Layers, Check, Mail, Loader2, Users, X } from "lucide-react";
 import { useCreateWorkspace } from "@/hooks/use-workspaces";
 import { toast } from "sonner";

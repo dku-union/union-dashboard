@@ -16,7 +16,7 @@ const sections = [
   },
   {
     title: "개발 가이드",
-    description: "미니앱 개발 환경 설정부터 배포까지의 전체 프로세스",
+    description: "SDK 템플릿으로 미니앱을 만들고 .unionapp 패키지를 업로드하는 흐름",
     href: "/docs/development-guide",
     icon: Code2,
     accent: "from-muted to-muted/50 border-border/40",
@@ -24,7 +24,7 @@ const sections = [
   },
   {
     title: "Bridge API 레퍼런스",
-    description: "Union 플랫폼과 미니앱 간 통신을 위한 API 문서",
+    description: "@union-miniapp/sdk가 제공하는 인증, UI, 디바이스, 저장소 API",
     href: "/docs/bridge-api",
     icon: Blocks,
     accent: "from-muted to-muted/50 border-border/40",
@@ -75,13 +75,13 @@ export default function DocsPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>
-              Union 미니앱은 웹 기술(HTML, CSS, JavaScript)을 사용하여 개발되며,
-              Union 플랫폼 내에서 실행됩니다.
+              Union 미니앱은 React와 Vite 기반으로 개발되며, Union iOS 앱의 WebView 안에서 실행됩니다.
+              브라우저 개발 환경에서는 SDK의 Mock Bridge가 자동으로 동작합니다.
             </p>
             <p>
-              미니앱 개발을 시작하려면 먼저 <span className="font-medium text-foreground">개발 가이드</span>를 읽고
-              개발 환경을 설정한 후, <span className="font-medium text-foreground">Bridge API</span>를 활용하여
-              플랫폼의 네이티브 기능에 접근할 수 있습니다.
+              개발을 시작하려면 <span className="font-medium text-foreground">개발 가이드</span>에서
+              프로젝트 생성과 빌드 방식을 확인하고, <span className="font-medium text-foreground">Bridge API</span>에서
+              네이티브 기능 호출 방법과 필요한 권한을 확인하세요.
             </p>
           </CardContent>
         </Card>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { ChevronDown } from "lucide-react";
-import { faqItems, landingNavItems } from "@/data/landing";
+import { faqItems } from "@/data/landing";
 
 function Reveal({
   children, className, delay = 0,

@@ -67,7 +67,11 @@ function star4(ctx: CanvasRenderingContext2D, x: number, y: number, outer: numbe
     const r     = i % 2 === 0 ? outer : inner;
     const px    = x + Math.cos(angle) * r;
     const py    = y + Math.sin(angle) * r;
-    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    if (i === 0) {
+      ctx.moveTo(px, py);
+    } else {
+      ctx.lineTo(px, py);
+    }
   }
   ctx.closePath();
 }
