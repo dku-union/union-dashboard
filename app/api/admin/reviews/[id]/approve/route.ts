@@ -24,11 +24,8 @@ export async function POST(
     if (target.versionStatus !== "IN_REVIEW") {
       return NextResponse.json({ error: "Only IN_REVIEW versions can be approved." }, { status: 409 });
     }
-    if (!target.existingReviewId) {
-      return NextResponse.json({ error: "Pending review not found." }, { status: 409 });
-    }
 
-    const result = await springFetch<Review>(`/reviews/${target.existingReviewId}/decision`, auth.session, {
+    const result = await springFetch<Review>(`/reviews/versions/${id}/decision`, auth.session, {
       method: "POST",
       body: { verdict: "ACCEPTED" },
     });

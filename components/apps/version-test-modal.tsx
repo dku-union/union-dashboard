@@ -32,18 +32,13 @@ export function VersionTestModal({
   const [testLink, setTestLink] = useState<string | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(TOKEN_TTL_SECONDS);
 
-  // 모달 열릴 때 새 토큰 발급. 닫히면 상태 리셋.
+  // 모달 열릴 때 새 토큰 발급.
   useEffect(() => {
-    if (open && !testLink) {
-      void createTestSession(versionId).then((link) => {
-        setTestLink(link);
-        setSecondsLeft(TOKEN_TTL_SECONDS);
-      });
-    }
-    if (!open) {
-      setTestLink(null);
+    if (!open || testLink) return;
+    void createTestSession(versionId).then((link) => {
+      setTestLink(link);
       setSecondsLeft(TOKEN_TTL_SECONDS);
-    }
+    });
   }, [open, versionId, testLink, createTestSession]);
 
   // 남은 시간 카운트다운 — 만료 시 사용자에게 시각적으로 즉시 알림.
@@ -66,8 +61,16 @@ export function VersionTestModal({
     setSecondsLeft(TOKEN_TTL_SECONDS);
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setTestLink(null);
+      setSecondsLeft(TOKEN_TTL_SECONDS);
+    }
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="heading-display text-lg">

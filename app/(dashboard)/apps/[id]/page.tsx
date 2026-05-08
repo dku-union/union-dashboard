@@ -1,16 +1,25 @@
 "use client";
 
 import { use, useState } from "react";
-import { useMiniAppDetail, useAppVersions, useSubmitReview } from "@/hooks/use-app-versions";
+import {
+  useDeployVersion,
+  useMiniAppDetail,
+  useAppVersions,
+  useMyReviews,
+  useSubmitReview,
+} from "@/hooks/use-app-versions";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { VersionTestModal } from "@/components/apps/version-test-modal";
+import { RejectionDetail } from "@/components/reviews/rejection-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AppWindow, History, Upload, QrCode, CheckCircle, Send } from "lucide-react";
+import { AlertTriangle, AppWindow, History, Upload, QrCode, CheckCircle, Rocket, Send } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { Review } from "@/types/app-version";
 
 const POLL_INTERVAL = 15_000;
 
@@ -20,15 +29,26 @@ export default function AppDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const numId = Number(id);
-  const { app, isLoading: appLoading } = useMiniAppDetail(numId);
+  const { app, isLoading: appLoading, refetch: refetchApp } = useMiniAppDetail(numId);
   const { versions, isLoading: versionsLoading, refetch: refetchVersions } = useAppVersions(numId, POLL_INTERVAL);
   const { submitReview, isSubmitting } = useSubmitReview();
+  const { deployVersion, deployingVersionId } = useDeployVersion();
+  const { reviews } = useMyReviews();
+
+  const rejectedReviewByVersionId = new Map(
+    reviews
+      .filter((review) => review.verdict === "REJECTED")
+      .map((review) => [review.versionId, review]),
+  );
 
   const [testModalVersion, setTestModalVersion] = useState<{
     id: string;
     versionNumber: string;
   } | null>(null);
+  const [selectedRejection, setSelectedRejection] = useState<Review | null>(null);
+  const [rejectionOpen, setRejectionOpen] = useState(false);
 
   if (appLoading) {
     return (
@@ -56,6 +76,19 @@ export default function AppDetailPage({
     );
   }
 
+  const latestVersion = versions[0];
+  const latestRejection =
+    latestVersion?.status === "REJECTED"
+      ? rejectedReviewByVersionId.get(latestVersion.id)
+      : undefined;
+  const uploadHref = (versionNumber?: string) => {
+    const params = new URLSearchParams({ miniAppId: String(app.id) });
+    if (versionNumber) {
+      params.set("rejectedVersion", versionNumber);
+    }
+    return `/workspace/${app.workspaceId}/upload?${params.toString()}`;
+  };
+
   return (
     <div className="space-y-6">
       {/* 상단 헤더 */}
@@ -82,9 +115,17 @@ export default function AppDetailPage({
             <History className="mr-1 h-4 w-4" />
             버전 이력
           </Button>
-          <Button size="sm" className="bg-union text-white hover:bg-union/90" render={<Link href={`/workspace/${app.workspaceId}/upload`} />}>
+          <Button
+            size="sm"
+            className={
+              latestRejection
+                ? "bg-destructive text-white hover:bg-destructive/90"
+                : "bg-union text-white hover:bg-union/90"
+            }
+            render={<Link href={uploadHref(latestRejection?.versionNumber)} />}
+          >
             <Upload className="mr-1 h-4 w-4" />
-            새 버전 업로드
+            {latestRejection ? "수정 버전 업로드" : "새 버전 업로드"}
           </Button>
         </div>
       </div>
@@ -145,54 +186,91 @@ export default function AppDetailPage({
               </p>
             ) : (
               <div className="space-y-3">
-                {versions.slice(0, 5).map((v) => (
-                  <div key={v.id} className="flex items-center justify-between py-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium">v{v.versionNumber}</span>
-                      <VersionStatusBadge status={v.status} />
-                      {v.testedAt && (
-                        <CheckCircle className="h-3 w-3 text-sage" />
-                      )}
+                {versions.slice(0, 5).map((v) => {
+                  const rejection = rejectedReviewByVersionId.get(v.id);
+
+                  return (
+                    <div key={v.id} className="space-y-2 py-1.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-mono font-medium">v{v.versionNumber}</span>
+                          <VersionStatusBadge status={v.status} />
+                          {v.testedAt && (
+                            <CheckCircle className="h-3 w-3 text-sage" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {v.status === "UPLOADED" && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-6 text-[11px] px-2 border-border/60"
+                                onClick={() =>
+                                  setTestModalVersion({
+                                    id: v.id,
+                                    versionNumber: v.versionNumber,
+                                  })
+                                }
+                              >
+                                <QrCode className="mr-1 h-3 w-3" />
+                                테스트
+                              </Button>
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                className="border-union/30 text-union hover:bg-union/10"
+                                disabled={!v.testedAt || isSubmitting}
+                                title={!v.testedAt ? "테스트 완료 후 활성화됩니다" : undefined}
+                                onClick={async () => {
+                                  const result = await submitReview(v.id);
+                                  if (result) refetchVersions();
+                                }}
+                              >
+                                <Send className="mr-1 h-3 w-3" />
+                                심사 요청
+                              </Button>
+                            </>
+                          )}
+                          {v.status === "ACCEPTED" && (
+                            <Button
+                              size="xs"
+                              className="bg-union text-white hover:bg-union/90"
+                              disabled={deployingVersionId === v.id}
+                              onClick={async () => {
+                                const result = await deployVersion(v.id);
+                                if (result) {
+                                  refetchVersions();
+                                  refetchApp();
+                                }
+                              }}
+                            >
+                              <Rocket className="mr-1 h-3 w-3" />
+                              배포
+                            </Button>
+                          )}
+                          {v.status === "REJECTED" && rejection && (
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              className="border-destructive/30 text-destructive hover:bg-destructive/10"
+                              onClick={() => {
+                                setSelectedRejection(rejection);
+                                setRejectionOpen(true);
+                              }}
+                            >
+                              <AlertTriangle className="mr-1 h-3 w-3" />
+                              반려 사유
+                            </Button>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(v.createdAt).toLocaleDateString("ko-KR")}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {v.status === "UPLOADED" && (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-6 text-[11px] px-2 border-border/60"
-                            onClick={() =>
-                              setTestModalVersion({
-                                id: v.id,
-                                versionNumber: v.versionNumber,
-                              })
-                            }
-                          >
-                            <QrCode className="mr-1 h-3 w-3" />
-                            테스트
-                          </Button>
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            className="border-union/30 text-union hover:bg-union/10"
-                            disabled={!v.testedAt || isSubmitting}
-                            title={!v.testedAt ? "테스트 완료 후 활성화됩니다" : undefined}
-                            onClick={async () => {
-                              const result = await submitReview(v.id);
-                              if (result) refetchVersions();
-                            }}
-                          >
-                            <Send className="mr-1 h-3 w-3" />
-                            심사 요청
-                          </Button>
-                        </>
-                      )}
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {versions.length > 5 && (
                   <Link
                     href={`/apps/${id}/versions`}
@@ -217,6 +295,14 @@ export default function AppDetailPage({
           }}
         />
       )}
+      <RejectionDetail
+        review={selectedRejection}
+        open={rejectionOpen}
+        onOpenChange={setRejectionOpen}
+        onUploadNewVersion={(review) => {
+          router.push(uploadHref(review.versionNumber));
+        }}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import type { Review } from "@/types/app-version";
 import { Card, CardContent } from "@/components/ui/card";
-import { AppWindow } from "lucide-react";
+import { AlertTriangle, AppWindow } from "lucide-react";
 
 interface ReviewCardProps {
   review: Review;
@@ -32,6 +32,12 @@ export function ReviewCard({ review, onClick }: ReviewCardProps) {
             <p className="text-[11px] text-muted-foreground/60">
               {new Date(review.submittedAt).toLocaleDateString("ko-KR")}
             </p>
+            {review.verdict === "REJECTED" && review.reason && (
+              <div className="flex gap-1.5 rounded-md bg-destructive/5 px-2 py-1.5 text-[11px] leading-relaxed text-destructive">
+                <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                <p className="line-clamp-2 whitespace-pre-wrap">{review.reason}</p>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
