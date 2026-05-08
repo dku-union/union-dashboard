@@ -6,7 +6,7 @@ import { ReviewCard } from "./review-card";
 import { RejectionDetail } from "./rejection-detail";
 import { ResubmitDialog } from "./resubmit-dialog";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { Upload } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const columns: { verdict: Verdict; title: string; dotColor: string }[] = [
@@ -18,15 +18,13 @@ const columns: { verdict: Verdict; title: string; dotColor: string }[] = [
 interface ReviewStatusBoardProps {
   reviews: Review[];
   isLoading?: boolean;
-  onResubmit?: (versionId: string) => Promise<boolean>;
-  isResubmitting?: boolean;
+  onUploadNewVersion?: (review: Review) => void;
 }
 
 export function ReviewStatusBoard({
   reviews,
   isLoading,
-  onResubmit,
-  isResubmitting,
+  onUploadNewVersion,
 }: ReviewStatusBoardProps) {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [rejectionOpen, setRejectionOpen] = useState(false);
@@ -40,11 +38,9 @@ export function ReviewStatusBoard({
   };
 
   const handleResubmit = async () => {
-    if (!selectedReview || !onResubmit) return;
-    const success = await onResubmit(selectedReview.versionId);
-    if (success) {
-      setResubmitOpen(false);
-    }
+    if (!selectedReview || !onUploadNewVersion) return;
+    setResubmitOpen(false);
+    onUploadNewVersion(selectedReview);
   };
 
   if (isLoading) {
@@ -87,19 +83,18 @@ export function ReviewStatusBoard({
                         review={review}
                         onClick={() => handleCardClick(review)}
                       />
-                      {review.verdict === "REJECTED" && onResubmit && (
+                      {review.verdict === "REJECTED" && onUploadNewVersion && (
                         <Button
                           variant="outline"
                           size="sm"
                           className="w-full mt-1 border-border/60 text-xs hover:border-union hover:text-union"
-                          disabled={isResubmitting}
                           onClick={() => {
                             setSelectedReview(review);
                             setResubmitOpen(true);
                           }}
                         >
-                          <RefreshCw className="mr-1 h-3 w-3" />
-                          재제출
+                          <Upload className="mr-1 h-3 w-3" />
+                          새 버전 업로드
                         </Button>
                       )}
                     </div>
@@ -115,13 +110,13 @@ export function ReviewStatusBoard({
         review={selectedReview}
         open={rejectionOpen}
         onOpenChange={setRejectionOpen}
+        onUploadNewVersion={onUploadNewVersion}
       />
       <ResubmitDialog
         review={selectedReview}
         open={resubmitOpen}
         onOpenChange={setResubmitOpen}
         onConfirm={handleResubmit}
-        isLoading={isResubmitting}
       />
     </>
   );

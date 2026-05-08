@@ -289,6 +289,34 @@ export function useSubmitReview() {
   return { submitReview, isSubmitting };
 }
 
+// 승인된 버전 배포
+export function useDeployVersion() {
+  const [deployingVersionId, setDeployingVersionId] = useState<string | null>(null);
+
+  const deployVersion = async (versionId: string) => {
+    setDeployingVersionId(versionId);
+    try {
+      const res = await fetch(`/api/app-versions/${versionId}/deploy`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "배포에 실패했습니다.");
+        return null;
+      }
+      toast.success("미니앱이 배포되었습니다.");
+      return data as AppVersion;
+    } catch {
+      toast.error("배포 중 오류가 발생했습니다.");
+      return null;
+    } finally {
+      setDeployingVersionId(null);
+    }
+  };
+
+  return { deployVersion, deployingVersionId };
+}
+
 // 내 심사 목록 조회
 export function useMyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);

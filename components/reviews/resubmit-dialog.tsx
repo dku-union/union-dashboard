@@ -17,31 +17,29 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  isLoading?: boolean;
 }
 
-export function ResubmitDialog({ review, open, onOpenChange, onConfirm, isLoading }: Props) {
+export function ResubmitDialog({ review, open, onOpenChange, onConfirm }: Props) {
   if (!review) return null;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="border-border/60">
         <AlertDialogHeader>
-          <AlertDialogTitle className="heading-display">심사 재제출</AlertDialogTitle>
+          <AlertDialogTitle className="heading-display">새 버전 업로드</AlertDialogTitle>
           <AlertDialogDescription>
             <span className="font-semibold">{review.miniAppName}</span>{" "}
-            <span className="font-mono text-xs">v{review.versionNumber}</span>을(를) 심사에 다시 제출하시겠습니까?
-            반려 사유를 해결한 후 재제출해주세요.
+            <span className="font-mono text-xs">v{review.versionNumber}</span>은(는) 반려되었습니다.
+            반려 사유를 반영한 새 빌드 파일을 업로드한 뒤 테스트와 심사를 다시 진행해주세요.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="border-border/60">취소</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            disabled={isLoading}
             className="bg-union text-white hover:bg-union/90"
           >
-            재제출
+            업로드로 이동
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

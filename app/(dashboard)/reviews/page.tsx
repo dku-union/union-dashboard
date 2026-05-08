@@ -1,19 +1,29 @@
 "use client";
 
 import { ReviewStatusBoard } from "@/components/reviews/review-status-board";
-import { useMyReviews, useSubmitReview } from "@/hooks/use-app-versions";
+import { useMyMiniApps, useMyReviews } from "@/hooks/use-app-versions";
+import type { Review } from "@/types/app-version";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ReviewsPage() {
+  const router = useRouter();
   const { reviews, isLoading, refetch } = useMyReviews();
-  const { submitReview, isSubmitting } = useSubmitReview();
+  const { apps } = useMyMiniApps();
 
-  const handleResubmit = async (versionId: string) => {
-    const result = await submitReview(versionId);
-    if (result) {
-      refetch();
-      return true;
+  const handleUploadNewVersion = (review: Review) => {
+    const app = apps.find((item) => item.name === review.miniAppName);
+    if (app) {
+      const params = new URLSearchParams({
+        miniAppId: String(app.id),
+        rejectedVersion: review.versionNumber,
+      });
+      router.push(`/workspace/${app.workspaceId}/upload?${params.toString()}`);
+      return;
     }
-    return false;
+
+    toast.error("업로드할 미니앱을 찾지 못했습니다. 미니앱 상세에서 새 버전을 업로드해주세요.");
+    refetch();
   };
 
   return (
@@ -28,8 +38,7 @@ export default function ReviewsPage() {
         <ReviewStatusBoard
           reviews={reviews}
           isLoading={isLoading}
-          onResubmit={handleResubmit}
-          isResubmitting={isSubmitting}
+          onUploadNewVersion={handleUploadNewVersion}
         />
       </div>
     </div>

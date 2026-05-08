@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useWorkspace } from "@/hooks/use-workspaces";
 import { useMiniAppList, useCreateMiniApp, useUploadVersion } from "@/hooks/use-app-versions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,22 +27,24 @@ import {
   Plus,
   Package,
 } from "lucide-react";
-import type { MiniAppRecord } from "@/types/app-version";
 
 type FlowStep = "select-app" | "version-info" | "uploading" | "done";
 
 export default function UploadPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const workspaceId = params.id as string;
+  const preselectedMiniAppId = searchParams.get("miniAppId");
+  const rejectedVersion = searchParams.get("rejectedVersion");
 
   const { workspace, isLoading: wsLoading } = useWorkspace(workspaceId);
   const { apps, isLoading: appsLoading, refetch: refetchApps } = useMiniAppList(workspaceId);
   const { createMiniApp, isCreating } = useCreateMiniApp();
   const { upload, step: uploadStep, uploadProgress, reset: resetUpload } = useUploadVersion();
 
-  const [flowStep, setFlowStep] = useState<FlowStep>("select-app");
-  const [selectedApp, setSelectedApp] = useState<MiniAppRecord | null>(null);
+  const [flowStep, setFlowStep] = useState<FlowStep>(preselectedMiniAppId ? "version-info" : "select-app");
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(preselectedMiniAppId);
   const [isNewApp, setIsNewApp] = useState(false);
 
   // 새 미니앱 필드
@@ -50,16 +52,20 @@ export default function UploadPage() {
   const [newAppDescription, setNewAppDescription] = useState("");
 
   // 버전 필드
-  const [versionNumber, setVersionNumber] = useState("1.0.0");
+  const [versionNumber, setVersionNumber] = useState(
+    rejectedVersion ? incrementPatchVersion(rejectedVersion) : "1.0.0",
+  );
   const [releaseNotes, setReleaseNotes] = useState("");
   const [buildFile, setBuildFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedApp = apps.find((item) => String(item.id) === selectedAppId) ?? null;
+  const currentFlowStep = flowStep === "version-info" && !selectedApp ? "select-app" : flowStep;
 
   const handleSelectExistingApp = (appId: string | null) => {
     if (!appId) return;
     const app = apps.find((a) => a.id === Number(appId));
     if (app) {
-      setSelectedApp(app);
+      setSelectedAppId(String(app.id));
       setIsNewApp(false);
     }
   };
@@ -72,7 +78,7 @@ export default function UploadPage() {
       workspaceId,
     });
     if (app) {
-      setSelectedApp(app);
+      setSelectedAppId(String(app.id));
       setIsNewApp(false);
       await refetchApps();
       setFlowStep("version-info");
@@ -143,7 +149,7 @@ export default function UploadPage() {
       </div>
 
       {/* Step 1: 미니앱 선택 / 생성 */}
-      {flowStep === "select-app" && (
+      {currentFlowStep === "select-app" && (
         <div className="space-y-4 animate-fade-up delay-1">
           <Card className="border-border/60">
             <CardHeader>
@@ -248,8 +254,14 @@ export default function UploadPage() {
       )}
 
       {/* Step 2: 버전 정보 + 파일 선택 */}
-      {flowStep === "version-info" && selectedApp && (
+      {currentFlowStep === "version-info" && selectedApp && (
         <div className="space-y-4 animate-fade-up delay-1">
+          {rejectedVersion && (
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+              반려된 v{rejectedVersion}을(를) 수정한 새 버전을 업로드합니다.
+            </div>
+          )}
+
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Package className="h-4 w-4" />
             <span className="font-medium text-foreground">{selectedApp.name}</span>
@@ -345,7 +357,9 @@ export default function UploadPage() {
               className="border-border/60"
               onClick={() => {
                 setFlowStep("select-app");
+                setSelectedAppId(null);
                 resetUpload();
+                router.replace(`/workspace/${workspaceId}/upload`);
               }}
             >
               <ArrowLeft className="mr-1 h-4 w-4" />
@@ -364,7 +378,7 @@ export default function UploadPage() {
       )}
 
       {/* Step 3: 업로드 중 */}
-      {flowStep === "uploading" && (
+      {currentFlowStep === "uploading" && (
         <Card className="border-border/60 animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-union/10">
@@ -388,7 +402,7 @@ export default function UploadPage() {
       )}
 
       {/* Step 4: 완료 */}
-      {flowStep === "done" && (
+      {currentFlowStep === "done" && (
         <Card className="border-border/60 animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-sage/10">
@@ -426,4 +440,12 @@ export default function UploadPage() {
       )}
     </div>
   );
+}
+
+function incrementPatchVersion(version: string) {
+  const parts = version.split(".").map((part) => Number(part));
+  if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+    return "1.0.0";
+  }
+  return `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
 }

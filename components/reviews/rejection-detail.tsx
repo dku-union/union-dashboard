@@ -5,19 +5,27 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Upload } from "lucide-react";
 
 interface Props {
   review: Review | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUploadNewVersion?: (review: Review) => void;
 }
 
-export function RejectionDetail({ review, open, onOpenChange }: Props) {
+export function RejectionDetail({ review, open, onOpenChange, onUploadNewVersion }: Props) {
   if (!review) return null;
+
+  const handleUpload = () => {
+    onOpenChange(false);
+    onUploadNewVersion?.(review);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -53,6 +61,14 @@ export function RejectionDetail({ review, open, onOpenChange }: Props) {
             </p>
           )}
         </div>
+        {onUploadNewVersion && (
+          <DialogFooter>
+            <Button className="bg-union text-white hover:bg-union/90" onClick={handleUpload}>
+              <Upload className="mr-1.5 h-4 w-4" />
+              새 버전 업로드
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );
