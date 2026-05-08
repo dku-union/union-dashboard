@@ -6,82 +6,115 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const sections = [
   {
-    title: "1. 개발 환경 설정",
-    description: "Union 미니앱 SDK를 설치하고 프로젝트를 초기화합니다.",
-    code: `# Union Mini App CLI 설치
-npm install -g @union/miniapp-cli
-
-# 새 프로젝트 생성
-union create my-miniapp
-
-# 개발 서버 실행
-cd my-miniapp
-npm run dev`,
-    lang: "bash",
-  },
-  {
-    title: "2. 프로젝트 구조",
-    code: `my-miniapp/
-├── src/
-│   ├── index.html      # 진입점
-│   ├── app.js          # 앱 로직
-│   ├── style.css       # 스타일
-│   └── assets/         # 정적 자원
-├── union.config.json    # Union 설정
-└── package.json`,
+    title: "1. 요구 사항",
+    description: "Union 미니앱은 React, Vite, TypeScript 기반 템플릿으로 시작합니다.",
+    code: `Node.js 18 이상
+npm 9 이상
+Union 퍼블리셔 계정
+업로드할 워크스페이스 권한(owner, admin, developer)`,
     lang: "text",
   },
   {
-    title: "3. Union 설정 파일",
-    description: "union.config.json 파일에서 앱의 기본 설정과 권한을 정의합니다.",
+    title: "2. SDK와 CLI 준비",
+    description: "현재 SDK는 모노레포 기준으로 빌드한 뒤 CLI를 사용합니다.",
+    code: `git clone https://github.com/dku-union/union-sdk.git
+cd union-sdk
+npm install
+npm run build`,
+    lang: "bash",
+  },
+  {
+    title: "3. 새 미니앱 생성",
+    description: "CLI가 React/Vite 템플릿과 union.config.json을 생성합니다.",
+    code: `npx union create festival-waiting
+cd festival-waiting
+npm install
+npx union dev`,
+    lang: "bash",
+  },
+  {
+    title: "4. 프로젝트 구조",
+    code: `festival-waiting/
+├── index.html
+├── src/
+│   ├── App.tsx
+│   ├── App.css
+│   └── main.tsx
+├── union.config.json
+├── package.json
+└── vite.config.ts`,
+    lang: "text",
+  },
+  {
+    title: "5. union.config.json",
+    description: "앱 식별자, 버전, 권한, 빌드 출력 위치를 정의합니다.",
     code: `{
-  "appId": "your-app-id",
-  "name": "내 미니앱",
+  "appId": "com.union.festival-waiting",
+  "name": "festival-waiting",
   "version": "1.0.0",
-  "permissions": [
-    "user.profile",
-    "location"
-  ],
-  "entry": "src/index.html",
-  "minPlatformVersion": "1.0.0"
+  "description": "축제 웨이팅 미니앱",
+  "icon": "./assets/icon.png",
+  "category": "utility",
+  "permissions": ["user.profile"],
+  "contactEmail": "team@example.com",
+  "keywords": ["festival", "waiting"],
+  "previews": [],
+  "minSdkVersion": "1.0.0",
+  "build": {
+    "entry": "src/main.tsx",
+    "outDir": "dist",
+    "maxBundleSize": "2MB"
+  }
 }`,
     lang: "json",
   },
   {
-    title: "4. Bridge API 사용",
-    description: "Union Bridge를 통해 플랫폼의 네이티브 기능에 접근합니다.",
-    code: `import { UnionBridge } from '@union/bridge';
+    title: "6. SDK 사용",
+    description: "@union-miniapp/sdk를 import해 인증, UI, 디바이스 기능을 호출합니다.",
+    code: `import Union from "@union-miniapp/sdk";
 
-// 사용자 프로필 조회
-const profile = await UnionBridge.getUserProfile();
-console.log(profile.name); // "김유니비"
+const profile = await Union.auth.getUserProfile();
 
-// 위치 정보 조회
-const location = await UnionBridge.getLocation();
-console.log(location.latitude, location.longitude);`,
+Union.ui.showToast({
+  message: \`\${profile.nickname}님, 환영합니다.\`,
+  duration: "short"
+});
+
+Union.analytics.trackEvent("home_opened", {
+  source: "dashboard-docs"
+});`,
     lang: "typescript",
   },
   {
-    title: "5. 빌드 & 제출",
-    description: "앱을 빌드하고 심사를 위해 제출합니다.",
-    code: `# 프로덕션 빌드
-npm run build
+    title: "7. 빌드와 검증",
+    description: "build는 Vite 빌드 후 manifest.json과 .unionapp 패키지를 생성합니다.",
+    code: `npx union build
+npx union validate
 
-# 빌드 파일 패키징 (.zip)
-union pack
-
-# 결과물: dist/my-miniapp-1.0.0.zip`,
+# 생성 결과 예시
+dist/
+com.union.festival-waiting-1.0.0.unionapp`,
     lang: "bash",
+  },
+  {
+    title: "8. 업로드와 심사",
+    description: "CLI upload는 아직 백엔드 API 연동 전이므로 dashboard에서 업로드합니다.",
+    code: `1. Dashboard > 워크스페이스 > 미니앱 업로드
+2. 기존 미니앱 선택 또는 새 미니앱 등록
+3. 버전과 릴리즈 노트 입력
+4. .unionapp 파일 업로드
+5. QR 테스트 완료 후 심사 요청
+6. 승인 후 배포 버튼으로 공개`,
+    lang: "text",
   },
 ];
 
-const reviewCriteria = [
-  "불필요한 권한을 요청하지 않아야 합니다.",
-  "개인정보 처리방침이 명시되어야 합니다.",
-  "안정적으로 동작하며 크래시가 없어야 합니다.",
-  "디자인 가이드라인을 준수해야 합니다.",
-  "유해 콘텐츠가 포함되지 않아야 합니다.",
-  "결제 기능 사용 시 보안 요구사항을 충족해야 합니다.",
+const packageRules = [
+  "파일 확장자는 .unionapp을 사용합니다.",
+  "패키지는 내부적으로 zip archive입니다.",
+  "index.html, manifest.json, signature 파일이 필요합니다.",
+  "version은 1.0.0 같은 semver 형식을 사용합니다.",
+  "build.maxBundleSize 기본값은 2MB입니다.",
 ];
 
 export default function DevelopmentGuidePage() {
@@ -94,32 +127,32 @@ export default function DevelopmentGuidePage() {
         <div className="animate-fade-up">
           <h1 className="heading-display text-2xl tracking-tight">개발 가이드</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            미니앱 개발 환경 설정부터 배포까지의 전체 프로세스
+            SDK 템플릿으로 미니앱을 만들고 dashboard에 업로드하는 전체 흐름
           </p>
         </div>
 
         {sections.map((section, i) => (
-          <Card key={section.title} className={`animate-fade-up delay-${i + 1} border-border/60`}>
+          <Card key={section.title} className={`animate-fade-up delay-${Math.min(i + 1, 8)} border-border/60`}>
             <CardHeader>
               <CardTitle className="heading-display text-base">{section.title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               {section.description && (
-                <p className="text-muted-foreground">{section.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{section.description}</p>
               )}
               <CodeBlock code={section.code} language={section.lang} />
             </CardContent>
           </Card>
         ))}
 
-        <Card className="animate-fade-up delay-6 border-border/60">
+        <Card className="animate-fade-up delay-8 border-border/60">
           <CardHeader>
-            <CardTitle className="heading-display text-base">6. 심사 기준</CardTitle>
+            <CardTitle className="heading-display text-base">.unionapp 패키지 규칙</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {reviewCriteria.map((item, j) => (
-                <li key={j} className="flex items-start gap-2">
+              {packageRules.map((item) => (
+                <li key={item} className="flex items-start gap-2">
                   <span className="h-1 w-1 rounded-full bg-union mt-2 shrink-0" />
                   {item}
                 </li>

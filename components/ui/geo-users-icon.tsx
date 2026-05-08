@@ -37,7 +37,6 @@ const rBL: Cell = { t: "q", c: R, d: "bl" };
 const rBR: Cell = { t: "q", c: R, d: "br" };
 
 // Charcoal quarter-circles
-const cTL: Cell = { t: "q", c: C, d: "tl" };
 const cTR: Cell = { t: "q", c: C, d: "tr" };
 const cBL: Cell = { t: "q", c: C, d: "bl" };
 const cBR: Cell = { t: "q", c: C, d: "br" };

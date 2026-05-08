@@ -3,7 +3,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { MiniAppFormValues } from "@/lib/validations";
 import { CATEGORY_LABELS } from "@/lib/constants";
-import { MiniAppCategory } from "@/types/mini-app";
 import {
   FormControl,
   FormField,
