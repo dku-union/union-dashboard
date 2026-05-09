@@ -87,15 +87,16 @@ export default function VersionsPage({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between animate-fade-up">
-        <div className="flex items-center gap-3">
+    <div className="publisher-page">
+      <div className="publisher-page-header animate-fade-up">
+        <div className="flex min-w-0 items-center gap-3">
           <Button variant="ghost" size="icon" className="h-8 w-8" render={<Link href={`/apps/${id}`} />}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="heading-display text-2xl tracking-tight">{app.name} - 버전 이력</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{app.workspaceName}</p>
+          <div className="min-w-0">
+            <p className="publisher-eyebrow">Release History</p>
+            <h1 className="mt-1 truncate text-heading-1">{app.name} 버전 이력</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{app.workspaceName}</p>
           </div>
         </div>
         <Button
@@ -112,9 +113,9 @@ export default function VersionsPage({
         </Button>
       </div>
 
-      <Card className="animate-fade-up delay-1 border-border/60">
+      <Card className="publisher-panel animate-fade-up delay-1">
         <CardHeader>
-          <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+          <CardTitle className="publisher-eyebrow">
             전체 버전 ({versions.length})
           </CardTitle>
         </CardHeader>
@@ -127,24 +128,34 @@ export default function VersionsPage({
               <p className="text-sm text-muted-foreground">등록된 버전이 없습니다.</p>
             </div>
           ) : (
-            <div className="divide-y divide-border/60">
+            <div className="space-y-2">
               {versions.map((v) => {
                 const rejection = rejectedReviewByVersionId.get(v.id);
 
                 return (
-                  <div key={v.id} className="space-y-2 py-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-mono font-semibold">v{v.versionNumber}</span>
-                        <VersionStatusBadge status={v.status} />
-                        {v.testedAt && (
-                          <span className="flex items-center gap-1 text-[11px] text-sage">
-                            <CheckCircle className="h-3 w-3" />
-                            테스트 완료
+                  <div key={v.id} className="publisher-row p-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-mono font-semibold">v{v.versionNumber}</span>
+                          <VersionStatusBadge status={v.status} />
+                          {v.testedAt && (
+                            <span className="flex items-center gap-1 text-[11px] text-sage">
+                              <CheckCircle className="h-3 w-3" />
+                              테스트 완료
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                          <span className="font-mono">
+                            {new Date(v.createdAt).toLocaleDateString("ko-KR")}
                           </span>
-                        )}
+                          {v.releaseNotes && (
+                            <span className="max-w-[360px] truncate">{v.releaseNotes}</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center justify-end gap-2">
                         {v.status === "UPLOADED" && (
                           <>
                             <Button
@@ -208,14 +219,6 @@ export default function VersionsPage({
                             반려 사유
                           </Button>
                         )}
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          {v.releaseNotes && (
-                            <span className="max-w-[200px] truncate">{v.releaseNotes}</span>
-                          )}
-                          <span className="font-mono">
-                            {new Date(v.createdAt).toLocaleDateString("ko-KR")}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </div>

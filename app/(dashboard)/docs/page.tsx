@@ -2,7 +2,8 @@
 
 import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Palette, Code2, Blocks, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Palette, Code2, Blocks, ArrowRight, Package, Upload, CheckCircle2, Terminal, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 const sections = [
@@ -38,38 +39,85 @@ export default function DocsPage() {
       <aside className="hidden w-56 shrink-0 lg:block animate-slide-in-left">
         <DocSidebar />
       </aside>
-      <div className="flex-1 space-y-8">
-        <div className="animate-fade-up">
-          <h1 className="text-heading-1">개발 문서</h1>
-          <p className="text-body-sm text-muted-foreground mt-1">
-            Union 미니앱 개발에 필요한 모든 문서를 확인하세요.
-          </p>
+      <div className="publisher-page flex-1">
+        <div className="publisher-page-header animate-fade-up">
+          <div className="max-w-2xl">
+            <p className="publisher-eyebrow">Developer Docs</p>
+            <h1 className="text-heading-1">개발 문서</h1>
+            <p className="mt-2 text-body-sm text-muted-foreground">
+              미니앱 생성부터 SDK 연동, 빌드 패키징, 콘솔 업로드까지 필요한 문서를 작업 흐름에 맞춰 확인하세요.
+            </p>
+          </div>
+          <Button className="bg-union text-white hover:bg-union/90" render={<Link href="/workspace" />}>
+            <Upload className="h-4 w-4" />
+            업로드로 이동
+          </Button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {sections.map((section, i) => (
-            <Link key={section.href} href={section.href} className={`animate-fade-up delay-${i + 1}`}>
-              <Card className="h-full card-hover border-border/60 group">
-                <CardHeader className="pb-3">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${section.accent} border mb-3`}>
-                    <section.icon className={`h-6 w-6 ${section.iconColor}`} />
-                  </div>
-                  <CardTitle className="text-heading-3 flex items-center gap-2">
-                    {section.title}
-                    <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-muted-foreground" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-body-sm text-muted-foreground leading-relaxed">
-                    {section.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+        <Card className="publisher-panel animate-fade-up delay-1">
+          <CardContent className="grid gap-4 p-4 md:grid-cols-4">
+            <FlowStep icon={Terminal} title="생성" description="SDK 템플릿으로 시작" />
+            <FlowStep icon={Blocks} title="연동" description="Bridge API와 권한 확인" />
+            <FlowStep icon={Package} title="빌드" description=".unionapp 패키징" />
+            <FlowStep icon={ShieldCheck} title="심사" description="업로드 후 테스트/제출" />
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {sections.map((section, i) => (
+              <Link key={section.href} href={section.href} className={`animate-fade-up delay-${i + 2}`}>
+                <Card className="publisher-panel group h-full transition-colors hover:border-union/45">
+                  <CardHeader className="pb-3">
+                    <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-muted/45 border border-border/60`}>
+                      <section.icon className={`h-5 w-5 ${section.iconColor}`} />
+                    </div>
+                    <CardTitle className="flex items-center gap-2 text-heading-3">
+                      {section.title}
+                      <ArrowRight className="h-4 w-4 -translate-x-1 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-body-sm leading-relaxed text-muted-foreground">
+                      {section.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          <aside className="space-y-4">
+            <Card className="publisher-panel animate-fade-up delay-5">
+              <CardContent className="p-4">
+                <p className="publisher-eyebrow">Quick Start</p>
+                <div className="mt-4 rounded-lg border border-border/70 bg-muted/25 p-3 font-mono text-xs leading-6">
+                  <p>npx union create my-app</p>
+                  <p>cd my-app</p>
+                  <p>npm run build</p>
+                  <p>npx union pack</p>
+                </div>
+                <Button variant="outline" className="mt-3 w-full border-border/70" render={<Link href="/docs/development-guide" />}>
+                  개발 가이드 보기
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="publisher-panel animate-fade-up delay-6">
+              <CardContent className="p-4">
+                <p className="publisher-eyebrow">Before Upload</p>
+                <div className="mt-4 space-y-3">
+                  <DocCheck title="앱 이름과 설명 정리" />
+                  <DocCheck title="필요 권한과 Bridge API 확인" />
+                  <DocCheck title=".unionapp 빌드 파일 생성" />
+                  <DocCheck title="릴리즈 노트 작성" />
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
         </div>
 
-        <Card className="animate-fade-up delay-4 border-border/60">
+        <Card className="publisher-panel animate-fade-up delay-7">
           <CardHeader>
             <CardTitle className="text-heading-3">시작하기</CardTitle>
           </CardHeader>
@@ -86,6 +134,37 @@ export default function DocsPage() {
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
+
+function FlowStep({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof Terminal;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-lg bg-muted/25 p-3">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card">
+        <Icon className="h-4 w-4 text-union" />
+      </div>
+      <div>
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function DocCheck({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <CheckCircle2 className="h-4 w-4 text-sage" />
+      <span>{title}</span>
     </div>
   );
 }
