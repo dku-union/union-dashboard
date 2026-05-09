@@ -26,6 +26,10 @@ import {
   Loader2,
   Plus,
   Package,
+  AppWindow,
+  ClipboardCheck,
+  FileCheck2,
+  ShieldCheck,
 } from "lucide-react";
 
 type FlowStep = "select-app" | "version-info" | "uploading" | "done";
@@ -60,6 +64,7 @@ export default function UploadPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedApp = apps.find((item) => String(item.id) === selectedAppId) ?? null;
   const currentFlowStep = flowStep === "version-info" && !selectedApp ? "select-app" : flowStep;
+  const canUpload = !!buildFile && !!versionNumber && /^\d+\.\d+\.\d+$/.test(versionNumber);
 
   const handleSelectExistingApp = (appId: string | null) => {
     if (!appId) return;
@@ -128,34 +133,42 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4 animate-fade-up">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 shrink-0"
-          onClick={() => router.push(`/workspace/${workspaceId}`)}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h1 className="heading-display text-2xl tracking-tight">미니앱 업로드</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {workspace?.name}
-          </p>
-          <div className="h-0.5 w-8 bg-union mt-3" />
+    <div className="publisher-page">
+      <div className="publisher-page-header animate-fade-up">
+        <div className="flex min-w-0 items-start gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mt-1 h-8 w-8 shrink-0"
+            onClick={() => router.push(`/workspace/${workspaceId}`)}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="min-w-0">
+            <p className="publisher-eyebrow">Release Preparation</p>
+            <h1 className="mt-1 text-heading-1">미니앱 업로드</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+              앱 등록, 버전 정보, 빌드 업로드를 순서대로 완료한 뒤 테스트와 심사 요청으로 이어갑니다.
+            </p>
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-card/80 px-2.5 py-1 text-xs text-muted-foreground">
+              <Package className="h-3.5 w-3.5" />
+              {workspace?.name}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Step 1: 미니앱 선택 / 생성 */}
-      {currentFlowStep === "select-app" && (
-        <div className="space-y-4 animate-fade-up delay-1">
-          <Card className="border-border/60">
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="space-y-4">
+          <StepRail currentStep={currentFlowStep} />
+
+          {currentFlowStep === "select-app" && (
+            <div className="space-y-4 animate-fade-up delay-1">
+              <Card className="publisher-panel">
             <CardHeader>
-              <CardTitle className="heading-display text-lg">미니앱 선택</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                기존 미니앱에 새 버전을 업로드하거나, 새 미니앱을 등록하세요.
+              <CardTitle className="text-lg font-semibold">미니앱 선택</CardTitle>
+              <p className="text-sm leading-6 text-muted-foreground">
+                기존 앱에 새 버전을 올리거나, 출시 준비를 위해 새 앱을 먼저 등록하세요.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -188,28 +201,28 @@ export default function UploadPage() {
               {!isNewApp ? (
                 <Button
                   variant="outline"
-                  className="w-full border-dashed border-border/60"
+                  className="h-11 w-full border-dashed border-border/70"
                   onClick={() => setIsNewApp(true)}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   새 미니앱 등록
                 </Button>
               ) : (
-                <div className="space-y-3 rounded-lg border border-border/60 p-4">
+                <div className="space-y-4 rounded-lg border border-border/70 bg-muted/20 p-4">
                   <div>
-                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">앱 이름</Label>
+                    <Label className="publisher-eyebrow">앱 이름</Label>
                     <Input
                       placeholder="미니앱 이름"
-                      className="mt-1.5 border-border/60"
+                      className="mt-1.5 border-border/60 bg-card"
                       value={newAppName}
                       onChange={(e) => setNewAppName(e.target.value)}
                     />
                   </div>
                   <div>
-                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">설명 (선택)</Label>
+                    <Label className="publisher-eyebrow">설명 (선택)</Label>
                     <Textarea
                       placeholder="미니앱에 대한 간단한 설명"
-                      className="mt-1.5 border-border/60 min-h-[80px]"
+                      className="mt-1.5 min-h-[96px] border-border/60 bg-card"
                       value={newAppDescription}
                       onChange={(e) => setNewAppDescription(e.target.value)}
                     />
@@ -238,46 +251,45 @@ export default function UploadPage() {
                 </div>
               )}
             </CardContent>
-          </Card>
+              </Card>
 
-          {selectedApp && !isNewApp && (
-            <div className="flex justify-end">
-              <Button
-                className="bg-union text-white hover:bg-union/90"
-                onClick={handleNextToVersion}
-              >
-                다음
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Step 2: 버전 정보 + 파일 선택 */}
-      {currentFlowStep === "version-info" && selectedApp && (
-        <div className="space-y-4 animate-fade-up delay-1">
-          {rejectedVersion && (
-            <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-              반려된 v{rejectedVersion}을(를) 수정한 새 버전을 업로드합니다.
+              {selectedApp && !isNewApp && (
+                <div className="flex justify-end">
+                  <Button
+                    className="bg-union text-white hover:bg-union/90"
+                    onClick={handleNextToVersion}
+                  >
+                    다음
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Package className="h-4 w-4" />
-            <span className="font-medium text-foreground">{selectedApp.name}</span>
-            에 새 버전 업로드
-          </div>
+          {currentFlowStep === "version-info" && selectedApp && (
+            <div className="space-y-4 animate-fade-up delay-1">
+              {rejectedVersion && (
+                <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                  반려된 v{rejectedVersion}을(를) 수정한 새 버전을 업로드합니다.
+                </div>
+              )}
 
-          <Card className="border-border/60">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Package className="h-4 w-4" />
+                <span className="font-medium text-foreground">{selectedApp.name}</span>
+                에 새 버전 업로드
+              </div>
+
+          <Card className="publisher-panel">
             <CardHeader>
-              <CardTitle className="heading-display text-lg">버전 정보</CardTitle>
+              <CardTitle className="text-lg font-semibold">버전 정보</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">버전</Label>
+                <Label className="publisher-eyebrow">버전</Label>
                 <Input
                   placeholder="1.0.0"
-                  className="mt-1.5 border-border/60 font-mono"
+                  className="mt-1.5 border-border/60 bg-card font-mono"
                   value={versionNumber}
                   onChange={(e) => setVersionNumber(e.target.value)}
                 />
@@ -287,17 +299,17 @@ export default function UploadPage() {
               </div>
 
               <div>
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">릴리즈 노트 (선택)</Label>
+                <Label className="publisher-eyebrow">릴리즈 노트 (선택)</Label>
                 <Textarea
                   placeholder="이번 버전에서 변경된 내용을 작성해주세요"
-                  className="mt-1.5 min-h-[100px] border-border/60"
+                  className="mt-1.5 min-h-[112px] border-border/60 bg-card"
                   value={releaseNotes}
                   onChange={(e) => setReleaseNotes(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">빌드 파일</Label>
+                <Label className="publisher-eyebrow">빌드 파일</Label>
                 <p className="text-[11px] text-muted-foreground/60 mb-3 mt-1">
                   .unionapp 형식의 빌드 파일을 업로드해주세요
                 </p>
@@ -328,8 +340,8 @@ export default function UploadPage() {
                     </Button>
                   </div>
                 ) : (
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/60 p-8 hover:border-union/30 hover:bg-union/5 transition-colors">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 mb-3">
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/60 bg-muted/20 p-8 transition-colors hover:border-union/30 hover:bg-union/5">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-card mb-3">
                       <Upload className="h-6 w-6 text-muted-foreground/50" />
                     </div>
                     <span className="text-sm text-muted-foreground">
@@ -367,21 +379,20 @@ export default function UploadPage() {
             </Button>
             <Button
               className="bg-union text-white hover:bg-union/90"
-              disabled={!buildFile || !versionNumber || !/^\d+\.\d+\.\d+$/.test(versionNumber)}
+              disabled={!canUpload}
               onClick={handleUpload}
             >
               <Upload className="mr-2 h-4 w-4" />
               업로드
             </Button>
           </div>
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* Step 3: 업로드 중 */}
-      {currentFlowStep === "uploading" && (
-        <Card className="border-border/60 animate-fade-up">
+          {currentFlowStep === "uploading" && (
+        <Card className="publisher-panel animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-union/10">
+            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-union/10">
               <Loader2 className="h-8 w-8 text-union animate-spin" />
             </div>
             <div className="text-center">
@@ -399,13 +410,12 @@ export default function UploadPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+          )}
 
-      {/* Step 4: 완료 */}
-      {currentFlowStep === "done" && (
-        <Card className="border-border/60 animate-fade-up">
+          {currentFlowStep === "done" && (
+        <Card className="publisher-panel animate-fade-up">
           <CardContent className="py-12 flex flex-col items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-sage/10">
+            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-sage/10">
               <CheckCircle className="h-8 w-8 text-sage" />
             </div>
             <div className="text-center">
@@ -437,7 +447,76 @@ export default function UploadPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+          )}
+        </div>
+
+        <aside className="space-y-4">
+          <Card className="publisher-panel animate-fade-up delay-2">
+            <CardContent className="p-4">
+              <p className="publisher-eyebrow">Selected App</p>
+              <div className="mt-3 flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-muted/50">
+                  <AppWindow className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{selectedApp?.name ?? "앱 선택 전"}</p>
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
+                    {selectedApp?.description || "업로드할 미니앱을 선택하거나 새로 등록하세요."}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="publisher-panel animate-fade-up delay-3">
+            <CardContent className="p-4">
+              <p className="publisher-eyebrow">Review Readiness</p>
+              <div className="mt-4 space-y-3">
+                <ChecklistItem
+                  done={!!selectedApp}
+                  icon={AppWindow}
+                  title="앱 등록"
+                  description="심사 대상 미니앱이 선택되어야 합니다."
+                />
+                <ChecklistItem
+                  done={/^\d+\.\d+\.\d+$/.test(versionNumber)}
+                  icon={FileCheck2}
+                  title="버전 형식"
+                  description="x.y.z 형식의 버전 번호를 사용합니다."
+                />
+                <ChecklistItem
+                  done={!!buildFile}
+                  icon={FileArchive}
+                  title="빌드 파일"
+                  description=".unionapp 파일을 50MB 이하로 업로드합니다."
+                />
+                <ChecklistItem
+                  done={currentFlowStep === "done"}
+                  icon={ClipboardCheck}
+                  title="다음 단계"
+                  description="업로드 완료 후 테스트와 심사 요청을 진행합니다."
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="publisher-panel animate-fade-up delay-4">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sage/10">
+                  <ShieldCheck className="h-4 w-4 text-sage" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">출시 준비 기준</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    앱 이름은 직관적으로, 릴리즈 노트는 변경 사항 중심으로 작성하면 심사 대응이 쉬워집니다.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 }
@@ -448,4 +527,70 @@ function incrementPatchVersion(version: string) {
     return "1.0.0";
   }
   return `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
+}
+
+function StepRail({ currentStep }: { currentStep: FlowStep }) {
+  const steps = [
+    { id: "select-app", label: "앱 선택", icon: AppWindow },
+    { id: "version-info", label: "버전 정보", icon: FileCheck2 },
+    { id: "uploading", label: "업로드", icon: Upload },
+    { id: "done", label: "완료", icon: CheckCircle },
+  ] satisfies { id: FlowStep; label: string; icon: typeof AppWindow }[];
+  const currentIndex = steps.findIndex((step) => step.id === currentStep);
+
+  return (
+    <div className="publisher-panel rounded-lg p-3">
+      <div className="grid gap-2 sm:grid-cols-4">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          const active = index === currentIndex;
+          const done = index < currentIndex;
+
+          return (
+            <div
+              key={step.id}
+              className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs ${
+                active
+                  ? "bg-union/10 text-union"
+                  : done
+                    ? "bg-sage/10 text-sage"
+                    : "bg-muted/25 text-muted-foreground"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" />
+              <span className="font-medium">{step.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ChecklistItem({
+  done,
+  icon: Icon,
+  title,
+  description,
+}: {
+  done: boolean;
+  icon: typeof AppWindow;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex gap-3">
+      <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${done ? "bg-sage/10" : "bg-muted/40"}`}>
+        {done ? (
+          <CheckCircle className="h-3.5 w-3.5 text-sage" />
+        ) : (
+          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+        )}
+      </div>
+      <div>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
 }

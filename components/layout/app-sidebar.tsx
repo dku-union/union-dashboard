@@ -60,7 +60,7 @@ export function AppSidebar() {
           <SidebarMenuButton
             render={<Link href={item.href} />}
             isActive={isActive(item.href)}
-            className="group relative h-8 transition-colors duration-100"
+            className="group relative h-9 rounded-lg px-2 transition-colors duration-100 data-[active=true]:bg-sidebar-accent"
           >
             <item.icon
               className={`h-[15px] w-[15px] shrink-0 transition-colors ${
@@ -85,24 +85,24 @@ export function AppSidebar() {
   );
 
   return (
-    <Sidebar>
-      {/* Header — h-14 to align with DashboardHeader */}
-      <SidebarHeader className="h-14 px-4 flex items-center border-b border-sidebar-border" style={{ flexDirection: "row" }}>
+    <Sidebar className="border-r border-sidebar-border/80">
+      <SidebarHeader className="h-16 px-4 flex items-center border-b border-sidebar-border/80 bg-sidebar" style={{ flexDirection: "row" }}>
         <div className="flex items-center gap-2.5">
-          <Image src="/logo.svg" alt="Union" width={26} height={26} className="shrink-0" />
+          <div className="flex size-9 items-center justify-center rounded-lg border border-sidebar-border bg-background/70">
+            <Image src="/logo.svg" alt="Union" width={22} height={22} className="shrink-0" />
+          </div>
           <div>
-            <p className="text-[13px] font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
-              Union
+            <p className="text-[13px] font-semibold text-sidebar-accent-foreground leading-none">
+              Union Console
             </p>
-            <p className="text-[10px] text-sidebar-foreground/60 tracking-[0.1em] uppercase mt-[3px]">
-              Publisher
+            <p className="text-[10px] text-sidebar-foreground/60 tracking-[0.08em] uppercase mt-1">
+              Publisher Center
             </p>
           </div>
         </div>
       </SidebarHeader>
 
-      {/* Content */}
-      <SidebarContent className="pt-2 gap-0">
+      <SidebarContent className="gap-0 pt-3">
         <SidebarGroup className="px-2 py-1">
           <SidebarGroupContent>
             {renderMenu(navItems)}
@@ -128,14 +128,14 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer */}
       <SidebarFooter className="px-2 pb-4">
         <SidebarSeparator className="mx-0 mb-1" />
         {renderMenu(bottomItems)}
-        <div className="px-2 pt-3">
-          <span className="text-[10px] text-sidebar-foreground/40 tabular-nums">
-            v1.0.0
-          </span>
+        <div className="mx-2 mt-3 rounded-lg border border-sidebar-border/70 bg-sidebar-accent/35 px-3 py-2">
+          <p className="text-[11px] font-medium text-sidebar-accent-foreground">배포 준비</p>
+          <p className="mt-1 text-[10px] leading-4 text-sidebar-foreground/65">
+            테스트 완료 후 심사를 요청하고 승인된 버전을 배포하세요.
+          </p>
         </div>
       </SidebarFooter>
     </Sidebar>

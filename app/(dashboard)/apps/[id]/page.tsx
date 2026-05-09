@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AlertTriangle, AppWindow, History, Upload, QrCode, CheckCircle, Rocket, Send } from "lucide-react";
+import { AlertTriangle, AppWindow, CalendarDays, CheckCircle, History, QrCode, Rocket, Send, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Review } from "@/types/app-version";
@@ -90,19 +90,19 @@ export default function AppDetailPage({
   };
 
   return (
-    <div className="space-y-6">
-      {/* 상단 헤더 */}
-      <div className="flex items-start justify-between animate-fade-up">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted/60 border border-border/40">
+    <div className="publisher-page">
+      <div className="publisher-page-header animate-fade-up">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted/60 border border-border/60">
             <AppWindow className="h-8 w-8 text-muted-foreground" />
           </div>
-          <div>
-            <h1 className="heading-display text-2xl tracking-tight">{app.name}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
+          <div className="min-w-0">
+            <p className="publisher-eyebrow">Mini App Detail</p>
+            <h1 className="mt-1 truncate text-heading-1">{app.name}</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
               {app.description || "설명 없음"}
             </p>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <MiniAppStatusBadge status={app.status} />
               <span className="text-xs text-muted-foreground">
                 {app.workspaceName}
@@ -110,7 +110,7 @@ export default function AppDetailPage({
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2">
           <Button variant="outline" size="sm" className="border-border/60" render={<Link href={`/apps/${id}/versions`} />}>
             <History className="mr-1 h-4 w-4" />
             버전 이력
@@ -130,48 +130,64 @@ export default function AppDetailPage({
         </div>
       </div>
 
-      {/* 기본 정보 카드 */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="animate-fade-up delay-1 border-border/60">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_420px]">
+        <Card className="publisher-panel animate-fade-up delay-1">
           <CardHeader>
-            <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">기본 정보</CardTitle>
+            <CardTitle className="publisher-eyebrow">기본 정보</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">워크스페이스</p>
-              <div className="flex items-center gap-2">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-lg border border-border/60 bg-muted/25 p-3">
+                <p className="publisher-eyebrow">워크스페이스</p>
+                <div className="mt-2 flex items-center gap-2">
                 <span
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: app.workspaceColor }}
                 />
                 <p className="text-sm font-medium">{app.workspaceName}</p>
+                </div>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-muted/25 p-3">
+                <p className="publisher-eyebrow">앱 상태</p>
+                <div className="mt-2">
+                  <MiniAppStatusBadge status={app.status} />
+                </div>
               </div>
             </div>
-            <Separator className="bg-border/60" />
             <div>
-              <p className="text-xs text-muted-foreground mb-1">설명</p>
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="publisher-eyebrow mb-2">설명</p>
+              <p className="text-sm leading-6 whitespace-pre-wrap">
                 {app.description || "설명 없음"}
               </p>
             </div>
             <Separator className="bg-border/60" />
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">등록일</p>
-                <p className="text-sm font-mono">{new Date(app.createdAt).toLocaleDateString("ko-KR")}</p>
+                <p className="publisher-eyebrow mb-1">등록일</p>
+                <p className="flex items-center gap-1.5 text-sm font-mono">
+                  <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+                  {new Date(app.createdAt).toLocaleDateString("ko-KR")}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">최종 수정일</p>
-                <p className="text-sm font-mono">{new Date(app.updatedAt).toLocaleDateString("ko-KR")}</p>
+                <p className="publisher-eyebrow mb-1">최종 수정일</p>
+                <p className="flex items-center gap-1.5 text-sm font-mono">
+                  <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+                  {new Date(app.updatedAt).toLocaleDateString("ko-KR")}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* 최근 버전 이력 */}
-        <Card className="animate-fade-up delay-2 border-border/60">
+        <Card className="publisher-panel animate-fade-up delay-2">
           <CardHeader>
-            <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">최근 버전</CardTitle>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="publisher-eyebrow">최근 버전</CardTitle>
+              <Button variant="outline" size="sm" className="border-border/70" render={<Link href={`/apps/${id}/versions`} />}>
+                전체 보기
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {versionsLoading ? (
@@ -190,16 +206,16 @@ export default function AppDetailPage({
                   const rejection = rejectedReviewByVersionId.get(v.id);
 
                   return (
-                    <div key={v.id} className="space-y-2 py-1.5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                    <div key={v.id} className="publisher-row space-y-3 p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2">
                           <span className="text-sm font-mono font-medium">v{v.versionNumber}</span>
                           <VersionStatusBadge status={v.status} />
                           {v.testedAt && (
                             <CheckCircle className="h-3 w-3 text-sage" />
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
                           {v.status === "UPLOADED" && (
                             <>
                               <Button
