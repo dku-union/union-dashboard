@@ -114,6 +114,15 @@ export const miniApps = pgTable("mini_apps", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const miniAppUsages = pgTable("mini_app_usages", {
+  id: bigint("id", { mode: "number" }).primaryKey().generatedByDefaultAsIdentity(),
+  miniAppId: bigint("mini_app_id", { mode: "number" })
+    .notNull()
+    .references(() => miniApps.id),
+  timestamp: timestamp("timestamp").notNull(),
+  userId: uuid("user_id").notNull(),
+});
+
 export const appVersions = pgTable("app_versions", {
   id: uuid("id").primaryKey().defaultRandom(),
   miniAppId: bigint("mini_app_id", { mode: "number" })
@@ -156,4 +165,3 @@ export const notifications = pgTable("notifications", {
   referenceId: varchar("reference_id", { length: 50 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
-
