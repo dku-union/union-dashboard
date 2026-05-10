@@ -74,6 +74,11 @@ export default function VersionsPage({
   }
 
   const latestVersion = versions[0];
+  const untestedVersion = versions.find((v) => v.status === "UPLOADED" && !v.testedAt);
+  const reviewReadyVersion = versions.find((v) => v.status === "UPLOADED" && v.testedAt);
+  const acceptedVersion = versions.find((v) => v.status === "ACCEPTED");
+  const inReviewCount = versions.filter((v) => v.status === "IN_REVIEW").length;
+  const deployedCount = versions.filter((v) => v.status === "DEPLOYED").length;
   const latestRejection =
     latestVersion?.status === "REJECTED"
       ? rejectedReviewByVersionId.get(latestVersion.id)
@@ -85,6 +90,15 @@ export default function VersionsPage({
     }
     return `/workspace/${app.workspaceId}/upload?${params.toString()}`;
   };
+  const nextAction = getNextReleaseAction({
+    hasVersions: versions.length > 0,
+    latestRejected: !!latestRejection,
+    hasUntested: !!untestedVersion,
+    hasReviewReady: !!reviewReadyVersion,
+    inReviewCount,
+    hasAccepted: !!acceptedVersion,
+    deployedCount,
+  });
 
   return (
     <div className="publisher-page">
@@ -112,6 +126,56 @@ export default function VersionsPage({
           {latestRejection ? "수정 버전 업로드" : "새 버전 업로드"}
         </Button>
       </div>
+
+      <Card className="publisher-panel animate-fade-up delay-1">
+        <CardContent className="p-4 sm:p-5">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-center">
+            <div>
+              <p className="publisher-eyebrow">Release Flow</p>
+              <h2 className="mt-1 text-lg font-semibold">다음 출시 작업</h2>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                {nextAction.description}
+              </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-5">
+                {[
+                  { label: "업로드", active: versions.length > 0 },
+                  { label: "QR 테스트", active: versions.some((v) => v.testedAt) },
+                  { label: "심사", active: inReviewCount > 0 || versions.some((v) => v.status === "ACCEPTED" || v.status === "REJECTED" || v.status === "DEPLOYED") },
+                  { label: "승인", active: versions.some((v) => v.status === "ACCEPTED" || v.status === "DEPLOYED") },
+                  { label: "배포", active: deployedCount > 0 },
+                ].map((step, index) => (
+                  <div
+                    key={step.label}
+                    className={`rounded-md border px-3 py-2 text-xs ${
+                      step.active
+                        ? "border-union/30 bg-union/10 text-union"
+                        : "border-border/60 bg-muted/20 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="font-mono text-[10px]">0{index + 1}</span>
+                    <p className="mt-1 font-medium">{step.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
+              <p className="text-sm font-semibold">{nextAction.title}</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">{nextAction.detail}</p>
+              <Button
+                size="sm"
+                className="mt-4 w-full bg-union text-white hover:bg-union/90"
+                variant={nextAction.variant}
+                render={nextAction.href ? <Link href={nextAction.href} /> : undefined}
+                onClick={nextAction.onClick}
+                disabled={nextAction.disabled}
+              >
+                {nextAction.icon}
+                {nextAction.label}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="publisher-panel animate-fade-up delay-1">
         <CardHeader>
@@ -249,4 +313,115 @@ export default function VersionsPage({
       />
     </div>
   );
+
+  function getNextReleaseAction({
+    hasVersions,
+    latestRejected,
+    hasUntested,
+    hasReviewReady,
+    inReviewCount,
+    hasAccepted,
+    deployedCount,
+  }: {
+    hasVersions: boolean;
+    latestRejected: boolean;
+    hasUntested: boolean;
+    hasReviewReady: boolean;
+    inReviewCount: number;
+    hasAccepted: boolean;
+    deployedCount: number;
+  }) {
+    if (!hasVersions) {
+      return {
+        title: "첫 버전 업로드 필요",
+        description: "아직 등록된 버전이 없습니다. 빌드 파일을 올리면 테스트와 심사 요청을 진행할 수 있습니다.",
+        detail: "앱 버전은 .unionapp 빌드와 버전 번호를 기준으로 관리됩니다.",
+        label: "버전 업로드",
+        href: uploadHref(),
+        icon: <Upload className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    if (latestRejected) {
+      return {
+        title: "반려 대응 필요",
+        description: "최근 버전이 반려되었습니다. 반려 사유를 확인하고 수정 버전을 업로드해야 합니다.",
+        detail: "반려된 버전 번호를 기준으로 다음 패치 버전이 자동 제안됩니다.",
+        label: "수정 버전 업로드",
+        href: uploadHref(latestRejection?.versionNumber),
+        icon: <Upload className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    if (hasUntested && untestedVersion) {
+      return {
+        title: "QR 테스트 필요",
+        description: "업로드는 완료됐지만 아직 테스트 완료 이력이 없습니다. QR 테스트 후 심사 요청이 활성화됩니다.",
+        detail: `v${untestedVersion.versionNumber} 테스트 링크를 발급하세요.`,
+        label: "QR 테스트",
+        onClick: () =>
+          setTestModalVersion({
+            id: untestedVersion.id,
+            versionNumber: untestedVersion.versionNumber,
+          }),
+        icon: <QrCode className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    if (hasReviewReady && reviewReadyVersion) {
+      return {
+        title: "심사 요청 가능",
+        description: "테스트가 완료된 버전이 있습니다. 심사 요청을 보내면 관리자 검토 대기열로 이동합니다.",
+        detail: `v${reviewReadyVersion.versionNumber} 버전을 심사 요청할 수 있습니다.`,
+        label: isSubmitting ? "요청 중" : "심사 요청",
+        onClick: async () => {
+          const result = await submitReview(reviewReadyVersion.id);
+          if (result) refetchVersions();
+        },
+        disabled: isSubmitting,
+        icon: <Send className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    if (inReviewCount > 0) {
+      return {
+        title: "심사 진행 중",
+        description: "관리자 검토가 진행 중입니다. 승인되면 배포 버튼이 활성화됩니다.",
+        detail: `${inReviewCount}개 버전이 심사 대기 또는 검토 중입니다.`,
+        label: "심사 현황 보기",
+        href: "/reviews",
+        icon: <Send className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    if (hasAccepted && acceptedVersion) {
+      return {
+        title: "배포 가능",
+        description: "승인된 버전이 있습니다. 배포하면 슈퍼앱 사용자에게 공개됩니다.",
+        detail: `v${acceptedVersion.versionNumber} 버전을 배포할 수 있습니다.`,
+        label: deployingVersionId === acceptedVersion.id ? "배포 중" : "배포",
+        onClick: async () => {
+          const result = await deployVersion(acceptedVersion.id);
+          if (result) {
+            refetchVersions();
+            refetchApp();
+          }
+        },
+        disabled: deployingVersionId === acceptedVersion.id,
+        icon: <Rocket className="mr-1 h-3.5 w-3.5" />,
+        variant: "default" as const,
+      };
+    }
+    return {
+      title: deployedCount > 0 ? "운영 중" : "추가 버전 준비",
+      description: deployedCount > 0
+        ? "배포된 버전이 운영 중입니다. 변경 사항이 있으면 새 버전을 업로드하세요."
+        : "현재 바로 처리할 출시 작업은 없습니다. 다음 변경 사항이 준비되면 새 버전을 업로드하세요.",
+      detail: deployedCount > 0 ? `${deployedCount}개 버전이 배포 이력에 있습니다.` : "버전 이력에서 기존 제출 내역을 확인할 수 있습니다.",
+      label: "새 버전 업로드",
+      href: uploadHref(),
+      icon: <Upload className="mr-1 h-3.5 w-3.5" />,
+      variant: "default" as const,
+    };
+  }
 }

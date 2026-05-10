@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { springFetch } from "@/lib/spring/client";
 import { createVersionSchema } from "@/lib/validations";
 import type { CreateVersionResponse, AppVersion } from "@/types/app-version";
+import { canWriteAppVersion, getMiniAppMembership } from "@/lib/app-versions/access";
 
 // 버전 생성 (DRAFT + GCS 업로드 URL 반환)
 export async function POST(request: Request) {
@@ -16,6 +17,14 @@ export async function POST(request: Request) {
     const parsed = createVersionSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "입력값이 올바르지 않습니다." }, { status: 400 });
+    }
+
+    const membership = await getMiniAppMembership(parsed.data.miniAppId, session.id);
+    if (!membership) {
+      return NextResponse.json({ error: "앱 접근 권한이 없습니다." }, { status: 403 });
+    }
+    if (!canWriteAppVersion(membership.role)) {
+      return NextResponse.json({ error: "버전 업로드 권한이 없습니다." }, { status: 403 });
     }
 
     const result = await springFetch<CreateVersionResponse>("/app-versions", session, {
@@ -48,6 +57,16 @@ export async function GET(request: Request) {
   }
 
   try {
+    const numericMiniAppId = Number(miniAppId);
+    if (!Number.isInteger(numericMiniAppId) || numericMiniAppId <= 0) {
+      return NextResponse.json({ error: "miniAppId가 올바르지 않습니다." }, { status: 400 });
+    }
+
+    const membership = await getMiniAppMembership(numericMiniAppId, session.id);
+    if (!membership) {
+      return NextResponse.json({ error: "앱 접근 권한이 없습니다." }, { status: 403 });
+    }
+
     const result = await springFetch<AppVersion[]>(
       `/app-versions/mini-app/${miniAppId}`,
       session,

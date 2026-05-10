@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { springFetch } from "@/lib/spring/client";
+import { canWriteAppVersion, getVersionMembership } from "@/lib/app-versions/access";
 
 interface TestSessionResponse {
   testLink: string;
@@ -18,6 +19,16 @@ export async function POST(
   const { id } = await params;
 
   try {
+    if (session.role !== "ROLE_ADMIN") {
+      const membership = await getVersionMembership(id, session.id);
+      if (!membership) {
+        return NextResponse.json({ error: "Version access is not allowed." }, { status: 403 });
+      }
+      if (!canWriteAppVersion(membership.role)) {
+        return NextResponse.json({ error: "Test session permission is required." }, { status: 403 });
+      }
+    }
+
     const result = await springFetch<TestSessionResponse>(
       `/app-versions/${id}/test-session`,
       session,

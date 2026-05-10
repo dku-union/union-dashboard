@@ -133,7 +133,7 @@ export default function DashboardHome() {
           <CardContent className="space-y-2">
             {quickActions.map((action) => (
               <Button
-                key={action.href}
+                key={`${action.href}-${action.label}`}
                 variant="ghost"
                 className="publisher-row group h-auto w-full justify-start p-3 text-left"
                 render={<Link href={action.href} />}

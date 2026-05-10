@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { springFetch } from "@/lib/spring/client";
 import type { AppVersion } from "@/types/app-version";
+import { getVersionMembership } from "@/lib/app-versions/access";
 
 export async function GET(
   _request: Request,
@@ -15,6 +16,11 @@ export async function GET(
   const { id } = await params;
 
   try {
+    const membership = await getVersionMembership(id, session.id);
+    if (!membership) {
+      return NextResponse.json({ error: "버전 접근 권한이 없습니다." }, { status: 403 });
+    }
+
     const result = await springFetch<AppVersion>(`/app-versions/${id}`, session);
 
     if ("error" in result) {

@@ -54,7 +54,12 @@ export async function PATCH(
     const [target] = await db
       .select({ role: workspaceMembers.role })
       .from(workspaceMembers)
-      .where(eq(workspaceMembers.id, Number(memberId)))
+      .where(
+        and(
+          eq(workspaceMembers.id, Number(memberId)),
+          eq(workspaceMembers.workspaceId, workspaceId),
+        ),
+      )
       .limit(1);
 
     if (!target) {
@@ -68,7 +73,12 @@ export async function PATCH(
     const [updated] = await db
       .update(workspaceMembers)
       .set({ role: parsed.data.role })
-      .where(eq(workspaceMembers.id, Number(memberId)))
+      .where(
+        and(
+          eq(workspaceMembers.id, Number(memberId)),
+          eq(workspaceMembers.workspaceId, workspaceId),
+        ),
+      )
       .returning();
 
     return NextResponse.json({
@@ -101,7 +111,12 @@ export async function DELETE(
     const [target] = await db
       .select({ role: workspaceMembers.role })
       .from(workspaceMembers)
-      .where(eq(workspaceMembers.id, Number(memberId)))
+      .where(
+        and(
+          eq(workspaceMembers.id, Number(memberId)),
+          eq(workspaceMembers.workspaceId, workspaceId),
+        ),
+      )
       .limit(1);
 
     if (!target) {
@@ -114,7 +129,12 @@ export async function DELETE(
 
     await db
       .delete(workspaceMembers)
-      .where(eq(workspaceMembers.id, Number(memberId)));
+      .where(
+        and(
+          eq(workspaceMembers.id, Number(memberId)),
+          eq(workspaceMembers.workspaceId, workspaceId),
+        ),
+      );
 
     return NextResponse.json({ success: true });
   } catch (error) {
