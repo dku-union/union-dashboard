@@ -83,13 +83,13 @@ export function LandingFaqCta() {
                   >
                     Union으로
                     <br />
-                    캠퍼스 아이디어를
+                    미니앱 출시를
                     <br />
                     시작하세요
                   </h2>
                   <p className="mt-5 max-w-md text-sm leading-7 text-white/50 sm:text-base">
-                    학생에게 필요한 공지, 참여, 운영 경험을 더 빠르게 출시하고 검증할 수 있습니다.
-                    지금 계정을 만들고 퍼블리셔 대시보드에서 다음 단계를 이어가세요.
+                    워크스페이스에서 앱을 등록하고, 빌드 업로드와 심사 요청,
+                    승인 후 배포까지 퍼블리셔 대시보드에서 이어가세요.
                   </p>
                 </div>
 
@@ -162,7 +162,7 @@ export function LandingFaqCta() {
               <ul className="space-y-3">
                 {[
                   { label: "서비스 소개", href: "#service" },
-                  { label: "사용 방법", href: "#how-it-works" },
+                  { label: "출시 흐름", href: "#how-it-works" },
                   { label: "미니앱 카탈로그", href: "#miniapps" },
                   { label: "활용 사례", href: "#use-cases" },
                 ].map((item) => (
@@ -181,9 +181,9 @@ export function LandingFaqCta() {
               <ul className="space-y-3">
                 {[
                   { label: "FAQ", href: "#faq" },
-                  { label: "개발 가이드", href: "#" },
-                  { label: "API 문서", href: "#" },
-                  { label: "SDK 레퍼런스", href: "#" },
+                  { label: "개발 가이드", href: "/docs/development-guide" },
+                  { label: "Bridge API", href: "/docs/bridge-api" },
+                  { label: "디자인 가이드", href: "/docs/design-guidelines" },
                 ].map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className="text-[13px] text-[#6B6D6B] transition-all duration-200 hover:text-[#262725] hover:translate-x-1 inline-block">

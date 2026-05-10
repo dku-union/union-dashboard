@@ -37,12 +37,12 @@ export function LandingHowItWorks() {
                 className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
                 style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)", wordBreak: "keep-all" }}
               >
-                아이디어만 있으면{" "}
-                <span className="text-[#E83A33]">바로 출시</span>할 수 있어요
+                개발부터 배포까지{" "}
+                <span className="text-[#E83A33]">흐름이 보입니다</span>
               </h2>
               <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
-                기존 앱스토어의 복잡한 절차 대신, Union에서는 훨씬 가벼운
-                운영 흐름으로 서비스를 시작할 수 있습니다.
+                Union은 막연한 랜딩 페이지가 아니라, 퍼블리셔가 실제로 사용하는
+                워크스페이스와 업로드, 심사, 배포 콘솔로 이어집니다.
               </p>
             </Reveal>
 
@@ -51,11 +51,11 @@ export function LandingHowItWorks() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#FDE8E7] to-white" />
                 <div className="relative flex flex-col items-center gap-4 text-center">
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FDE8E7] border border-[#E83A33]/15">
-                    <span className="text-2xl">🚀</span>
+                    <span className="text-sm font-bold text-[#E83A33]">APP</span>
                   </div>
-                  <p className="text-sm font-medium text-[#6B6D6B]">아이디어에서 출시까지, 단 3일</p>
+                  <p className="text-sm font-medium text-[#6B6D6B]">워크스페이스에서 슈퍼앱 배포까지</p>
                   <div className="flex items-center gap-3 mt-2">
-                    {["기획", "개발", "배포"].map((step, i) => (
+                    {["개발", "테스트", "심사"].map((step, i) => (
                       <div key={step} className="flex items-center gap-3">
                         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FDE8E7] text-xs font-bold text-[#E83A33]">
                           {i + 1}

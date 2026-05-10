@@ -4,8 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { Highlight } from "@/components/ui/highlight";
 import {
-  Bell, BarChart3, Rocket, Users, Globe, Code2,
-  CheckCircle, Zap,
+  Bell, BarChart3, Code2, FileCheck2, ListChecks, Users,
 } from "lucide-react";
 
 function Reveal({
@@ -26,21 +25,21 @@ function Reveal({
 
 function BentoCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`group rounded-xl border border-[#DCE4F2] bg-white shadow-sm overflow-hidden h-full hover:shadow-md hover:border-[#E83A33]/30 transition-all duration-300 ${className}`}>
+    <div className={`group rounded-lg border border-[#DCE4F2] bg-white overflow-hidden h-full transition-colors duration-300 hover:border-[#C6D1E2] ${className}`}>
       {children}
     </div>
   );
 }
 
 const NOTIFS = [
-  { title: "동아리 모집 마감 D-1",     time: "방금 전", unread: true },
-  { title: "새 공지: 학생회 투표 시작", time: "3분 전",  unread: false },
-  { title: "신청이 승인되었습니다",     time: "12분 전", unread: false },
+  { title: "v1.2.0 심사 요청 완료", time: "방금 전", unread: true },
+  { title: "테스트 링크가 발급되었습니다", time: "3분 전", unread: false },
+  { title: "반려 사유가 등록되었습니다", time: "12분 전", unread: false },
 ] as const;
 
 const CHART_BARS = [35, 52, 40, 68, 55, 78, 70, 88, 82, 95, 90, 100] as const;
 
-const UNIS = ["단국대", "연세대", "고려대", "성균관대", "한양대", "+45개"] as const;
+const RELEASE_STEPS = ["업로드", "테스트", "심사", "승인", "배포"] as const;
 
 const AVATARS = [
   { initial: "P", bg: "#E83A33" },
@@ -64,15 +63,15 @@ export function LandingFeatureBento() {
             className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
             style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)" }}
           >
-            퍼블리셔를 위한
+            출시와 운영을 위한
             <br />
             <span className="text-[#8E908E]">
-              모든 것이 <Highlight>여기에.</Highlight>
+              콘솔 흐름이 <Highlight>여기에.</Highlight>
             </span>
           </h2>
           <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
-            아이디어 기획부터 배포, 분석, 운영까지—
-            Union 대시보드 하나로 전부 해결됩니다.
+            워크스페이스, 빌드 업로드, 테스트, 심사, 배포 상태를
+            퍼블리셔 대시보드에서 끊기지 않게 이어갑니다.
           </p>
         </Reveal>
 
@@ -84,31 +83,29 @@ export function LandingFeatureBento() {
             <BentoCard className="p-7 sm:p-9 min-h-[280px]">
               <div className="flex flex-col sm:flex-row sm:gap-10 h-full">
                 <div className="flex-1">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
                     <Bell className="h-5 w-5" />
                   </div>
                   <h3 className="heading-display text-xl sm:text-2xl font-bold text-[#262725]">
-                    실시간 푸시 알림
+                    심사와 버전 알림
                   </h3>
                   <p className="mt-2.5 text-[13px] sm:text-sm text-[#6B6D6B] leading-relaxed max-w-[260px]">
-                    중요 공지와 이벤트를 구독 중인 학생에게 즉각 전달하세요.
-                    열람률을 추적할 수 있습니다.
+                    테스트 링크 발급, 심사 결과, 반려 사유처럼 퍼블리셔가
+                    바로 대응해야 하는 상태를 놓치지 않게 보여줍니다.
                   </p>
-                  <div className="mt-5 flex items-center gap-2 flex-wrap">
-                    <div className="flex items-center gap-1.5 rounded-full bg-[#FDE8E7] px-3 py-1.5">
-                      <CheckCircle className="h-3 w-3 text-[#E83A33]" />
-                      <span className="text-[11px] text-[#E83A33] font-medium">열람률 추적</span>
+                  <div className="mt-5 grid grid-cols-2 gap-2">
+                    <div className="border-l-2 border-[#E83A33] bg-[#FFF7F6] px-3 py-2">
+                      <span className="text-[11px] text-[#E83A33] font-medium">상태 추적</span>
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-[#EDF2FA] px-3 py-1.5">
-                      <Zap className="h-3 w-3 text-[#6B6D6B]" />
-                      <span className="text-[11px] text-[#6B6D6B] font-medium">즉시 발송</span>
+                    <div className="border-l-2 border-[#C6D1E2] bg-[#F7FAFE] px-3 py-2">
+                      <span className="text-[11px] text-[#6B6D6B] font-medium">대응 안내</span>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 sm:mt-0 sm:flex-1 sm:max-w-[260px]">
                   <div className="space-y-2">
                     {NOTIFS.map((n, i) => (
-                      <div key={i} className="flex items-center gap-3 rounded-xl bg-[#EDF2FA] px-4 py-3">
+                      <div key={i} className="flex items-center gap-3 rounded-lg border border-[#DCE4F2] bg-[#F7FAFE] px-4 py-3">
                         <div className={`h-2 w-2 shrink-0 rounded-full ${n.unread ? "bg-[#E83A33]" : "bg-[#DCE4F2]"}`} />
                         <span className="text-[12px] text-[#4A4C4A] flex-1 truncate">{n.title}</span>
                         <span className="text-[11px] text-[#8E908E] shrink-0">{n.time}</span>
@@ -124,11 +121,11 @@ export function LandingFeatureBento() {
           <Reveal className="lg:col-span-5" delay={0.10} y={24}>
             <BentoCard className="p-7 min-h-[280px]">
               <div className="flex flex-col h-full">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
                   <BarChart3 className="h-5 w-5" />
                 </div>
-                <h3 className="heading-display text-xl font-bold text-[#262725]">성장 분석 대시보드</h3>
-                <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">사용자 행동과 전환율을 실시간으로 추적하세요.</p>
+                <h3 className="heading-display text-xl font-bold text-[#262725]">운영 분석 대시보드</h3>
+                <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">출시 이후 앱 사용 흐름과 리텐션을 확인합니다.</p>
                 <div className="mt-5 flex-1 flex flex-col justify-end">
                   <div className="flex items-end gap-[3px] h-20">
                     {CHART_BARS.map((h, i) => (
@@ -146,12 +143,12 @@ export function LandingFeatureBento() {
                   </div>
                   <div className="mt-1 h-px bg-[#DCE4F2]" />
                   <div className="mt-4 grid grid-cols-2 gap-2.5">
-                    <div className="rounded-xl bg-[#EDF2FA] px-4 py-3">
-                      <p className="text-[10px] text-[#8E908E] uppercase tracking-wide">주간 방문</p>
+                    <div className="rounded-lg border border-[#DCE4F2] bg-[#F7FAFE] px-4 py-3">
+                      <p className="text-[10px] text-[#8E908E] uppercase tracking-wide">주간 사용</p>
                       <p className="mt-1 text-xl font-bold text-[#262725]">12,840</p>
                       <p className="mt-0.5 text-[11px] text-[#E83A33]">↑ 18.4%</p>
                     </div>
-                    <div className="rounded-xl bg-[#EDF2FA] px-4 py-3">
+                    <div className="rounded-lg border border-[#DCE4F2] bg-[#F7FAFE] px-4 py-3">
                       <p className="text-[10px] text-[#8E908E] uppercase tracking-wide">전환율</p>
                       <p className="mt-1 text-xl font-bold text-[#262725]">7.2%</p>
                       <p className="mt-0.5 text-[11px] text-[#E83A33]">↑ 2.1%</p>
@@ -165,14 +162,14 @@ export function LandingFeatureBento() {
           {/* ③ Quick Deploy (4 cols) */}
           <Reveal className="lg:col-span-4" delay={0.15} y={24}>
             <BentoCard className="p-7 min-h-[220px]">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
-                <Rocket className="h-5 w-5" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
+                <FileCheck2 className="h-5 w-5" />
               </div>
-              <h3 className="heading-display text-xl font-bold text-[#262725]">앱스토어 없이 배포</h3>
-              <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">심사 없이 즉시 모든 Union 사용자에게 배포됩니다.</p>
+              <h3 className="heading-display text-xl font-bold text-[#262725]">승인 후 배포</h3>
+              <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">테스트와 심사를 거친 버전을 슈퍼앱에 배포합니다.</p>
               <div className="mt-5">
-                <p className="font-black leading-none tracking-tighter text-[#E83A33]" style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)" }}>3일</p>
-                <p className="mt-1.5 text-[12px] text-[#8E908E]">평균 아이디어 → 출시</p>
+                <p className="font-black leading-none tracking-tighter text-[#E83A33]" style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)" }}>4단계</p>
+                <p className="mt-1.5 text-[12px] text-[#8E908E]">업로드 → 테스트 → 심사 → 배포</p>
               </div>
             </BentoCard>
           </Reveal>
@@ -180,7 +177,7 @@ export function LandingFeatureBento() {
           {/* ④ Team (3 cols) */}
           <Reveal className="lg:col-span-3" delay={0.20} y={24}>
             <BentoCard className="p-7 min-h-[220px]">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
                 <Users className="h-5 w-5" />
               </div>
               <h3 className="heading-display text-lg font-bold text-[#262725]">팀 협업</h3>
@@ -205,20 +202,20 @@ export function LandingFeatureBento() {
           {/* ⑤ Global Reach (5 cols) */}
           <Reveal className="lg:col-span-5" delay={0.25} y={24}>
             <BentoCard className="p-7 min-h-[220px]">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
-                <Globe className="h-5 w-5" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
+                <ListChecks className="h-5 w-5" />
               </div>
-              <h3 className="heading-display text-xl font-bold text-[#262725]">전국 대학 동시 도달</h3>
-              <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">한 번의 배포로 50개 이상 파트너 대학 학생 전체에 전달됩니다.</p>
+              <h3 className="heading-display text-xl font-bold text-[#262725]">릴리즈 단계 관리</h3>
+              <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">앱별 버전이 지금 어느 단계에 있는지 한눈에 확인합니다.</p>
               <div className="mt-5 flex flex-wrap gap-1.5">
-                {UNIS.map((name, i) => (
+                {RELEASE_STEPS.map((name, i) => (
                   <span
                     key={i}
-                    className="rounded-full border px-2.5 py-1 text-[11px] font-medium"
+                    className="rounded-md border px-2.5 py-1 text-[11px] font-medium"
                     style={{
-                      borderColor: i === 5 ? "#E83A33" : "#DCE4F2",
-                      color: i === 5 ? "#E83A33" : "#6B6D6B",
-                      background: i === 5 ? "#FDE8E7" : "transparent",
+                      borderColor: i >= 3 ? "#E83A33" : "#DCE4F2",
+                      color: i >= 3 ? "#E83A33" : "#6B6D6B",
+                      background: i >= 3 ? "#FDE8E7" : "transparent",
                     }}
                   >
                     {name}
@@ -233,21 +230,21 @@ export function LandingFeatureBento() {
             <BentoCard className="p-7 sm:p-9">
               <div className="flex flex-col lg:flex-row lg:items-center lg:gap-14">
                 <div className="flex-1">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDE8E7] text-[#E83A33] mb-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
                     <Code2 className="h-5 w-5" />
                   </div>
                   <h3 className="heading-display text-2xl font-bold text-[#262725]">Bridge SDK로 네이티브 기능까지</h3>
                   <p className="mt-2.5 text-sm text-[#6B6D6B] leading-relaxed max-w-md">
-                    카메라, 위치, 저장소 등 iOS 네이티브 기능을 Bridge SDK를 통해 웹앱에서
-                    그대로 사용하세요. React 컴포넌트처럼 간결하게 통합됩니다.
+                    카메라, 위치, 저장소 등 슈퍼앱 브릿지 기능을 SDK로 호출하고,
+                    콘솔에서 빌드 파일을 업로드해 테스트와 심사를 진행합니다.
                   </p>
                 </div>
                 {/* Code snippet — dark inset */}
-                <div className="mt-6 lg:mt-0 flex-1 max-w-lg rounded-xl bg-[#262725] p-5 overflow-hidden">
+                <div className="mt-6 lg:mt-0 flex-1 max-w-lg rounded-lg bg-[#262725] p-5 overflow-hidden">
                   <div className="flex items-center gap-1.5 mb-4">
-                    <div className="h-2.5 w-2.5 rounded-full bg-white/[0.15]" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-white/[0.15]" />
-                    <div className="h-2.5 w-2.5 rounded-full bg-white/[0.15]" />
+                    <div className="h-2 w-2 rounded-sm bg-white/[0.16]" />
+                    <div className="h-2 w-2 rounded-sm bg-white/[0.16]" />
+                    <div className="h-2 w-2 rounded-sm bg-white/[0.16]" />
                     <span className="ml-2 text-[11px] text-white/40 font-mono">camera.ts</span>
                   </div>
                   <div className="font-mono text-[12px] leading-[1.75] overflow-x-auto">
@@ -255,7 +252,7 @@ export function LandingFeatureBento() {
                       <span className="text-[#EF6560]">import</span>
                       <span className="text-white/60">{" { union } "}</span>
                       <span className="text-[#EF6560]">from</span>
-                      <span className="text-[#EF6560]">{" '@union/sdk'"}</span>
+                      <span className="text-[#EF6560]">{" '@union-miniapp/sdk'"}</span>
                     </p>
                     <p className="mt-3 text-white/40">{"// 카메라 접근 — 한 줄로"}</p>
                     <p>

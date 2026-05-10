@@ -8,10 +8,12 @@ import { Highlight } from "@/components/ui/highlight";
 import { HeroMosaicCanvas } from "@/components/landing/hero-rocket-canvas";
 
 const TICKER = [
-  "대학생 미니앱 플랫폼", "·", "UNION", "·",
-  "PUBLISHER PLATFORM",   "·", "200,000+ 대학생", "·",
-  "50+ 미니앱",           "·", "300+ 연결 대학",  "·",
+  "UNION MINIAPP PLATFORM", "·", "PUBLISHER CONSOLE", "·",
+  "SDK BUILD",              "·", "QR TEST",           "·",
+  "REVIEW",                 "·", "DEPLOY",            "·",
 ];
+
+const MOBILE_FLOW_STEPS = ["빌드 업로드", "QR 테스트", "심사 요청", "승인 후 배포"] as const;
 
 /* ── Hero Section ─────────────────────────────────────────── */
 
@@ -26,16 +28,6 @@ export function LandingHero() {
         style={{
           backgroundImage: "radial-gradient(circle, #B0B2B0 0.5px, transparent 0.5px)",
           backgroundSize: "32px 32px",
-        }}
-      />
-
-      {/* Top-right decorative wash */}
-      <div
-        className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full pointer-events-none"
-        aria-hidden
-        style={{
-          background: "radial-gradient(circle, rgba(232,58,51,0.06) 0%, transparent 60%)",
-          filter: "blur(80px)",
         }}
       />
 
@@ -75,11 +67,10 @@ export function LandingHero() {
             className="flex items-center gap-2.5 mb-8"
           >
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E83A33] opacity-55" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E83A33]" />
             </span>
             <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-[#6B6D6B]">
-              대학생 전용 미니앱 플랫폼
+              Union Publisher Platform
             </p>
           </motion.div>
 
@@ -91,11 +82,11 @@ export function LandingHero() {
             className="heading-display font-extrabold leading-[1.04] tracking-tight text-[#262725]"
             style={{ fontSize: "clamp(2.8rem, 6vw, 5.5rem)" }}
           >
-            내 아이디어가
+            캠퍼스 서비스를
             <br />
-            <Highlight>200,000명의</Highlight>
+            <Highlight>미니앱으로</Highlight>
             <br />
-            대학생에게 닿는 방법
+            출시하는 콘솔
           </motion.h1>
 
           {/* Description */}
@@ -105,9 +96,9 @@ export function LandingHero() {
             transition={{ duration: 0.65, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 max-w-lg text-base leading-relaxed text-[#6B6D6B] sm:text-lg"
           >
-            Union에서 미니앱을 출시하고,
+            SDK로 개발한 미니앱을 업로드하고,
             <br />
-            전국 대학생들에게 내 서비스를 선보이세요.
+            테스트·심사·배포까지 하나의 흐름으로 관리하세요.
           </motion.p>
 
           {/* CTA */}
@@ -127,13 +118,37 @@ export function LandingHero() {
               지금 시작하기
             </Link>
             <a
-              href="#service"
+              href="#how-it-works"
               className="inline-flex h-12 items-center justify-center rounded-xl
                          border border-[#DCE4F2] bg-white px-8 text-sm font-medium text-[#6B6D6B]
                          transition-all hover:border-[#B0B2B0] hover:text-[#262725]"
             >
-              서비스 알아보기
+              출시 흐름 보기
             </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.62 }}
+            className="mt-8 rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm backdrop-blur lg:hidden"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#E83A33]">
+                Release Flow
+              </p>
+              <span className="rounded-full bg-[#FDE8E7] px-2.5 py-1 text-[11px] font-medium text-[#E83A33]">
+                4단계
+              </span>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {MOBILE_FLOW_STEPS.map((step, i) => (
+                <div key={step} className="rounded-xl border border-[#DCE4F2] bg-[#EDF2FA] px-3 py-2.5">
+                  <p className="text-[10px] font-medium text-[#8E908E]">0{i + 1}</p>
+                  <p className="mt-1 text-[12px] font-semibold text-[#262725]">{step}</p>
+                </div>
+              ))}
+            </div>
           </motion.div>
 
           {/* Stats */}
@@ -141,17 +156,20 @@ export function LandingHero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-16 flex flex-wrap gap-x-12 gap-y-6"
+            className="mt-10 grid grid-cols-3 gap-3 sm:mt-16 sm:flex sm:flex-wrap sm:gap-x-12 sm:gap-y-6"
           >
             {landingStats.map((stat, i) => (
               <div
                 key={stat.label}
-                className={i > 0 ? "border-l border-[#DCE4F2] pl-12" : undefined}
+                className={cn(
+                  "rounded-xl border border-[#DCE4F2] bg-white/55 px-3 py-3 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0",
+                  i > 0 && "sm:border-l sm:border-[#DCE4F2] sm:pl-12"
+                )}
               >
-                <p className="heading-display text-3xl font-bold text-[#262725] sm:text-4xl">
+                <p className="heading-display text-xl font-bold leading-tight text-[#262725] sm:text-4xl">
                   {stat.value}
                 </p>
-                <p className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#8E908E]">
+                <p className="mt-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-[#8E908E] sm:text-[10px] sm:tracking-[0.2em]">
                   {stat.label}
                 </p>
               </div>
@@ -159,7 +177,7 @@ export function LandingHero() {
           </motion.div>
         </div>
 
-        {/* Right: Geometric Mosaic + Rocket */}
+        {/* Right: Geometric Mosaic */}
         <div
           className="hidden lg:flex items-center justify-center flex-shrink-0"
           style={{ overflow: "visible" }}
