@@ -31,6 +31,8 @@ import {
   FileCheck2,
   ShieldCheck,
 } from "lucide-react";
+import { toast } from "sonner";
+import type { AppVersion } from "@/types/app-version";
 
 type FlowStep = "select-app" | "version-info" | "uploading" | "done";
 
@@ -61,10 +63,13 @@ export default function UploadPage() {
   );
   const [releaseNotes, setReleaseNotes] = useState("");
   const [buildFile, setBuildFile] = useState<File | null>(null);
+  const [uploadedVersion, setUploadedVersion] = useState<AppVersion | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedApp = apps.find((item) => String(item.id) === selectedAppId) ?? null;
   const currentFlowStep = flowStep === "version-info" && !selectedApp ? "select-app" : flowStep;
   const canUpload = !!buildFile && !!versionNumber && /^\d+\.\d+\.\d+$/.test(versionNumber);
+  const myRole = workspace?.myRole;
+  const canUploadInWorkspace = myRole === "owner" || myRole === "admin" || myRole === "developer";
 
   const handleSelectExistingApp = (appId: string | null) => {
     if (!appId) return;
@@ -108,6 +113,7 @@ export default function UploadPage() {
     });
 
     if (result) {
+      setUploadedVersion(result);
       setFlowStep("done");
     } else {
       setFlowStep("version-info");
@@ -117,7 +123,14 @@ export default function UploadPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.name.toLowerCase().endsWith(".unionapp")) {
+        toast.error(".unionapp 형식의 빌드 파일만 업로드할 수 있습니다.");
+        e.target.value = "";
+        return;
+      }
       if (file.size > 50 * 1024 * 1024) {
+        toast.error("빌드 파일은 최대 50MB까지 업로드할 수 있습니다.");
+        e.target.value = "";
         return;
       }
       setBuildFile(file);
@@ -128,6 +141,57 @@ export default function UploadPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!workspace) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-20">
+        <p className="text-sm text-muted-foreground">워크스페이스를 찾을 수 없습니다.</p>
+        <Button variant="outline" onClick={() => router.push("/workspace")}>
+          워크스페이스로 돌아가기
+        </Button>
+      </div>
+    );
+  }
+
+  if (!canUploadInWorkspace) {
+    return (
+      <div className="publisher-page">
+        <div className="publisher-page-header animate-fade-up">
+          <div className="flex min-w-0 items-start gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="mt-1 h-8 w-8 shrink-0"
+              onClick={() => router.push(`/workspace/${workspaceId}`)}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0">
+              <p className="publisher-eyebrow">Permission Required</p>
+              <h1 className="mt-1 text-heading-1">업로드 권한이 없습니다</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                미니앱 등록과 버전 업로드는 소유자, 관리자, 개발자 권한에서만 가능합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+        <Card className="publisher-panel">
+          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+            <ShieldCheck className="h-8 w-8 text-muted-foreground" />
+            <div>
+              <p className="text-sm font-semibold">현재 역할: {myRole ?? "알 수 없음"}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                업로드가 필요하면 워크스페이스 관리자에게 권한 변경을 요청하세요.
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => router.push(`/workspace/${workspaceId}`)}>
+              워크스페이스로 돌아가기
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -431,6 +495,7 @@ export default function UploadPage() {
                 onClick={() => {
                   resetUpload();
                   setBuildFile(null);
+                  setUploadedVersion(null);
                   setVersionNumber("1.0.0");
                   setReleaseNotes("");
                   setFlowStep("version-info");
@@ -440,9 +505,15 @@ export default function UploadPage() {
               </Button>
               <Button
                 className="bg-union text-white hover:bg-union/90"
-                onClick={() => router.push(`/workspace/${workspaceId}`)}
+                onClick={() => {
+                  if (uploadedVersion?.miniAppId) {
+                    router.push(`/apps/${uploadedVersion.miniAppId}/versions`);
+                    return;
+                  }
+                  router.push(`/workspace/${workspaceId}`);
+                }}
               >
-                워크스페이스로 돌아가기
+                테스트·심사로 이동
               </Button>
             </div>
           </CardContent>
