@@ -1,6 +1,11 @@
 import { getSession } from "@/lib/auth/session";
+import type { SessionPayload } from "@/lib/auth/jwt";
 
-export async function requireAdminSession() {
+type AdminSessionResult =
+  | { error: string; status: 401 | 403 }
+  | { session: SessionPayload };
+
+export async function requireAdminSession(): Promise<AdminSessionResult> {
   const session = await getSession();
 
   if (!session) {
