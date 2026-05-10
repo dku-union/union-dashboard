@@ -10,6 +10,18 @@ import type {
   Review,
 } from "@/types/app-version";
 
+interface ApiErrorPayload {
+  error?: string;
+  requestId?: string;
+}
+
+function apiErrorMessage(payload: ApiErrorPayload, fallback: string) {
+  const message = payload.error || fallback;
+  if (!payload.requestId) return message;
+
+  return `${message} 요청 ID: ${payload.requestId.slice(0, 8)}`;
+}
+
 // 내 전체 미니앱 조회 (모든 워크스페이스)
 export function useMyMiniApps() {
   const [apps, setApps] = useState<MiniAppWithWorkspace[]>([]);
@@ -177,7 +189,7 @@ export function useTestSession() {
         );
         const data = await res.json();
         if (!res.ok) {
-          toast.error(data.error || "테스트 링크를 발급하지 못했습니다.");
+          toast.error(apiErrorMessage(data, "테스트 링크를 발급하지 못했습니다."));
           return null;
         }
         return data.testLink as string;
@@ -220,7 +232,7 @@ export function useUploadVersion() {
       });
       const createData = await createRes.json();
       if (!createRes.ok) {
-        throw new Error(createData.error || "버전 생성에 실패했습니다.");
+        throw new Error(apiErrorMessage(createData, "버전 생성에 실패했습니다."));
       }
       const { versionId: vid, uploadUrl } = createData as CreateVersionResponse;
       setVersionId(vid);
@@ -236,7 +248,7 @@ export function useUploadVersion() {
       });
       const confirmData = await confirmRes.json();
       if (!confirmRes.ok) {
-        throw new Error(confirmData.error || "업로드 확인에 실패했습니다.");
+        throw new Error(apiErrorMessage(confirmData, "업로드 확인에 실패했습니다."));
       }
 
       setStep("done");
@@ -273,7 +285,7 @@ export function useSubmitReview() {
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || "심사 요청에 실패했습니다.");
+        toast.error(apiErrorMessage(data, "심사 요청에 실패했습니다."));
         return null;
       }
       toast.success("심사가 요청되었습니다.");
@@ -301,7 +313,7 @@ export function useDeployVersion() {
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || "배포에 실패했습니다.");
+        toast.error(apiErrorMessage(data, "배포에 실패했습니다."));
         return null;
       }
       toast.success("미니앱이 배포되었습니다.");
