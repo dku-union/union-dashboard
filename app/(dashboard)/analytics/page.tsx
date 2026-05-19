@@ -90,6 +90,7 @@ export default function AnalyticsPage() {
           <Select
             value={selectedWorkspaceId}
             onValueChange={(value) => {
+              if (!value) return;
               setWorkspaceId(value);
               setMiniAppId("all");
             }}
@@ -108,7 +109,10 @@ export default function AnalyticsPage() {
 
           <Select
             value={String(miniAppId)}
-            onValueChange={(value) => setMiniAppId(value === "all" ? "all" : Number(value))}
+            onValueChange={(value) => {
+              if (!value) return;
+              setMiniAppId(value === "all" ? "all" : Number(value));
+            }}
           >
             <SelectTrigger className="min-w-44">
               <SelectValue />
@@ -123,7 +127,13 @@ export default function AnalyticsPage() {
             </SelectContent>
           </Select>
 
-          <Select value={range} onValueChange={(value) => setRange(value as AnalyticsRange)}>
+          <Select
+            value={range}
+            onValueChange={(value) => {
+              if (!value) return;
+              setRange(value as AnalyticsRange);
+            }}
+          >
             <SelectTrigger className="min-w-36">
               <SelectValue />
             </SelectTrigger>
