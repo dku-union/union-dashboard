@@ -187,6 +187,22 @@ export default function AppDetailPage({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
+          {canEditIcon && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-border/60"
+              disabled={isUploadingIcon}
+              onClick={() => iconInputRef.current?.click()}
+            >
+              {isUploadingIcon ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              ) : (
+                <ImagePlus className="mr-1 h-4 w-4" />
+              )}
+              {isUploadingIcon ? "아이콘 업로드 중..." : "아이콘 변경"}
+            </Button>
+          )}
           <Button variant="outline" size="sm" className="border-border/60" render={<Link href={`/apps/${id}/versions`} />}>
             <History className="mr-1 h-4 w-4" />
             버전 이력
