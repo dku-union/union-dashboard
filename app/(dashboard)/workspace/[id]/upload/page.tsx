@@ -159,6 +159,18 @@ export default function UploadPage() {
     if (!selectedApp || !buildFile || !versionNumber) return;
 
     setFlowStep("uploading");
+
+    // 아이콘이 함께 선택되어 있으면 빌드 업로드 전에 교체 (실패해도 빌드는 진행)
+    if (iconFile) {
+      const iconUrl = await uploadIcon(selectedApp.id, iconFile);
+      if (iconUrl) {
+        await refetchApps();
+        clearIconSelection();
+      } else {
+        toast.info("아이콘 교체는 실패했지만 빌드 업로드는 계속 진행합니다.");
+      }
+    }
+
     const result = await upload({
       miniAppId: selectedApp.id,
       versionNumber,
@@ -459,6 +471,79 @@ export default function UploadPage() {
                 <span className="font-medium text-foreground">{selectedApp.name}</span>
                 에 새 버전 업로드
               </div>
+
+          <Card className="publisher-panel">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">앱 아이콘 (선택)</CardTitle>
+              <p className="text-sm leading-6 text-muted-foreground">
+                이번 버전 업로드와 함께 아이콘을 교체할 수 있습니다. 선택하지 않으면 현재 아이콘이 유지됩니다.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-start gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-muted/40">
+                  {iconPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={iconPreview}
+                      alt="새 아이콘 미리보기"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : selectedApp.iconUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedApp.iconUrl}
+                      alt={`${selectedApp.name} 현재 아이콘`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <AppWindow className="h-7 w-7 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 space-y-2">
+                  {iconFile ? (
+                    <div className="flex items-center justify-between gap-2 rounded-lg border border-sage/20 bg-sage/5 px-3 py-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{iconFile.name}</p>
+                        <p className="font-mono text-[11px] text-muted-foreground">
+                          {(iconFile.size / 1024).toFixed(1)} KB · 새 아이콘으로 교체됨
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:text-union"
+                        onClick={clearIconSelection}
+                        disabled={isUploadingIcon}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm">
+                        {selectedApp.iconUrl ? "현재 아이콘 사용 중" : "등록된 아이콘 없음"}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground/70">
+                        PNG, JPG, WebP (최대 2MB)
+                      </p>
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border/60 bg-card px-3 py-1.5 text-xs transition-colors hover:border-union/30 hover:bg-union/5">
+                        <ImagePlus className="h-3.5 w-3.5" />
+                        아이콘 변경 선택
+                        <input
+                          ref={iconInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          onChange={handleIconChange}
+                        />
+                      </label>
+                    </>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card className="publisher-panel">
             <CardHeader>
