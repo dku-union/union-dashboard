@@ -18,6 +18,10 @@ const ALLOWED_CONTENT_TYPES = ["image/png", "image/jpeg", "image/webp"] as const
 const MAX_ICON_BYTES = 2 * 1024 * 1024;
 
 const bodySchema = z.object({
+  filename: z
+    .string()
+    .min(1, "파일명이 비어 있습니다.")
+    .max(255, "파일명이 너무 깁니다."),
   contentType: z.enum(ALLOWED_CONTENT_TYPES),
   contentLength: z
     .number()
@@ -98,12 +102,13 @@ export async function POST(
       );
     }
 
+    // Spring 측은 filename 만 사용. contentType/contentLength 는 dashboard 측 검증 용도.
     const result = await springFetch<IconUploadUrlSpringResponse>(
       `/mini-apps/${miniAppId}/icon/upload-url`,
       session,
       {
         method: "POST",
-        body: parsed.data,
+        body: { filename: parsed.data.filename },
       },
     );
 

@@ -403,6 +403,7 @@ export function useUploadMiniAppIcon() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              filename: file.name,
               contentType: file.type,
               contentLength: file.size,
             }),
