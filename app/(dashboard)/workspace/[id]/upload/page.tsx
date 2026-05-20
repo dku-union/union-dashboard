@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useWorkspace } from "@/hooks/use-workspaces";
-import { useMiniAppList, useCreateMiniApp, useUploadVersion } from "@/hooks/use-app-versions";
+import {
+  useCreateMiniApp,
+  useMiniAppList,
+  useUploadMiniAppIcon,
+  useUploadVersion,
+} from "@/hooks/use-app-versions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +34,7 @@ import {
   AppWindow,
   ClipboardCheck,
   FileCheck2,
+  ImagePlus,
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -48,6 +54,7 @@ export default function UploadPage() {
   const { apps, isLoading: appsLoading, refetch: refetchApps } = useMiniAppList(workspaceId);
   const { createMiniApp, isCreating } = useCreateMiniApp();
   const { upload, step: uploadStep, uploadProgress, reset: resetUpload } = useUploadVersion();
+  const { uploadIcon, step: iconStep } = useUploadMiniAppIcon();
 
   const [flowStep, setFlowStep] = useState<FlowStep>(preselectedMiniAppId ? "version-info" : "select-app");
   const [selectedAppId, setSelectedAppId] = useState<string | null>(preselectedMiniAppId);
@@ -56,6 +63,10 @@ export default function UploadPage() {
   // 새 미니앱 필드
   const [newAppName, setNewAppName] = useState("");
   const [newAppDescription, setNewAppDescription] = useState("");
+  const [iconFile, setIconFile] = useState<File | null>(null);
+  const [iconPreview, setIconPreview] = useState<string | null>(null);
+  const iconInputRef = useRef<HTMLInputElement>(null);
+  const isUploadingIcon = iconStep === "url" || iconStep === "uploading" || iconStep === "saving";
 
   // 버전 필드
   const [versionNumber, setVersionNumber] = useState(
@@ -80,19 +91,62 @@ export default function UploadPage() {
     }
   };
 
+  const clearIconSelection = () => {
+    setIconFile(null);
+    setIconPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    if (iconInputRef.current) iconInputRef.current.value = "";
+  };
+
+  useEffect(() => {
+    return () => {
+      if (iconPreview) URL.revokeObjectURL(iconPreview);
+    };
+  }, [iconPreview]);
+
+  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      toast.error("PNG, JPG, WebP 형식의 이미지만 업로드할 수 있습니다.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("아이콘은 최대 2MB까지 업로드할 수 있습니다.");
+      e.target.value = "";
+      return;
+    }
+    setIconFile(file);
+    setIconPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+  };
+
   const handleCreateNewApp = async () => {
-    if (!newAppName.trim()) return;
+    if (!newAppName.trim() || !iconFile) return;
     const app = await createMiniApp({
       name: newAppName,
       description: newAppDescription || undefined,
       workspaceId,
     });
-    if (app) {
-      setSelectedAppId(String(app.id));
-      setIsNewApp(false);
-      await refetchApps();
-      setFlowStep("version-info");
+    if (!app) return;
+
+    const iconUrl = await uploadIcon(app.id, iconFile);
+    if (!iconUrl) {
+      toast.error(
+        "앱은 등록되었으나 아이콘 업로드에 실패했습니다. 앱 상세에서 다시 시도해주세요.",
+      );
     }
+
+    setSelectedAppId(String(app.id));
+    setIsNewApp(false);
+    await refetchApps();
+    clearIconSelection();
+    setFlowStep("version-info");
   };
 
   const handleNextToVersion = () => {
@@ -291,25 +345,87 @@ export default function UploadPage() {
                       onChange={(e) => setNewAppDescription(e.target.value)}
                     />
                   </div>
+                  <div>
+                    <Label className="publisher-eyebrow">앱 아이콘</Label>
+                    <p className="text-[11px] text-muted-foreground/60 mb-2 mt-1">
+                      PNG, JPG, WebP (최대 2MB, 512x512 권장)
+                    </p>
+                    {iconFile && iconPreview ? (
+                      <div className="flex items-center gap-3 rounded-lg border border-sage/20 bg-sage/5 p-3">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={iconPreview}
+                          alt="아이콘 미리보기"
+                          className="h-12 w-12 rounded-md object-cover border border-border/60"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-medium truncate">{iconFile.name}</p>
+                            <CheckCircle className="h-3.5 w-3.5 text-sage shrink-0" />
+                          </div>
+                          <p className="text-[11px] text-muted-foreground font-mono">
+                            {(iconFile.size / 1024).toFixed(1)} KB
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="hover:text-union"
+                          onClick={clearIconSelection}
+                          disabled={isUploadingIcon}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border/60 bg-card p-6 transition-colors hover:border-union/30 hover:bg-union/5">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/40 mb-2">
+                          <ImagePlus className="h-6 w-6 text-muted-foreground/60" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          클릭하여 아이콘 업로드
+                        </span>
+                        <input
+                          ref={iconInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          onChange={handleIconChange}
+                        />
+                      </label>
+                    )}
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       className="border-border/60"
-                      onClick={() => setIsNewApp(false)}
+                      disabled={isCreating || isUploadingIcon}
+                      onClick={() => {
+                        setIsNewApp(false);
+                        clearIconSelection();
+                      }}
                     >
                       취소
                     </Button>
                     <Button
                       className="bg-union text-white hover:bg-union/90"
-                      disabled={!newAppName.trim() || isCreating}
+                      disabled={!newAppName.trim() || !iconFile || isCreating || isUploadingIcon}
                       onClick={handleCreateNewApp}
                     >
-                      {isCreating ? (
+                      {isCreating || isUploadingIcon ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
                         <Plus className="mr-2 h-4 w-4" />
                       )}
-                      등록
+                      {iconStep === "url"
+                        ? "URL 발급 중..."
+                        : iconStep === "uploading"
+                          ? "아이콘 업로드 중..."
+                          : iconStep === "saving"
+                            ? "아이콘 저장 중..."
+                            : isCreating
+                              ? "앱 등록 중..."
+                              : "등록"}
                     </Button>
                   </div>
                 </div>
@@ -526,13 +642,37 @@ export default function UploadPage() {
             <CardContent className="p-4">
               <p className="publisher-eyebrow">Selected App</p>
               <div className="mt-3 flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/70 bg-muted/50">
-                  <AppWindow className="h-5 w-5 text-muted-foreground" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/70 bg-muted/50">
+                  {selectedApp?.iconUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedApp.iconUrl}
+                      alt={`${selectedApp.name} 아이콘`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : isNewApp && iconPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={iconPreview}
+                      alt="아이콘 미리보기"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <AppWindow className="h-5 w-5 text-muted-foreground" />
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{selectedApp?.name ?? "앱 선택 전"}</p>
+                  <p className="truncate text-sm font-semibold">
+                    {selectedApp?.name ??
+                      (isNewApp && newAppName.trim()
+                        ? newAppName
+                        : "앱 선택 전")}
+                  </p>
                   <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                    {selectedApp?.description || "업로드할 미니앱을 선택하거나 새로 등록하세요."}
+                    {selectedApp?.description ||
+                      (isNewApp
+                        ? "등록 중인 새 미니앱"
+                        : "업로드할 미니앱을 선택하거나 새로 등록하세요.")}
                   </p>
                 </div>
               </div>
