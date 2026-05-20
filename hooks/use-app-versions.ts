@@ -358,11 +358,12 @@ function uploadToGCS(
   uploadUrl: string,
   file: File,
   onProgress: (percent: number) => void,
+  contentType: string = "application/octet-stream",
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", uploadUrl);
-    xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    xhr.setRequestHeader("Content-Type", contentType);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
@@ -382,4 +383,78 @@ function uploadToGCS(
     xhr.onerror = () => reject(new Error("네트워크 오류가 발생했습니다."));
     xhr.send(file);
   });
+}
+
+// 미니앱 아이콘 업로드 (URL 발급 → GCS PUT → 메타 저장)
+type IconUploadStep = "idle" | "url" | "uploading" | "saving" | "done" | "error";
+
+export function useUploadMiniAppIcon() {
+  const [step, setStep] = useState<IconUploadStep>("idle");
+  const [progress, setProgress] = useState(0);
+
+  const uploadIcon = useCallback(
+    async (miniAppId: number, file: File): Promise<string | null> => {
+      try {
+        setStep("url");
+        setProgress(0);
+        const urlRes = await fetch(
+          `/api/mini-apps/${miniAppId}/icon/upload-url`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              filename: file.name,
+              contentType: file.type,
+              contentLength: file.size,
+            }),
+          },
+        );
+        const urlData = await urlRes.json();
+        if (!urlRes.ok) {
+          throw new Error(
+            apiErrorMessage(urlData, "업로드 URL 발급에 실패했습니다."),
+          );
+        }
+        const { uploadUrl, iconUrl } = urlData as {
+          uploadUrl: string;
+          iconUrl: string;
+        };
+
+        setStep("uploading");
+        await uploadToGCS(uploadUrl, file, setProgress, file.type);
+
+        setStep("saving");
+        const saveRes = await fetch(`/api/mini-apps/${miniAppId}/icon`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ iconUrl }),
+        });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) {
+          throw new Error(
+            apiErrorMessage(saveData, "아이콘 저장에 실패했습니다."),
+          );
+        }
+
+        setStep("done");
+        return (saveData as { iconUrl: string }).iconUrl;
+      } catch (err) {
+        setStep("error");
+        const message =
+          err instanceof Error
+            ? err.message
+            : "아이콘 업로드 중 오류가 발생했습니다.";
+        toast.error(message);
+        return null;
+      }
+    },
+    [],
+  );
+
+  const reset = useCallback(() => {
+    setStep("idle");
+    setProgress(0);
+  }, []);
+
+  return { uploadIcon, step, progress, reset };
 }

@@ -1,13 +1,15 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useRef, useState } from "react";
 import {
+  useAppVersions,
   useDeployVersion,
   useMiniAppDetail,
-  useAppVersions,
   useMyReviews,
   useSubmitReview,
+  useUploadMiniAppIcon,
 } from "@/hooks/use-app-versions";
+import { useWorkspace } from "@/hooks/use-workspaces";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { VersionTestModal } from "@/components/apps/version-test-modal";
@@ -16,9 +18,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { AlertTriangle, AppWindow, CalendarDays, CheckCircle, History, QrCode, Rocket, Send, Upload } from "lucide-react";
+import {
+  AlertTriangle,
+  AppWindow,
+  CalendarDays,
+  CheckCircle,
+  History,
+  ImagePlus,
+  Loader2,
+  QrCode,
+  Rocket,
+  Send,
+  Upload,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import type { Review } from "@/types/app-version";
 
 const POLL_INTERVAL = 15_000;
@@ -36,6 +51,36 @@ export default function AppDetailPage({
   const { submitReview, isSubmitting } = useSubmitReview();
   const { deployVersion, deployingVersionId } = useDeployVersion();
   const { reviews } = useMyReviews();
+  const { workspace } = useWorkspace(app?.workspaceId ?? "");
+  const { uploadIcon, step: iconStep } = useUploadMiniAppIcon();
+  const iconInputRef = useRef<HTMLInputElement>(null);
+  const isUploadingIcon =
+    iconStep === "url" || iconStep === "uploading" || iconStep === "saving";
+  const canEditIcon =
+    workspace?.myRole === "owner" ||
+    workspace?.myRole === "admin" ||
+    workspace?.myRole === "developer";
+
+  const handleIconChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !app) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      toast.error("PNG, JPG, WebP 형식만 업로드할 수 있습니다.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("아이콘은 최대 2MB까지 업로드할 수 있습니다.");
+      return;
+    }
+    const url = await uploadIcon(app.id, file);
+    if (url) {
+      toast.success("아이콘이 변경되었습니다.");
+      refetchApp();
+    }
+  };
 
   const rejectedReviewByVersionId = new Map(
     reviews
@@ -93,9 +138,40 @@ export default function AppDetailPage({
     <div className="publisher-page">
       <div className="publisher-page-header animate-fade-up">
         <div className="flex min-w-0 items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted/60 border border-border/60">
-            <AppWindow className="h-8 w-8 text-muted-foreground" />
-          </div>
+          <button
+            type="button"
+            className="group relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/60 bg-muted/60 enabled:hover:border-union/40 disabled:cursor-default"
+            disabled={!canEditIcon || isUploadingIcon}
+            onClick={() => iconInputRef.current?.click()}
+            title={canEditIcon ? "아이콘 변경" : undefined}
+          >
+            {app.iconUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={app.iconUrl}
+                alt={`${app.name} 아이콘`}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <AppWindow className="h-8 w-8 text-muted-foreground" />
+            )}
+            {canEditIcon && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity group-hover:opacity-100">
+                {isUploadingIcon ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                ) : (
+                  <ImagePlus className="h-5 w-5 text-white" />
+                )}
+              </div>
+            )}
+          </button>
+          <input
+            ref={iconInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={handleIconChange}
+          />
           <div className="min-w-0">
             <p className="publisher-eyebrow">Mini App Detail</p>
             <h1 className="mt-1 truncate text-heading-1">{app.name}</h1>
@@ -111,6 +187,22 @@ export default function AppDetailPage({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
+          {canEditIcon && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-border/60"
+              disabled={isUploadingIcon}
+              onClick={() => iconInputRef.current?.click()}
+            >
+              {isUploadingIcon ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              ) : (
+                <ImagePlus className="mr-1 h-4 w-4" />
+              )}
+              {isUploadingIcon ? "아이콘 업로드 중..." : "아이콘 변경"}
+            </Button>
+          )}
           <Button variant="outline" size="sm" className="border-border/60" render={<Link href={`/apps/${id}/versions`} />}>
             <History className="mr-1 h-4 w-4" />
             버전 이력
