@@ -8,7 +8,6 @@ import {
   AlertCircle,
   AppWindow,
   ArrowLeft,
-  Info,
   Loader2,
   Save,
 } from "lucide-react";
@@ -22,11 +21,6 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
-// NOTE: Spring 측 PATCH /mini-apps/{id} (이름/설명 수정) endpoint 구현 대기 중.
-// 현재는 UI 프레임워크만 제공하며 저장 버튼은 비활성화 상태.
-// endpoint 가 추가되면 SAVE_DISABLED 를 false 로 바꾸고 handleSave 안에서
-// /api/mini-apps/{id} PATCH 호출 (BFF 라우트도 동일 시점에 활성화).
-const SAVE_DISABLED = true;
 
 export default function AppEditPage({
   params,
@@ -60,17 +54,16 @@ export default function AppEditPage({
     : false;
 
   const handleSave = async () => {
-    if (SAVE_DISABLED) {
-      toast.info("앱 정보 수정 API는 아직 백엔드 구현 대기 중입니다.");
-      return;
-    }
     if (!app || !isDirty) return;
     setIsSaving(true);
     try {
       const res = await fetch(`/api/mini-apps/${app.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() || null }),
+        body: JSON.stringify({
+          name: name.trim() !== app.name ? name.trim() : undefined,
+          description: description.trim() !== (app.description ?? "") ? (description.trim() || null) : undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -140,20 +133,6 @@ export default function AppEditPage({
         </div>
       </div>
 
-      {SAVE_DISABLED && (
-        <div className="flex items-start gap-3 rounded-lg border border-gold/30 bg-gold/5 p-4 animate-fade-up">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-          <div className="space-y-1">
-            <p className="text-sm font-semibold">백엔드 구현 대기 중</p>
-            <p className="text-xs leading-5 text-muted-foreground">
-              앱 이름/설명 수정 API(<code className="rounded bg-card px-1.5 py-0.5 font-mono text-[11px]">PATCH /mini-apps/&#123;id&#125;</code>)는 아직 구현되지 않아
-              저장 버튼이 비활성화되어 있습니다. Spring 측 endpoint 추가 후 활성화됩니다.
-              현재 가능한 변경은 <strong>아이콘 교체</strong>(앱 상세에서) 뿐입니다.
-            </p>
-          </div>
-        </div>
-      )}
-
       <Card className="publisher-panel animate-fade-up delay-1">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">기본 정보</CardTitle>
@@ -170,7 +149,6 @@ export default function AppEditPage({
               onChange={(e) => setName(e.target.value)}
               placeholder="앱 이름"
               maxLength={100}
-              disabled={SAVE_DISABLED}
             />
             <p className="mt-1 text-[11px] text-muted-foreground/60">
               앱 카탈로그에 노출되는 이름. 2~100자.
@@ -187,7 +165,6 @@ export default function AppEditPage({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="앱에 대한 간단한 설명"
               maxLength={2000}
-              disabled={SAVE_DISABLED}
             />
           </div>
         </CardContent>
@@ -207,9 +184,8 @@ export default function AppEditPage({
           </Button>
           <Button
             className="bg-union text-white hover:bg-union/90"
-            disabled={SAVE_DISABLED || !isDirty || !name.trim() || isSaving}
+            disabled={!isDirty || !name.trim() || isSaving}
             onClick={handleSave}
-            title={SAVE_DISABLED ? "백엔드 구현 대기 중" : undefined}
           >
             {isSaving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
