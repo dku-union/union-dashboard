@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import type {
   AppVersion,
   CreateVersionResponse,
+  MiniAppCategoryDto,
   MiniAppRecord,
   MiniAppWithWorkspace,
   Review,
@@ -98,6 +99,45 @@ export function useMiniAppList(workspaceId: string) {
   return { apps, isLoading, refetch: fetchApps };
 }
 
+// 미니앱 카테고리 목록 (활성만, Spring 측 permitAll)
+// 한 세션 동안 한 번만 fetch — 카테고리는 거의 안 변함.
+let cachedCategories: MiniAppCategoryDto[] | null = null;
+let inFlight: Promise<MiniAppCategoryDto[] | null> | null = null;
+
+export function useMiniAppCategories() {
+  const [categories, setCategories] = useState<MiniAppCategoryDto[]>(
+    cachedCategories ?? [],
+  );
+  const [isLoading, setIsLoading] = useState(!cachedCategories);
+
+  useEffect(() => {
+    if (cachedCategories) return;
+    const promise =
+      inFlight ??
+      (inFlight = (async () => {
+        try {
+          const res = await fetch("/api/mini-apps/categories");
+          if (!res.ok) return null;
+          const data = (await res.json()) as MiniAppCategoryDto[];
+          cachedCategories = data;
+          return data;
+        } catch {
+          return null;
+        } finally {
+          inFlight = null;
+        }
+      })());
+
+    promise.then((data) => {
+      if (data) setCategories(data);
+      else toast.error("카테고리 목록을 불러오지 못했습니다.");
+      setIsLoading(false);
+    });
+  }, []);
+
+  return { categories, isLoading };
+}
+
 // 미니앱 생성
 export function useCreateMiniApp() {
   const [isCreating, setIsCreating] = useState(false);
@@ -106,6 +146,9 @@ export function useCreateMiniApp() {
     name: string;
     description?: string;
     workspaceId: string;
+    categoryId: number;
+    keywords?: string[];
+    permissions?: string[];
   }) => {
     setIsCreating(true);
     try {
