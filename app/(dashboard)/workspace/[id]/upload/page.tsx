@@ -53,7 +53,7 @@ export default function UploadPage() {
   const { workspace, isLoading: wsLoading } = useWorkspace(workspaceId);
   const { apps, isLoading: appsLoading, refetch: refetchApps } = useMiniAppList(workspaceId);
   const { createMiniApp, isCreating } = useCreateMiniApp();
-  const { upload, step: uploadStep, uploadProgress, reset: resetUpload } = useUploadVersion();
+  const { upload, step: uploadStep, uploadProgress, didRetry, reset: resetUpload } = useUploadVersion();
   const { uploadIcon, step: iconStep } = useUploadMiniAppIcon();
 
   const [flowStep, setFlowStep] = useState<FlowStep>(preselectedMiniAppId ? "version-info" : "select-app");
@@ -663,7 +663,7 @@ export default function UploadPage() {
             <div className="text-center">
               <p className="text-sm font-semibold">
                 {uploadStep === "creating" && "버전 생성 중..."}
-                {uploadStep === "uploading" && "파일 업로드 중..."}
+                {uploadStep === "uploading" && (didRetry ? "재시도 중..." : "파일 업로드 중...")}
                 {uploadStep === "confirming" && "업로드 확인 중..."}
               </p>
               {uploadStep === "uploading" && (

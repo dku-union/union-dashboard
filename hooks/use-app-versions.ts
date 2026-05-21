@@ -211,6 +211,7 @@ export function useUploadVersion() {
   const [step, setStep] = useState<"idle" | "creating" | "uploading" | "confirming" | "done" | "error">("idle");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [versionId, setVersionId] = useState<string | null>(null);
+  const [didRetry, setDidRetry] = useState(false);
 
   const upload = async (data: {
     miniAppId: number;
@@ -221,6 +222,7 @@ export function useUploadVersion() {
     try {
       // Step 1: 버전 생성 + 업로드 URL 받기
       setStep("creating");
+      setDidRetry(false);
       const createRes = await fetch("/api/app-versions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -237,9 +239,27 @@ export function useUploadVersion() {
       const { versionId: vid, uploadUrl } = createData as CreateVersionResponse;
       setVersionId(vid);
 
-      // Step 2: GCS에 직접 업로드
+      // Step 2: GCS에 직접 업로드. 실패 시 signed URL 재발급 후 1회 자동 재시도.
       setStep("uploading");
-      await uploadToGCS(uploadUrl, data.file, setUploadProgress);
+      try {
+        await uploadToGCS(uploadUrl, data.file, setUploadProgress);
+      } catch (firstError) {
+        toast.info("업로드 실패. 잠시 후 자동 재시도합니다.");
+        setDidRetry(true);
+        setUploadProgress(0);
+        const refreshRes = await fetch(`/api/app-versions/${vid}/upload-url-refresh`, {
+          method: "POST",
+        });
+        const refreshData = await refreshRes.json();
+        if (!refreshRes.ok) {
+          // 재발급 자체가 실패하면 원래 에러 메시지 우선 노출
+          throw new Error(
+            apiErrorMessage(refreshData, firstError instanceof Error ? firstError.message : "업로드 URL 재발급에 실패했습니다."),
+          );
+        }
+        const { uploadUrl: refreshedUrl } = refreshData as CreateVersionResponse;
+        await uploadToGCS(refreshedUrl, data.file, setUploadProgress);
+      }
 
       // Step 3: 업로드 확인
       setStep("confirming");
@@ -266,9 +286,10 @@ export function useUploadVersion() {
     setStep("idle");
     setUploadProgress(0);
     setVersionId(null);
+    setDidRetry(false);
   };
 
-  return { upload, step, uploadProgress, versionId, reset };
+  return { upload, step, uploadProgress, versionId, didRetry, reset };
 }
 
 // 심사 요청 제출
