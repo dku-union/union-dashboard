@@ -5,10 +5,15 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useWorkspace } from "@/hooks/use-workspaces";
 import {
   useCreateMiniApp,
+  useMiniAppCategories,
   useMiniAppList,
   useUploadMiniAppIcon,
   useUploadVersion,
 } from "@/hooks/use-app-versions";
+import { KeywordInput } from "@/components/apps/keyword-input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PERMISSION_LABELS } from "@/lib/constants";
+import type { PermissionScope } from "@/types/app-version";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +60,7 @@ export default function UploadPage() {
   const { createMiniApp, isCreating } = useCreateMiniApp();
   const { upload, step: uploadStep, uploadProgress, didRetry, reset: resetUpload } = useUploadVersion();
   const { uploadIcon, step: iconStep } = useUploadMiniAppIcon();
+  const { categories, isLoading: categoriesLoading } = useMiniAppCategories();
 
   const [flowStep, setFlowStep] = useState<FlowStep>(preselectedMiniAppId ? "version-info" : "select-app");
   const [selectedAppId, setSelectedAppId] = useState<string | null>(preselectedMiniAppId);
@@ -63,6 +69,9 @@ export default function UploadPage() {
   // 새 미니앱 필드
   const [newAppName, setNewAppName] = useState("");
   const [newAppDescription, setNewAppDescription] = useState("");
+  const [newAppCategoryId, setNewAppCategoryId] = useState<number | null>(null);
+  const [newAppKeywords, setNewAppKeywords] = useState<string[]>([]);
+  const [newAppPermissions, setNewAppPermissions] = useState<PermissionScope[]>([]);
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
   const iconInputRef = useRef<HTMLInputElement>(null);
@@ -127,11 +136,14 @@ export default function UploadPage() {
   };
 
   const handleCreateNewApp = async () => {
-    if (!newAppName.trim() || !iconFile) return;
+    if (!newAppName.trim() || !iconFile || !newAppCategoryId) return;
     const app = await createMiniApp({
       name: newAppName,
       description: newAppDescription || undefined,
       workspaceId,
+      categoryId: newAppCategoryId,
+      keywords: newAppKeywords.length > 0 ? newAppKeywords : undefined,
+      permissions: newAppPermissions.length > 0 ? newAppPermissions : undefined,
     });
     if (!app) return;
 
@@ -146,7 +158,16 @@ export default function UploadPage() {
     setIsNewApp(false);
     await refetchApps();
     clearIconSelection();
+    setNewAppCategoryId(null);
+    setNewAppKeywords([]);
+    setNewAppPermissions([]);
     setFlowStep("version-info");
+  };
+
+  const togglePermission = (scope: PermissionScope, checked: boolean) => {
+    setNewAppPermissions((prev) =>
+      checked ? Array.from(new Set([...prev, scope])) : prev.filter((p) => p !== scope),
+    );
   };
 
   const handleNextToVersion = () => {
@@ -358,6 +379,74 @@ export default function UploadPage() {
                     />
                   </div>
                   <div>
+                    <Label className="publisher-eyebrow">카테고리</Label>
+                    <Select
+                      value={newAppCategoryId ? String(newAppCategoryId) : ""}
+                      onValueChange={(v) => setNewAppCategoryId(Number(v))}
+                      disabled={categoriesLoading || categories.length === 0}
+                    >
+                      <SelectTrigger className="mt-1.5 border-border/60 bg-card">
+                        <SelectValue>
+                          {() =>
+                            categories.find((c) => c.id === newAppCategoryId)?.displayName ??
+                            (categoriesLoading ? "카테고리 로드 중..." : "카테고리 선택")
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={String(category.id)}>
+                            {category.displayName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="publisher-eyebrow">키워드 (선택)</Label>
+                    <p className="text-[11px] text-muted-foreground/60 mb-2 mt-1">
+                      검색·추천에 사용됩니다. 최대 10개.
+                    </p>
+                    <KeywordInput
+                      value={newAppKeywords}
+                      onChange={setNewAppKeywords}
+                    />
+                  </div>
+                  <div>
+                    <Label className="publisher-eyebrow">권한 스코프 (선택)</Label>
+                    <p className="text-[11px] text-muted-foreground/60 mb-2 mt-1">
+                      미니앱이 사용할 권한. 불필요한 권한은 심사 반려 사유가 될 수 있습니다.
+                    </p>
+                    <div className="space-y-2">
+                      {(Object.entries(PERMISSION_LABELS) as [
+                        PermissionScope,
+                        { label: string; description: string },
+                      ][]).map(([scope, { label, description }]) => {
+                        const checked = newAppPermissions.includes(scope);
+                        return (
+                          <label
+                            key={scope}
+                            className="flex cursor-pointer items-start gap-3 rounded-md border border-border/50 bg-card px-3 py-2 hover:border-border/80"
+                          >
+                            <Checkbox
+                              checked={checked}
+                              onCheckedChange={(value) =>
+                                togglePermission(scope, value === true)
+                              }
+                              className="mt-0.5"
+                            />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium">{label}</p>
+                              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                                {description}
+                              </p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
                     <Label className="publisher-eyebrow">앱 아이콘</Label>
                     <p className="text-[11px] text-muted-foreground/60 mb-2 mt-1">
                       PNG, JPG, WebP (최대 2MB, 512x512 권장)
@@ -415,13 +504,22 @@ export default function UploadPage() {
                       onClick={() => {
                         setIsNewApp(false);
                         clearIconSelection();
+                        setNewAppCategoryId(null);
+                        setNewAppKeywords([]);
+                        setNewAppPermissions([]);
                       }}
                     >
                       취소
                     </Button>
                     <Button
                       className="bg-union text-white hover:bg-union/90"
-                      disabled={!newAppName.trim() || !iconFile || isCreating || isUploadingIcon}
+                      disabled={
+                        !newAppName.trim() ||
+                        !iconFile ||
+                        !newAppCategoryId ||
+                        isCreating ||
+                        isUploadingIcon
+                      }
                       onClick={handleCreateNewApp}
                     >
                       {isCreating || isUploadingIcon ? (
