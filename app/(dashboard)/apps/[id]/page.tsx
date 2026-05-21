@@ -16,6 +16,7 @@ import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { RejectionDetail } from "@/components/reviews/rejection-detail";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -26,6 +27,7 @@ import {
   History,
   ImagePlus,
   Loader2,
+  Pencil,
   QrCode,
   Rocket,
   Send,
@@ -109,15 +111,13 @@ export default function AppDetailPage({
 
   if (!app) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 animate-fade-up">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted mb-4">
-          <AppWindow className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h2 className="heading-display text-lg">앱을 찾을 수 없습니다</h2>
-        <Button variant="outline" className="mt-4 border-border/60" render={<Link href="/apps" />}>
-          목록으로 돌아가기
-        </Button>
-      </div>
+      <EmptyState
+        icon={AppWindow}
+        title="앱을 찾을 수 없습니다"
+        description="삭제되었거나 접근 권한이 없는 앱일 수 있습니다."
+        action={{ label: "목록으로 돌아가기", href: "/apps" }}
+        className="animate-fade-up my-12"
+      />
     );
   }
 
@@ -201,6 +201,17 @@ export default function AppDetailPage({
                 <ImagePlus className="mr-1 h-4 w-4" />
               )}
               {isUploadingIcon ? "아이콘 업로드 중..." : "아이콘 변경"}
+            </Button>
+          )}
+          {canEditIcon && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-border/60"
+              render={<Link href={`/apps/${id}/edit`} />}
+            >
+              <Pencil className="mr-1 h-4 w-4" />
+              앱 정보 편집
             </Button>
           )}
           <Button variant="outline" size="sm" className="border-border/60" render={<Link href={`/apps/${id}/versions`} />}>

@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Review, Verdict } from "@/types/app-version";
 import { ReviewCard } from "./review-card";
 import { RejectionDetail } from "./rejection-detail";
 import { ResubmitDialog } from "./resubmit-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, CheckCircle2, Clock3, FileCheck2, Upload } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AlertTriangle, CheckCircle2, Clock3, FileCheck2, Search, Upload } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+type ReviewSort = "submitted_desc" | "submitted_asc" | "app_asc";
+const sortOptions: { value: ReviewSort; label: string }[] = [
+  { value: "submitted_desc", label: "최근 제출순" },
+  { value: "submitted_asc", label: "오래된 순" },
+  { value: "app_asc", label: "앱 이름순" },
+];
 
 const columns: { verdict: Verdict; title: string; dotColor: string }[] = [
   { verdict: "PENDING", title: "심사 대기", dotColor: "bg-gold" },
@@ -30,6 +45,32 @@ export function ReviewStatusBoard({
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [rejectionOpen, setRejectionOpen] = useState(false);
   const [resubmitOpen, setResubmitOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<ReviewSort>("submitted_desc");
+
+  const visibleReviews = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const filtered = normalizedQuery
+      ? reviews.filter((review) =>
+          [review.miniAppName, review.versionNumber, review.reason ?? ""]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalizedQuery),
+        )
+      : reviews;
+    return [...filtered].sort((a, b) => {
+      switch (sort) {
+        case "submitted_desc":
+          return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+        case "submitted_asc":
+          return new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime();
+        case "app_asc":
+          return a.miniAppName.localeCompare(b.miniAppName, "ko");
+        default:
+          return 0;
+      }
+    });
+  }, [reviews, query, sort]);
 
   const handleCardClick = (review: Review) => {
     if (review.verdict === "REJECTED") {
@@ -61,9 +102,40 @@ export function ReviewStatusBoard({
   return (
     <>
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="space-y-4">
+          <Card className="publisher-panel">
+            <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="relative w-full sm:max-w-72">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="앱 이름, 버전, 사유 검색"
+                  className="h-9 border-border/70 bg-card pl-8 text-sm"
+                />
+              </div>
+              <Select value={sort} onValueChange={(v) => setSort(v as ReviewSort)}>
+                <SelectTrigger className="h-9 w-full border-border/70 bg-card text-sm sm:w-40">
+                  <SelectValue>
+                    {() =>
+                      sortOptions.find((option) => option.value === sort)?.label ?? "정렬"
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4 md:grid-cols-3">
           {columns.map(({ verdict, title, dotColor }, colIdx) => {
-            const columnReviews = reviews.filter((r) => r.verdict === verdict);
+            const columnReviews = visibleReviews.filter((r) => r.verdict === verdict);
             return (
               <div key={verdict} className={`publisher-panel animate-fade-up delay-${colIdx + 1} rounded-lg p-3`}>
                 <div className="mb-3 flex items-center gap-2 border-b border-border/50 pb-3">
@@ -106,6 +178,7 @@ export function ReviewStatusBoard({
               </div>
             );
           })}
+          </div>
         </div>
 
         <aside className="space-y-4">
