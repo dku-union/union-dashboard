@@ -24,7 +24,7 @@ function Reveal({
 
 export function LandingMiniAppCatalog() {
   return (
-    <section id="miniapps" className="relative overflow-hidden bg-[#E83A33] py-24 sm:py-32">
+    <section id="miniapps" className="relative overflow-hidden bg-[#EDF2FA] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
         <Reveal className="mb-16">
@@ -32,16 +32,16 @@ export function LandingMiniAppCatalog() {
             Mini Apps
           </p>
           <h2
-            className="heading-display font-bold leading-[1.08] tracking-tight text-white"
+            className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
             style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)" }}
           >
-            Union에서
+            Union 안에서
             <br />
-            <Highlight variant="onRed">가능해요</Highlight>
+            <Highlight>가능해요</Highlight>
           </h2>
-          <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-white/70">
+          <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
             학사, 생활, 행사, 커뮤니티 운영처럼 대학생 일상과 맞닿은
-            미니앱을 빠르게 구성할 수 있습니다.
+            서비스를 미니앱 단위로 등록하고 운영할 수 있습니다.
           </p>
         </Reveal>
 
@@ -56,10 +56,10 @@ export function LandingMiniAppCatalog() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.4, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
-                  className="group rounded-xl bg-white px-3.5 py-4 text-center shadow-sm
-                             hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+                  className="group rounded-lg border border-[#DCE4F2] bg-white px-3.5 py-4 text-center
+                             transition-colors duration-200 hover:border-[#C6D1E2] cursor-default"
                 >
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl text-[#E83A33]">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33]">
                     <item.icon
                       className="transition-colors"
                       style={{ height: "18px", width: "18px" }}
@@ -74,7 +74,7 @@ export function LandingMiniAppCatalog() {
 
           {/* Mockup card */}
           <Reveal delay={0.15}>
-            <div className="rounded-xl bg-white p-6 shadow-md">
+            <div className="rounded-lg border border-[#DCE4F2] bg-white p-6">
               <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#E83A33]">
                 Sample Experience
               </p>
@@ -100,7 +100,7 @@ export function LandingMiniAppCatalog() {
           </Reveal>
         </div>
 
-        <div className="mt-20 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="mt-20 h-px bg-gradient-to-r from-transparent via-[#DCE4F2] to-transparent" />
       </div>
     </section>
   );

@@ -97,6 +97,7 @@ export default function WorkspaceDetailPage() {
   const pendingInvitations = workspace.pendingInvitations ?? [];
   const myRole = workspace.myRole as MemberRole;
   const canManage = myRole === "owner" || myRole === "admin";
+  const canUploadApps = canManage || myRole === "developer";
   const canChangeRole = myRole === "owner";
 
   const roleStats = {
@@ -155,7 +156,7 @@ export default function WorkspaceDetailPage() {
               멤버 초대
             </Button>
           )}
-          {canManage && (
+          {canUploadApps && (
             <Button className="bg-union text-white hover:bg-union/90" render={<Link href={`/workspace/${workspaceId}/upload`} />}>
               <Upload className="h-4 w-4" />
               앱 업로드
@@ -234,7 +235,7 @@ export default function WorkspaceDetailPage() {
                   워크스페이스 안의 앱 등록과 운영 상태를 한눈에 확인합니다.
                 </p>
               </div>
-              {canManage && (
+              {canUploadApps && (
                 <Button
                   className="bg-union text-white hover:bg-union/90"
                   render={<Link href={`/workspace/${workspaceId}/upload`} />}
@@ -254,7 +255,7 @@ export default function WorkspaceDetailPage() {
                 <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
                   개발이 완료되지 않았더라도 앱을 먼저 등록하고, 이후 빌드를 업로드해 심사와 배포를 진행할 수 있습니다.
                 </p>
-                {canManage && (
+                {canUploadApps && (
                   <Button
                     variant="outline"
                     className="mt-4 border-border/70"

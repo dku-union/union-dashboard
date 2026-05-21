@@ -43,7 +43,7 @@ export function MetricCard({ title, subtitle, data, icon }: MetricCardProps) {
             {data.change > 0 ? "+" : ""}
             {data.change}%
           </span>
-          <span className="text-muted-foreground/60">전주 대비</span>
+          <span className="text-muted-foreground/60">이전 기간 대비</span>
         </div>
       </CardContent>
     </Card>

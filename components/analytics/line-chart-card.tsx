@@ -31,8 +31,8 @@ export function LineChartCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-64 min-w-0">
+          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
               <XAxis

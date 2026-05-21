@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Download, Loader2, Mail, ShieldCheck, Smartphone, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  Download,
+  Loader2,
+  Mail,
+  ShieldAlert,
+  ShieldCheck,
+  Smartphone,
+  XCircle,
+} from "lucide-react";
 import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { MiniAppStatusBadge } from "@/components/apps/mini-app-status-badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +79,7 @@ export function AdminReviewDetailDialog({
   const testLink = currentTestLinkState?.url ?? null;
   const isQrLoading = shouldShowReviewQr && !currentTestLinkState;
   const isQrFailed = currentTestLinkState?.status === "failed";
+  const canDecide = review?.versionStatus === "IN_REVIEW";
 
   useEffect(() => {
     if (!shouldShowReviewQr || !reviewVersionId) {
@@ -140,51 +150,70 @@ export function AdminReviewDetailDialog({
           )}
         </DialogHeader>
 
-        <div className="grid gap-4 px-6 py-5 lg:grid-cols-[1.5fr_1fr]">
-          <Card className="border-border/60 shadow-none">
-            <CardHeader>
-              <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
-                제출 정보
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {isLoading || !review ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-24 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ) : (
-                <>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">퍼블리셔</p>
-                      <p className="mt-1 text-sm font-medium">{review.publisherName ?? "-"}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{review.publisherEmail ?? "-"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">고객 문의</p>
-                      <div className="mt-1 flex items-center gap-2 text-sm">
-                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{review.contactEmail}</span>
+        <div className="max-h-[72vh] overflow-y-auto px-6 py-5">
+          <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+            <Card className="border-border/60 shadow-none">
+              <CardHeader>
+                <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+                  제출 정보
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {isLoading || !review ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">퍼블리셔</p>
+                        <p className="mt-1 text-sm font-medium">{review.publisherName ?? "-"}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{review.publisherEmail ?? "-"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">고객 문의</p>
+                        <div className="mt-1 flex items-center gap-2 text-sm">
+                          <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span>{review.contactEmail}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">버전</p>
+                        <p className="mt-1 text-sm font-mono">v{review.versionNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">제출일</p>
+                        <p className="mt-1 text-sm">{formatDateTime(review.submittedAt)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">번들 크기</p>
+                        <p className="mt-1 text-sm">{formatBytes(review.bundleSize)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">테스트 시각</p>
+                        <p className="mt-1 text-sm">{formatDateTime(review.testedAt)}</p>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">버전</p>
-                      <p className="mt-1 text-sm font-mono">v{review.versionNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">제출일</p>
-                      <p className="mt-1 text-sm">{formatDateTime(review.submittedAt)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">번들 크기</p>
-                      <p className="mt-1 text-sm">{formatBytes(review.bundleSize)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">테스트 시각</p>
-                      <p className="mt-1 text-sm">{formatDateTime(review.testedAt)}</p>
-                    </div>
+
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <ReviewSignal
+                      label="QR 테스트"
+                      value={review.testedAt ? "완료" : "확인 필요"}
+                      ok={Boolean(review.testedAt)}
+                    />
+                    <ReviewSignal
+                      label="릴리즈 노트"
+                      value={review.releaseNotes ? "작성됨" : "비어 있음"}
+                      ok={Boolean(review.releaseNotes)}
+                    />
+                    <ReviewSignal
+                      label="문의 이메일"
+                      value={review.contactEmail ? "등록됨" : "없음"}
+                      ok={Boolean(review.contactEmail)}
+                    />
                   </div>
 
                   <div>
@@ -212,10 +241,42 @@ export function AdminReviewDetailDialog({
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <div className="space-y-4">
+            <div className="space-y-4">
+              {isLoading || !review ? null : (
+                <Card className="border-border/60 shadow-none">
+                  <CardHeader>
+                    <CardTitle className="heading-display text-sm uppercase tracking-wider text-muted-foreground">
+                      운영 체크리스트
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <ReviewCheck
+                      done={Boolean(review.testedAt)}
+                      title="모바일 QR 테스트"
+                      description="슈퍼앱 WebView에서 핵심 화면과 권한 요청을 확인합니다."
+                    />
+                    <ReviewCheck
+                      done={Boolean(review.releaseNotes)}
+                      title="변경 사항 확인"
+                      description="릴리즈 노트가 실제 변경 범위와 사용자 영향도를 설명하는지 봅니다."
+                    />
+                    <ReviewCheck
+                      done={Boolean(review.contactEmail)}
+                      title="운영 연락처 확인"
+                      description="장애 또는 반려 안내를 받을 수 있는 연락처인지 확인합니다."
+                    />
+                    <ReviewCheck
+                      done={review.bundleSize === null || review.bundleSize <= 50 * 1024 * 1024}
+                      title="패키지 크기 확인"
+                      description="콘솔 업로드 제한과 초기 로딩에 영향을 줄 수 있는 번들 크기를 점검합니다."
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
             {isLoading || !review ? null : review.versionStatus === "IN_REVIEW" ? (
               <Card className="border-border/60 shadow-none">
                 <CardHeader>
@@ -304,12 +365,14 @@ export function AdminReviewDetailDialog({
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-3 text-sm text-muted-foreground">
-                  심사 중 상태의 버전에 대해서만 승인 또는 반려를 처리할 수 있습니다.
+                  {canDecide
+                    ? "승인은 즉시 퍼블리셔의 배포 가능 상태로 이어집니다. 반려 시 퍼블리셔가 바로 수정할 수 있도록 구체적인 사유를 남겨주세요."
+                    : "심사 중 상태의 버전에 대해서만 승인 또는 반려를 처리할 수 있습니다."}
                 </div>
                 <div className="grid gap-2">
                   <Button
                     onClick={onApprove}
-                    disabled={!review || review.versionStatus !== "IN_REVIEW" || actionLoading !== null}
+                    disabled={!review || !canDecide || actionLoading !== null}
                     className="bg-union text-white hover:bg-union/90"
                   >
                     <ShieldCheck className="mr-2 h-4 w-4" />
@@ -318,7 +381,7 @@ export function AdminReviewDetailDialog({
                   <Button
                     variant="outline"
                     onClick={onStartReject}
-                    disabled={!review || review.versionStatus !== "IN_REVIEW" || actionLoading !== null}
+                    disabled={!review || !canDecide || actionLoading !== null}
                     className="border-destructive/30 text-destructive hover:bg-destructive/10"
                   >
                     <XCircle className="mr-2 h-4 w-4" />
@@ -327,6 +390,7 @@ export function AdminReviewDetailDialog({
                 </div>
               </CardContent>
             </Card>
+            </div>
           </div>
         </div>
 
@@ -337,5 +401,55 @@ export function AdminReviewDetailDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ReviewSignal({
+  label,
+  value,
+  ok,
+}: {
+  label: string;
+  value: string;
+  ok: boolean;
+}) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <div className="mt-1 flex items-center gap-1.5 text-sm font-medium">
+        {ok ? (
+          <CheckCircle2 className="h-3.5 w-3.5 text-sage" />
+        ) : (
+          <ShieldAlert className="h-3.5 w-3.5 text-gold" />
+        )}
+        <span>{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function ReviewCheck({
+  done,
+  title,
+  description,
+}: {
+  done: boolean;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${done ? "bg-sage/10" : "bg-gold/10"}`}>
+        {done ? (
+          <CheckCircle2 className="h-3.5 w-3.5 text-sage" />
+        ) : (
+          <ShieldAlert className="h-3.5 w-3.5 text-gold" />
+        )}
+      </div>
+      <div>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
+      </div>
+    </div>
   );
 }

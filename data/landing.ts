@@ -20,32 +20,32 @@ import {
 
 export const landingNavItems = [
   { label: "서비스 소개", href: "#service" },
-  { label: "사용 방법", href: "#how-it-works" },
+  { label: "출시 흐름", href: "#how-it-works" },
   { label: "미니앱", href: "#miniapps" },
   { label: "활용 사례", href: "#use-cases" },
   { label: "FAQ", href: "#faq" },
 ];
 
 export const landingStats = [
-  { label: "대학생 사용자", value: "200,000+" },
-  { label: "등록된 미니앱", value: "50+" },
-  { label: "연결된 대학", value: "300+" },
+  { label: "출시 흐름", value: "4단계" },
+  { label: "관리 단위", value: "워크스페이스" },
+  { label: "배포 대상", value: "슈퍼앱" },
 ];
 
 export const serviceHighlights = [
   {
-    title: "대학생 전용 도달력",
-    description: "캠퍼스 안에서 바로 쓰이는 미니앱 경험에 집중해 실제 사용자를 더 빠르게 만납니다.",
+    title: "슈퍼앱 안의 미니앱 배포",
+    description: "별도 앱 설치 없이 Union 슈퍼앱 안에서 대학생에게 필요한 기능을 미니앱으로 제공합니다.",
     icon: Users,
   },
   {
-    title: "빠른 출시 흐름",
-    description: "복잡한 앱스토어 배포보다 가볍고 빠른 형태로 새로운 아이디어를 테스트합니다.",
+    title: "검증 가능한 출시 흐름",
+    description: "빌드 업로드, QR 테스트, 심사 요청, 승인 후 배포까지 콘솔에서 단계별로 관리합니다.",
     icon: BadgeCheck,
   },
   {
-    title: "운영과 확장까지 연결",
-    description: "출시 이후에도 Union 퍼블리셔 대시보드에서 운영 데이터를 바탕으로 다음 기능을 설계합니다.",
+    title: "팀 단위 운영과 버전 관리",
+    description: "워크스페이스에서 멤버 권한을 나누고, 앱별 버전 이력과 심사 상태를 이어서 관리합니다.",
     icon: AppWindow,
   },
 ];
@@ -72,57 +72,54 @@ export const miniAppCategories = [
 export const howItWorksSteps = [
   {
     eyebrow: "Step 1",
-    title: "아이디어를 정리해요",
-    description: "학생에게 필요한 기능과 운영 방식을 간단히 정의하면 출발할 준비가 끝납니다.",
+    title: "워크스페이스를 준비해요",
+    description: "팀을 만들고 멤버를 초대해 앱 등록과 배포를 함께 관리할 운영 공간을 정리합니다.",
   },
   {
     eyebrow: "Step 2",
-    title: "Union에서 빠르게 구성해요",
-    description: "복잡한 앱스토어 절차 없이 캠퍼스에 맞는 미니앱 구조를 빠르게 조합하고 검수합니다.",
+    title: "SDK로 미니앱을 개발해요",
+    description: "Union SDK와 Bridge API를 사용해 인증, UI, 디바이스 기능을 미니앱 안에 연결합니다.",
   },
   {
     eyebrow: "Step 3",
-    title: "대학생에게 바로 전달해요",
-    description: "학생회, 동아리, 학과 단위로 바로 배포하고 반응을 보며 다음 기능을 확장합니다.",
+    title: "업로드 후 심사를 요청해요",
+    description: ".unionapp 빌드를 업로드하고 QR 테스트를 완료한 뒤 심사 요청과 승인 후 배포를 진행합니다.",
   },
 ];
 
 export const useCases = [
   {
     title: "학생회 운영 허브",
-    description: "투표, 공지, 행사 신청을 하나의 미니앱 묶음으로 제공해 학생 참여를 높입니다.",
+    description: "투표, 공지, 행사 신청처럼 반복되는 학생회 운영 업무를 하나의 미니앱 경험으로 정리합니다.",
     image: "/landing/student-council.webp",
-    emoji: "🏛️",
   },
   {
-    title: "캠퍼스 서비스 런칭",
-    description: "새로운 생활 편의 서비스나 정보 서비스를 아이디어 단계에서 바로 검증할 수 있습니다.",
+    title: "캠퍼스 서비스 출시",
+    description: "생활 편의, 정보 탐색, 모집형 서비스를 슈퍼앱 안에 배포하고 버전 단위로 개선합니다.",
     image: "/landing/easy-launch.webp",
-    emoji: "🚀",
   },
   {
     title: "기존 운영 방식 전환",
     description: "폼, 메신저, 게시판에 흩어진 캠퍼스 운영 절차를 미니앱 흐름으로 정리합니다.",
     image: "/landing/compare-stores.webp",
-    emoji: "🔄",
   },
 ];
 
 export const faqItems = [
   {
-    question: "개발 경험이 없어도 시작할 수 있나요?",
-    answer: "가능합니다. Union은 캠퍼스 운영자가 아이디어와 운영 목적만 정리해도 빠르게 시작할 수 있도록 설계된 미니앱 플랫폼입니다.",
+    question: "개발자가 있어야 사용할 수 있나요?",
+    answer: "미니앱은 SDK 기반으로 개발해 업로드하는 구조입니다. 다만 운영자는 워크스페이스에서 멤버를 초대하고, 업로드·심사·배포 흐름을 함께 관리할 수 있습니다.",
   },
   {
     question: "어떤 조직이 가장 잘 맞나요?",
     answer: "학생회, 동아리, 학과, 교내 프로젝트 팀처럼 대학생 대상 공지나 참여 흐름이 있는 조직에 적합합니다.",
   },
   {
-    question: "출시까지 얼마나 걸리나요?",
-    answer: "기능 범위에 따라 다르지만, 기본적인 투표·공지·모집형 미니앱은 복잡한 앱스토어 배포 없이 훨씬 빠르게 검토하고 출시할 수 있습니다.",
+    question: "출시는 어떤 절차로 진행되나요?",
+    answer: "워크스페이스에서 앱을 등록하고 .unionapp 빌드를 업로드한 뒤, 테스트를 완료하고 심사를 요청합니다. 승인된 버전은 퍼블리셔 콘솔에서 배포할 수 있습니다.",
   },
   {
-    question: "기존 Union 대시보드와 어떻게 연결되나요?",
-    answer: "랜딩 페이지에서 관심을 모으고, 로그인 후에는 기존 퍼블리셔 대시보드에서 앱 등록과 관리 흐름을 그대로 이어서 사용합니다.",
+    question: "출시 후에도 버전을 관리할 수 있나요?",
+    answer: "가능합니다. 앱 상세와 버전 이력에서 업로드, 테스트, 심사 요청, 반려 대응, 배포 상태를 계속 확인할 수 있습니다.",
   },
 ];
