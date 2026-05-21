@@ -1,41 +1,60 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AnalyticsOverview, RetentionCohort, AcquisitionData, OsDistribution, GenderData } from "@/types/analytics";
-import {
-  mockAnalyticsOverview,
-  mockRetentionCohorts,
-  mockAcquisitionData,
-  mockOsDistribution,
-  mockGenderData,
-} from "@/data/analytics";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { AnalyticsRange, UsageAnalytics } from "@/types/analytics";
 
-export function useAnalytics() {
-  const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
-  const [retention, setRetention] = useState<RetentionCohort[]>([]);
-  const [acquisition, setAcquisition] = useState<AcquisitionData[]>([]);
-  const [osDistribution, setOsDistribution] = useState<OsDistribution[]>([]);
-  const [genderData, setGenderData] = useState<GenderData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface UseAnalyticsParams {
+  workspaceId?: string;
+  miniAppId?: number | "all";
+  range: AnalyticsRange;
+}
+
+export function useAnalytics({ workspaceId, miniAppId = "all", range }: UseAnalyticsParams) {
+  const [data, setData] = useState<UsageAnalytics | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchAnalytics = useCallback(async () => {
+    if (!workspaceId) {
+      setData(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        workspaceId,
+        range,
+        miniAppId: String(miniAppId),
+      });
+      const res = await fetch(`/api/analytics/usage?${params.toString()}`, {
+        cache: "no-store",
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        toast.error(result.error || "분석 데이터를 불러오지 못했습니다.");
+        setData(null);
+        return;
+      }
+
+      setData(result);
+    } catch {
+      toast.error("분석 데이터를 불러오는 중 오류가 발생했습니다.");
+      setData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [miniAppId, range, workspaceId]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setOverview(mockAnalyticsOverview);
-      setRetention(mockRetentionCohorts);
-      setAcquisition(mockAcquisitionData);
-      setOsDistribution(mockOsDistribution);
-      setGenderData(mockGenderData);
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   return {
-    overview,
-    retention,
-    acquisition,
-    osDistribution,
-    genderData,
+    data,
     isLoading,
+    refetch: fetchAnalytics,
   };
 }

@@ -5,9 +5,10 @@ export interface Publisher {
   id: string;
   email: string;
   name: string;
-  contactEmail?: string;
+
   role: PublisherRole;
   status: PublisherStatus;
   createdAt: string;
   profileImage?: string;
+  hasWorkspace?: boolean;
 }

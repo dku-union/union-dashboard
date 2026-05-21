@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tooling / personal configs
+.claude/
+.context/
+.playwright-mcp/
+.cursorignore
+
+# debug screenshots in project root (untracked working images)
+/*.png
+/*.jpeg
+/*.jpg
+!/logo.png

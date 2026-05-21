@@ -9,13 +9,36 @@ export interface TimeSeriesPoint {
   value: number;
 }
 
+export type AnalyticsRange = "today" | "last_7_days" | "last_30_days" | "this_month" | "all";
+
+export interface AnalyticsMiniAppOption {
+  id: number;
+  name: string;
+}
+
+export interface AnalyticsAppBreakdown {
+  id: number;
+  name: string;
+  launches: number;
+  activeUsers: number;
+}
+
 export interface AnalyticsOverview {
-  dau: MetricData;
-  wau: MetricData;
-  mau: MetricData;
-  dauTrend: TimeSeriesPoint[];
-  wauTrend: TimeSeriesPoint[];
-  mauTrend: TimeSeriesPoint[];
+  totalLaunches: MetricData;
+  activeUsers: MetricData;
+  usedMiniApps: MetricData;
+}
+
+export interface UsageAnalytics {
+  workspaceId: string;
+  miniAppId: number | "all";
+  range: AnalyticsRange;
+  from: string | null;
+  to: string;
+  apps: AnalyticsMiniAppOption[];
+  overview: AnalyticsOverview;
+  dailyTrend: TimeSeriesPoint[];
+  appBreakdown: AnalyticsAppBreakdown[];
 }
 
 export interface RetentionCohort {

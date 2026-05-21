@@ -1,8 +1,7 @@
 "use client";
 
-import { MiniApp } from "@/types/mini-app";
-import { CATEGORY_LABELS } from "@/lib/constants";
-import { StatusBadge } from "./status-badge";
+import type { MiniAppWithWorkspace } from "@/types/app-version";
+import { MiniAppStatusBadge } from "./mini-app-status-badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -11,25 +10,41 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Edit, History, BarChart3, AppWindow } from "lucide-react";
+import { MoreVertical, History, BarChart3, AppWindow, ArrowUpRight, Building2, Upload } from "lucide-react";
 import Link from "next/link";
 
-export function AppCard({ app }: { app: MiniApp }) {
+export function AppCard({ app }: { app: MiniAppWithWorkspace }) {
   return (
-    <Card className="card-hover accent-line overflow-hidden border-border/60 group">
-      <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-union/10 to-union/5 border border-union/10">
-          <AppWindow className="h-5 w-5 text-union/70" />
+    <Card className="publisher-panel group overflow-hidden transition-colors hover:border-union/45">
+      <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3 sm:items-center">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-muted/55">
+          {app.iconUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={app.iconUrl} alt="" className="h-full w-full rounded-lg object-cover" />
+          ) : (
+            <AppWindow className="h-5 w-5 text-muted-foreground" />
+          )}
         </div>
         <div className="flex-1 space-y-1 min-w-0">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <Link
               href={`/apps/${app.id}`}
-              className="text-sm font-semibold hover:text-union truncate transition-colors"
+              className="group/link flex min-w-0 items-center gap-1.5 text-sm font-semibold transition-colors hover:text-union"
             >
-              {app.name}
+              <span className="truncate">{app.name}</span>
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover/link:opacity-100" />
             </Link>
-            <DropdownMenu>
+            <div className="flex shrink-0 items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden border-border/70 text-xs sm:inline-flex"
+                render={<Link href={`/workspace/${app.workspaceId}/upload?miniAppId=${app.id}`} />}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                새 버전
+              </Button>
+              <DropdownMenu>
               <DropdownMenuTrigger
                 render={
                   <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -38,36 +53,40 @@ export function AppCard({ app }: { app: MiniApp }) {
                 }
               />
               <DropdownMenuContent align="end">
-                <DropdownMenuItem render={<Link href={`/apps/${app.id}`} />} className="text-[13px]">
-                  <Edit className="mr-2 h-3.5 w-3.5" />
-                  상세/편집
-                </DropdownMenuItem>
                 <DropdownMenuItem render={<Link href={`/apps/${app.id}/versions`} />} className="text-[13px]">
                   <History className="mr-2 h-3.5 w-3.5" />
                   버전 이력
+                </DropdownMenuItem>
+                <DropdownMenuItem render={<Link href={`/workspace/${app.workspaceId}/upload?miniAppId=${app.id}`} />} className="text-[13px]">
+                  <Upload className="mr-2 h-3.5 w-3.5" />
+                  새 버전 업로드
                 </DropdownMenuItem>
                 <DropdownMenuItem render={<Link href={`/apps/${app.id}/analytics`} />} className="text-[13px]">
                   <BarChart3 className="mr-2 h-3.5 w-3.5" />
                   분석
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+              </DropdownMenu>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground truncate leading-relaxed">
-            {app.shortDescription}
+          <p className="line-clamp-2 min-h-10 text-xs leading-5 text-muted-foreground">
+            {app.description || "설명 없음"}
           </p>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-3">
           <div className="flex items-center gap-2">
-            <StatusBadge status={app.status} />
-            <span className="text-[11px] text-muted-foreground/60">
-              {CATEGORY_LABELS[app.category]}
+            <MiniAppStatusBadge status={app.status} />
+            <span className="inline-flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground/70">
+              <Building2 className="h-3 w-3 shrink-0" />
+              <span className="truncate">
+              {app.workspaceName}
+              </span>
             </span>
           </div>
-          <span className="text-[11px] text-muted-foreground/60 font-mono">
-            v{app.currentVersion}
+          <span className="text-[11px] text-muted-foreground/60">
+            {new Date(app.updatedAt).toLocaleDateString("ko-KR")}
           </span>
         </div>
       </CardContent>
