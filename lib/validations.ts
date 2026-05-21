@@ -78,12 +78,34 @@ export const inviteMemberSchema = z.object({
 
 export type InviteMemberFormValues = z.infer<typeof inviteMemberSchema>;
 
+const permissionScopeEnum = z.enum([
+  "user.profile",
+  "user.student_info",
+  "payment",
+  "location",
+  "notification",
+  "camera",
+  "share",
+]);
+
 export const createMiniAppSchema = z.object({
   name: z
     .string()
     .min(2, "앱 이름은 2자 이상이어야 합니다.")
     .max(100, "앱 이름은 100자 이하여야 합니다."),
   description: z.string().max(2000, "설명은 2000자 이하여야 합니다.").optional(),
+  categoryId: z
+    .number()
+    .int()
+    .positive("카테고리를 선택해주세요."),
+  keywords: z
+    .array(z.string().min(1).max(30))
+    .max(10, "키워드는 최대 10개까지 입력 가능합니다.")
+    .optional(),
+  permissions: z
+    .array(permissionScopeEnum)
+    .max(8, "권한 스코프는 최대 8개까지 선택 가능합니다.")
+    .optional(),
 });
 
 export type CreateMiniAppFormValues = z.infer<typeof createMiniAppSchema>;

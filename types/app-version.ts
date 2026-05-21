@@ -58,6 +58,22 @@ export interface ReviewDecisionRequest {
 
 export type MiniAppStatus = "PENDING" | "APPROVED";
 
+export type PermissionScope =
+  | "user.profile"
+  | "user.student_info"
+  | "payment"
+  | "location"
+  | "notification"
+  | "camera"
+  | "share";
+
+export interface MiniAppCategoryDto {
+  id: number;
+  name: string;
+  displayName: string;
+  iconUrl: string | null;
+}
+
 export interface MiniAppRecord {
   id: number;
   name: string;
@@ -67,6 +83,8 @@ export interface MiniAppRecord {
   workspaceId: string;
   createdAt: string;
   updatedAt: string;
+  tags?: string | null;
+  permissions?: PermissionScope[] | null;
 }
 
 export interface MiniAppWithWorkspace extends MiniAppRecord {
