@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  AlertTriangle,
   AppWindow,
   ArrowUpRight,
   BookOpen,
@@ -10,25 +11,50 @@ import {
   Clock3,
   Plus,
   Rocket,
-  ShieldCheck,
   Users,
 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
-import { StatusBadge } from "@/components/apps/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockMiniApps } from "@/data/mini-apps";
-import { mockReviews } from "@/data/reviews";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useMyMiniApps, useMyReviews } from "@/hooks/use-app-versions";
+import type { Verdict } from "@/types/app-version";
+
+const VERDICT_META: Record<
+  Verdict,
+  { label: string; icon: typeof Clock3; dot: string; bg: string }
+> = {
+  PENDING: {
+    label: "심사 중",
+    icon: Clock3,
+    dot: "bg-gold",
+    bg: "bg-gold/10 text-gold",
+  },
+  ACCEPTED: {
+    label: "승인됨",
+    icon: CheckCircle2,
+    dot: "bg-sage",
+    bg: "bg-sage/10 text-sage",
+  },
+  REJECTED: {
+    label: "반려됨",
+    icon: AlertTriangle,
+    dot: "bg-destructive",
+    bg: "bg-destructive/10 text-destructive",
+  },
+};
 
 export default function DashboardHome() {
   const { user } = useAuth();
+  const { apps, isLoading: appsLoading } = useMyMiniApps();
+  const { reviews, isLoading: reviewsLoading } = useMyReviews();
 
-  const publishedCount = mockMiniApps.filter((app) => app.status === "published").length;
-  const inReviewCount = mockMiniApps.filter((app) => app.status === "in_review").length;
-  const totalApps = mockMiniApps.length;
-  const pendingReviews = mockReviews.filter(
-    (review) => review.status === "in_review" || review.status === "rejected"
-  ).length;
+  const totalApps = apps.length;
+  const approvedAppCount = apps.filter((app) => app.status === "APPROVED").length;
+  const pendingReviewCount = reviews.filter((review) => review.verdict === "PENDING").length;
+  const rejectedReviewCount = reviews.filter((review) => review.verdict === "REJECTED").length;
 
   const stats = [
     {
@@ -40,16 +66,16 @@ export default function DashboardHome() {
       bg: "bg-foreground/[0.04]",
     },
     {
-      label: "게시됨",
-      value: publishedCount,
+      label: "승인된 앱",
+      value: approvedAppCount,
       icon: AppWindow,
-      caption: "슈퍼앱 노출 가능",
+      caption: "슈퍼앱 배포 가능 상태",
       color: "text-sage",
       bg: "bg-sage/10",
     },
     {
-      label: "심사 중",
-      value: inReviewCount,
+      label: "심사 대기",
+      value: pendingReviewCount,
       icon: ClipboardCheck,
       caption: "검토 대기 또는 진행",
       color: "text-gold",
@@ -57,9 +83,9 @@ export default function DashboardHome() {
     },
     {
       label: "처리 필요",
-      value: pendingReviews,
+      value: rejectedReviewCount,
       icon: Clock3,
-      caption: "반려/검토 필요 항목",
+      caption: "반려 항목 — 수정 필요",
       color: "text-union",
       bg: "bg-union/10",
     },
@@ -86,6 +112,9 @@ export default function DashboardHome() {
     },
   ];
 
+  const recentReviews = reviews.slice(0, 5);
+  const recentLoading = reviewsLoading && reviews.length === 0;
+
   return (
     <div className="publisher-page">
       <div className="publisher-page-header animate-fade-up">
@@ -110,10 +139,12 @@ export default function DashboardHome() {
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="publisher-eyebrow">
-                    {stat.label}
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold tabular-nums">{stat.value}</p>
+                  <p className="publisher-eyebrow">{stat.label}</p>
+                  {appsLoading || reviewsLoading ? (
+                    <Skeleton className="mt-2 h-8 w-12" />
+                  ) : (
+                    <p className="mt-2 text-2xl font-semibold tabular-nums">{stat.value}</p>
+                  )}
                   <p className="mt-1 text-xs text-muted-foreground">{stat.caption}</p>
                 </div>
                 <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${stat.bg}`}>
@@ -167,38 +198,60 @@ export default function DashboardHome() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-1">
-              {mockReviews.slice(0, 5).map((review, index) => (
-                <div
-                  key={review.id}
-                  className={`publisher-row animate-fade-up delay-${index + 1} flex items-center justify-between gap-4 p-3`}
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/70">
-                      {review.status === "published" ? (
-                        <CheckCircle2 className="h-4 w-4 text-sage" />
-                      ) : review.status === "in_review" ? (
-                        <ShieldCheck className="h-4 w-4 text-gold" />
-                      ) : review.status === "rejected" ? (
-                        <Rocket className="h-4 w-4 text-union" />
-                      ) : (
-                        <AppWindow className="h-4 w-4 text-muted-foreground" />
-                      )}
+            {recentLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                ))}
+              </div>
+            ) : recentReviews.length === 0 ? (
+              <EmptyState
+                icon={ClipboardCheck}
+                title="아직 심사 요청이 없습니다"
+                description="미니앱 업로드 후 테스트를 거쳐 심사를 요청해보세요."
+                action={{ label: "미니앱 업로드로 이동", href: "/workspace" }}
+                variant="bare"
+              />
+            ) : (
+              <div className="space-y-1">
+                {recentReviews.map((review, index) => {
+                  const meta = VERDICT_META[review.verdict];
+                  const Icon = meta.icon;
+                  const submittedLabel = new Date(review.submittedAt).toLocaleDateString("ko-KR", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                  return (
+                    <div
+                      key={review.id}
+                      className={`publisher-row animate-fade-up delay-${index + 1} flex items-center justify-between gap-4 p-3`}
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/70">
+                          <Icon className={`h-4 w-4 ${meta.bg.split(" ").find((c) => c.startsWith("text-")) ?? "text-muted-foreground"}`} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{review.miniAppName}</p>
+                          <p className="text-xs text-muted-foreground">v{review.versionNumber}</p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <Badge
+                          variant="secondary"
+                          className={`gap-1.5 font-medium text-[11px] ${meta.bg}`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
+                          {meta.label}
+                        </Badge>
+                        <span className="hidden min-w-20 text-right text-xs text-muted-foreground/70 sm:block">
+                          {submittedLabel}
+                        </span>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{review.appName}</p>
-                      <p className="text-xs text-muted-foreground">v{review.version}</p>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <StatusBadge status={review.status} />
-                    <span className="hidden min-w-20 text-right text-xs text-muted-foreground/70 sm:block">
-                      {review.submittedAt}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
