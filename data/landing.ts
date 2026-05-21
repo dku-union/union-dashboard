@@ -77,7 +77,7 @@ export const howItWorksSteps = [
   },
   {
     eyebrow: "Step 2",
-    title: "UniApp에서 빠르게 구성해요",
+    title: "Union에서 빠르게 구성해요",
     description: "복잡한 앱스토어 절차 없이 캠퍼스에 맞는 미니앱 구조를 빠르게 조합하고 검수합니다.",
   },
   {
@@ -111,7 +111,7 @@ export const useCases = [
 export const faqItems = [
   {
     question: "개발 경험이 없어도 시작할 수 있나요?",
-    answer: "가능합니다. UniApp은 캠퍼스 운영자가 아이디어와 운영 목적만 정리해도 빠르게 시작할 수 있도록 설계된 미니앱 플랫폼입니다.",
+    answer: "가능합니다. Union은 캠퍼스 운영자가 아이디어와 운영 목적만 정리해도 빠르게 시작할 수 있도록 설계된 미니앱 플랫폼입니다.",
   },
   {
     question: "어떤 조직이 가장 잘 맞나요?",

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 
@@ -38,7 +39,7 @@ export function LandingImpactStats() {
         </Reveal>
 
         <div className="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:items-end">
-          {/* Left: headline */}
+          {/* Left: headline + Korea map */}
           <div>
             <Reveal delay={0.06} y={50}>
               <h2
@@ -55,6 +56,23 @@ export function LandingImpactStats() {
                 Union은 대학생들이 가장 많이 사용하는 캠퍼스 슈퍼앱입니다.
                 퍼블리셔는 단 하나의 플랫폼으로 전국 모든 대학에 즉시 도달합니다.
               </p>
+            </Reveal>
+
+            {/* Broadcast cluster — 단 한 번의 배포로 50+ 파트너 대학에 도달 */}
+            <Reveal delay={0.32} y={20}>
+              <div className="relative mt-10 max-w-sm">
+                <Image
+                  src="/landing/generated/impact-broadcast-cluster.png"
+                  alt="한 번의 배포가 파트너 대학으로 동시 도달하는 모습"
+                  width={1024}
+                  height={1280}
+                  className="h-auto w-full"
+                  priority={false}
+                />
+                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.22em] text-[#8E908E]">
+                  One deploy · 50+ partner universities
+                </p>
+              </div>
             </Reveal>
           </div>
 

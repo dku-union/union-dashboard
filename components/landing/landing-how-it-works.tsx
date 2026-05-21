@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { howItWorksSteps } from "@/data/landing";
@@ -46,27 +47,28 @@ export function LandingHowItWorks() {
               </p>
             </Reveal>
 
-            <Reveal delay={0.15} className="mt-10 overflow-hidden rounded-xl border border-[#DCE4F2] bg-white shadow-sm">
-              <div className="relative flex items-center justify-center py-20 px-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FDE8E7] to-white" />
-                <div className="relative flex flex-col items-center gap-4 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FDE8E7] border border-[#E83A33]/15">
-                    <span className="text-2xl">🚀</span>
-                  </div>
-                  <p className="text-sm font-medium text-[#6B6D6B]">아이디어에서 출시까지, 단 3일</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    {["기획", "개발", "배포"].map((step, i) => (
-                      <div key={step} className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FDE8E7] text-xs font-bold text-[#E83A33]">
-                          {i + 1}
-                        </span>
-                        <span className="text-xs text-[#6B6D6B]">{step}</span>
-                        {i < 2 && <span className="text-[#DCE4F2]">→</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <Reveal delay={0.15} className="mt-10">
+              <figure className="group relative overflow-hidden rounded-2xl border border-[#DCE4F2] bg-[#262725] shadow-md">
+                <Image
+                  src="/landing/generated/howitworks-launch-moment-v2.png"
+                  alt="첫 미니앱이 Union에서 출시 완료되는 순간을 보는 퍼블리셔"
+                  width={1024}
+                  height={1280}
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="h-auto w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  priority={false}
+                />
+
+                {/* Bottom caption overlay — context for the moment captured */}
+                <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-6 pt-16 bg-gradient-to-t from-[#262725] via-[#262725]/80 to-transparent">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#EF6560]">
+                    The launch moment
+                  </p>
+                  <p className="mt-2 text-sm font-medium text-white sm:text-base">
+                    아이디어에서 출시까지, 평균 <span className="text-[#EF6560] font-bold">3일</span>
+                  </p>
+                </figcaption>
+              </figure>
             </Reveal>
           </div>
 

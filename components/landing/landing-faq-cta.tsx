@@ -64,6 +64,26 @@ export function LandingFaqCta() {
           <Reveal>
             <div className="relative overflow-hidden rounded-2xl bg-[#262725] px-8 py-12 sm:px-12 sm:py-16">
 
+              {/* Cinematic backdrop — Seoul cityscape duotone with red kite accent */}
+              <div className="absolute inset-0 pointer-events-none" aria-hidden>
+                <Image
+                  src="/landing/generated/faq-cta-closing.png"
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  className="object-cover object-right opacity-[0.45]"
+                  priority={false}
+                />
+                {/* Left-to-right charcoal gradient so left-side copy stays legible */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #262725 0%, rgba(38,39,37,0.92) 35%, rgba(38,39,37,0.55) 65%, rgba(38,39,37,0.35) 100%)",
+                  }}
+                />
+              </div>
+
               {/* Decorative quarter circles */}
               <svg className="absolute top-0 right-0 w-48 h-48 opacity-[0.08]" viewBox="0 0 200 200" aria-hidden>
                 <path d="M 200 0 L 200 200 A 200 200 0 0 1 0 0 Z" fill="#E83A33" />

@@ -35,7 +35,7 @@ export function LandingMiniAppCatalog() {
             className="heading-display font-bold leading-[1.08] tracking-tight text-white"
             style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)" }}
           >
-            UniApp에서
+            Union에서
             <br />
             <Highlight variant="onRed">가능해요</Highlight>
           </h2>
@@ -87,13 +87,13 @@ export function LandingMiniAppCatalog() {
                 학생회 공지, 캠퍼스 맵, 소모임, 맛집, 분실물처럼 자주 쓰이는
                 기능을 카드형 경험으로 빠르게 묶을 수 있습니다.
               </p>
-              <div className="mt-5 overflow-hidden rounded-xl border border-[#DCE4F2] bg-white">
+              <div className="mt-5 overflow-hidden rounded-xl border border-[#DCE4F2] bg-[#EDF2FA]">
                 <Image
-                  src="/landing/miniapp-mockup.webp"
-                  alt="Union miniapp mockup"
-                  width={760}
-                  height={760}
-                  className="mx-auto h-auto w-full max-w-[300px] object-contain"
+                  src="/landing/generated/sample-experience-hub.png"
+                  alt="여러 미니앱이 하나의 Union 플랫폼 허브로 연결되는 모습"
+                  width={1024}
+                  height={1024}
+                  className="mx-auto h-auto w-full max-w-[320px] object-contain"
                 />
               </div>
             </div>

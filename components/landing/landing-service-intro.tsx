@@ -1,9 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { serviceHighlights } from "@/data/landing";
 import { Highlight } from "@/components/ui/highlight";
+
+const SERVICE_IMAGES = [
+  "/landing/generated/svc-b-deploy.png",
+  "/landing/generated/svc-a-build.png",
+  "/landing/generated/svc-c-analyze.png",
+] as const;
 
 function Reveal({
   children, className, delay = 0, y = 28,
@@ -49,12 +56,25 @@ export function LandingServiceIntro() {
         <div className="mt-16 grid gap-4 sm:grid-cols-3">
           {serviceHighlights.map((item, i) => (
             <Reveal key={item.title} delay={0.05 + i * 0.1} y={20}>
-              <div className="group rounded-xl bg-white p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl text-[#E83A33]">
-                  <item.icon className="h-5 w-5" />
+              <div className="group overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 h-full flex flex-col">
+                {/* Isometric illustration header */}
+                <div className="relative h-44 bg-[#EDF2FA]">
+                  <Image
+                    src={SERVICE_IMAGES[i]}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
                 </div>
-                <h3 className="mt-5 text-[15px] font-semibold text-[#262725]">{item.title}</h3>
-                <p className="mt-2.5 text-[13px] leading-[1.6] text-[#6B6D6B]">{item.description}</p>
+                {/* Card body */}
+                <div className="flex-1 p-6 pt-5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FDE8E7] text-[#E83A33] mb-4">
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-[#262725]">{item.title}</h3>
+                  <p className="mt-2.5 text-[13px] leading-[1.6] text-[#6B6D6B]">{item.description}</p>
+                </div>
               </div>
             </Reveal>
           ))}

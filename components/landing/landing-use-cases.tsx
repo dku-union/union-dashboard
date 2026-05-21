@@ -1,12 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { useCases } from "@/data/landing";
 import { Highlight } from "@/components/ui/highlight";
-import { Building2, Rocket, RefreshCw } from "lucide-react";
 
-const CASE_ICONS = [Building2, Rocket, RefreshCw];
+const CASE_IMAGES = [
+  "/landing/generated/use-case-01-student-council.png",
+  "/landing/generated/use-case-02-club-booth.png",
+  "/landing/generated/use-case-03-lecture-hall.png",
+] as const;
+
+const CASE_ALT = [
+  "학생회 회의 — 투표 운영 사례",
+  "동아리 부스 — 모집·운영 사례",
+  "강의실 — 학과 운영 사례",
+] as const;
 
 function Reveal({
   children, className, delay = 0, y = 28,
@@ -51,24 +61,24 @@ export function LandingUseCases() {
           {useCases.map((item, i) => (
             <Reveal key={item.title} delay={i * 0.1} y={20}>
               <article className="group overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-                {/* Visual header */}
-                <div className="relative h-44 overflow-hidden">
+                {/* Visual header — duotone editorial photograph */}
+                <div className="relative h-52 overflow-hidden bg-[#262725]">
+                  <Image
+                    src={CASE_IMAGES[i]}
+                    alt={CASE_ALT[i]}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {/* Subtle red wash on hover for brand resonance */}
                   <div
-                    className="absolute inset-0"
+                    className="absolute inset-0 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                     style={{
-                      background: `linear-gradient(135deg, rgba(232,58,51,${0.08 + i * 0.05}) 0%, #FFFFFF 100%)`,
+                      background: "linear-gradient(135deg, rgba(232,58,51,0.18) 0%, transparent 70%)",
                     }}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {(() => {
-                      const Icon = CASE_ICONS[i];
-                      return (
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FDE8E7] shadow-sm">
-                          <Icon className="h-7 w-7 text-[#E83A33]" />
-                        </div>
-                      );
-                    })()}
-                  </div>
+                  {/* Bottom fade so the case label below reads well */}
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/95 to-transparent pointer-events-none" />
                 </div>
                 {/* Body */}
                 <div className="p-6 space-y-3">
