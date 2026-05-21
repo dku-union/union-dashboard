@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -89,17 +89,20 @@ export function DocSidebar() {
   const [openIds, setOpenIds] = useState<Set<string>>(
     () => new Set(activeCategoryId ? [activeCategoryId] : []),
   );
+  const [trackedActiveId, setTrackedActiveId] = useState(activeCategoryId);
 
-  useEffect(() => {
-    if (activeCategoryId) {
+  // pathname이 바뀌어 activeCategoryId가 갱신되면 해당 카테고리를 자동으로 펼침.
+  // useEffect 대신 렌더 중 동기화하는 React 권장 패턴.
+  if (activeCategoryId !== trackedActiveId) {
+    setTrackedActiveId(activeCategoryId);
+    if (activeCategoryId && !openIds.has(activeCategoryId)) {
       setOpenIds((prev) => {
-        if (prev.has(activeCategoryId)) return prev;
         const next = new Set(prev);
         next.add(activeCategoryId);
         return next;
       });
     }
-  }, [activeCategoryId]);
+  }
 
   const toggle = (id: string) => {
     setOpenIds((prev) => {
