@@ -12,6 +12,7 @@ import { VersionStatusBadge } from "@/components/apps/version-status-badge";
 import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { RejectionDetail } from "@/components/reviews/rejection-detail";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, AppWindow, ArrowLeft, Upload, QrCode, CheckCircle, Rocket, Send } from "lucide-react";
@@ -61,15 +62,12 @@ export default function VersionsPage({
 
   if (!app) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 animate-fade-up">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted mb-4">
-          <AppWindow className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h2 className="heading-display text-lg">앱을 찾을 수 없습니다</h2>
-        <Button variant="outline" className="mt-4 border-border/60" render={<Link href="/apps" />}>
-          목록으로 돌아가기
-        </Button>
-      </div>
+      <EmptyState
+        icon={AppWindow}
+        title="앱을 찾을 수 없습니다"
+        action={{ label: "목록으로 돌아가기", href: "/apps" }}
+        className="animate-fade-up my-12"
+      />
     );
   }
 
@@ -185,12 +183,16 @@ export default function VersionsPage({
         </CardHeader>
         <CardContent>
           {versions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/50 mb-3">
-                <AppWindow className="h-6 w-6 text-muted-foreground/40" />
-              </div>
-              <p className="text-sm text-muted-foreground">등록된 버전이 없습니다.</p>
-            </div>
+            <EmptyState
+              icon={AppWindow}
+              title="등록된 버전이 없습니다"
+              description="워크스페이스에서 빌드 파일을 업로드해 첫 버전을 등록해보세요."
+              action={{
+                label: "새 버전 업로드",
+                href: `/workspace/${app.workspaceId}/upload?miniAppId=${app.id}`,
+              }}
+              variant="bare"
+            />
           ) : (
             <div className="space-y-2">
               {versions.map((v) => {
