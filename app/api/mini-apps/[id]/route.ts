@@ -4,8 +4,10 @@ import { db } from "@/lib/db";
 import { miniApps, workspaceMembers, workspaces } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { canWriteAppVersion, getMiniAppMembership } from "@/lib/app-versions/access";
+import { springFetch } from "@/lib/spring/client";
 import {
   getRequestId,
+  jsonData,
   jsonError,
   serverError,
 } from "@/lib/api/responses";
@@ -88,9 +90,20 @@ const patchSchema = z.object({
   description: z.string().max(2000).nullable().optional(),
 });
 
-// NOTE: Spring 측 PATCH /mini-apps/{id} (이름/설명 수정) endpoint 가 아직 없음.
-// endpoint 추가되면 아래 stub 의 503 분기를 제거하고 springFetch 로 forward 하면
-// 됨. 권한 검증과 dashboard DB 동기화 코드는 미리 작성해둠.
+// Spring 의 MiniAppResponseDto 와 매핑되는 응답 형태. 신규 필드(tags, permissions)는
+// 응답에 포함되지만 dashboard 측 GET 라우트가 별도라 그대로 forward 해두고,
+// 클라이언트(useMiniAppDetail 등) 가 필요 시 활용.
+interface MiniAppPatchResponse {
+  id: number;
+  name: string;
+  description: string | null;
+  iconUrl: string | null;
+  workspaceName?: string;
+  status: string;
+  tags?: string | null;
+  permissions?: string[] | null;
+  createdAt: string;
+}
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -125,20 +138,38 @@ export async function PATCH(
       return jsonError("앱 정보 수정 권한이 없습니다.", 403, requestId, "APP_WRITE_DENIED");
     }
 
-    // Spring endpoint 미구현. 활성화 시점에 아래 분기를 제거하고
-    // springFetch("/mini-apps/${miniAppId}", session, { method: "PATCH", body: parsed.data })
-    // 호출 후 dashboard DB (miniApps 테이블) 동기화하는 흐름으로 교체.
-    logger.warn("mini_app.patch.not_implemented", {
+    const result = await springFetch<MiniAppPatchResponse>(
+      `/mini-apps/${miniAppId}`,
+      session,
+      { method: "PATCH", body: parsed.data },
+    );
+
+    if ("error" in result) {
+      logger.warn("mini_app.patch.spring_failed", {
+        requestId,
+        actorId: session.id,
+        miniAppId,
+        status: result.status,
+      });
+      return jsonError(result.error, result.status, requestId, "SPRING_REQUEST_FAILED");
+    }
+
+    // dashboard DB(drizzle) 동기화: name / description 만 부분 업데이트.
+    // (Spring 응답 전체를 신뢰하되, dashboard 테이블엔 해당 두 필드만 미러링)
+    const updates: { name?: string; description?: string | null; updatedAt: Date } = {
+      updatedAt: new Date(),
+    };
+    if (parsed.data.name !== undefined) updates.name = parsed.data.name;
+    if (parsed.data.description !== undefined) updates.description = parsed.data.description;
+    await db.update(miniApps).set(updates).where(eq(miniApps.id, miniAppId));
+
+    logger.info("mini_app.patch.succeeded", {
       requestId,
       actorId: session.id,
       miniAppId,
     });
-    return jsonError(
-      "앱 정보 수정 API는 아직 백엔드 구현 대기 중입니다.",
-      503,
-      requestId,
-      "NOT_IMPLEMENTED",
-    );
+
+    return jsonData(result.data, requestId);
   } catch (error) {
     return serverError("mini_app.patch.failed", error, requestId, undefined, {
       actorId: session.id,
