@@ -96,7 +96,12 @@ export default function AnalyticsPage() {
             }}
           >
             <SelectTrigger className="min-w-48">
-              <SelectValue />
+              <SelectValue>
+                {() =>
+                  workspaces.find((workspace) => workspace.id === selectedWorkspaceId)
+                    ?.name ?? "워크스페이스 선택"
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {workspaces.map((workspace) => (
@@ -115,7 +120,15 @@ export default function AnalyticsPage() {
             }}
           >
             <SelectTrigger className="min-w-44">
-              <SelectValue />
+              <SelectValue>
+                {() => {
+                  if (miniAppId === "all") return "전체 미니앱";
+                  return (
+                    data?.apps.find((app) => app.id === miniAppId)?.name ??
+                    "전체 미니앱"
+                  );
+                }}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체 미니앱</SelectItem>
@@ -135,7 +148,12 @@ export default function AnalyticsPage() {
             }}
           >
             <SelectTrigger className="min-w-36">
-              <SelectValue />
+              <SelectValue>
+                {() =>
+                  rangeOptions.find((option) => option.value === range)?.label ??
+                  "기간"
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {rangeOptions.map((option) => (
