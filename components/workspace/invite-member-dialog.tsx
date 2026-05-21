@@ -105,7 +105,7 @@ export function InviteMemberDialog({ open, onOpenChange, workspaceId, onInvited 
             </label>
             <Select value={role} onValueChange={(v) => setRole(v as MemberRole)}>
               <SelectTrigger className="border-border/60">
-                <SelectValue />
+                <SelectValue>{() => ROLE_LABELS[role] ?? "역할 선택"}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {(Object.entries(ROLE_LABELS) as [MemberRole, string][])
