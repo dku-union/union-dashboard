@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { howItWorksSteps } from "@/data/landing";
@@ -37,36 +38,37 @@ export function LandingHowItWorks() {
                 className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
                 style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)", wordBreak: "keep-all" }}
               >
-                개발부터 배포까지{" "}
-                <span className="text-[#E83A33]">흐름이 보입니다</span>
+                아이디어만 있으면{" "}
+                <span className="text-[#E83A33]">바로 출시</span>할 수 있어요
               </h2>
               <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
-                Union은 막연한 랜딩 페이지가 아니라, 퍼블리셔가 실제로 사용하는
-                워크스페이스와 업로드, 심사, 배포 콘솔로 이어집니다.
+                기존 앱스토어의 복잡한 절차 대신, Union에서는 훨씬 가벼운
+                운영 흐름으로 서비스를 시작할 수 있습니다.
               </p>
             </Reveal>
 
-            <Reveal delay={0.15} className="mt-10 overflow-hidden rounded-xl border border-[#DCE4F2] bg-white shadow-sm">
-              <div className="relative flex items-center justify-center py-20 px-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FDE8E7] to-white" />
-                <div className="relative flex flex-col items-center gap-4 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FDE8E7] border border-[#E83A33]/15">
-                    <span className="text-sm font-bold text-[#E83A33]">APP</span>
-                  </div>
-                  <p className="text-sm font-medium text-[#6B6D6B]">워크스페이스에서 슈퍼앱 배포까지</p>
-                  <div className="flex items-center gap-3 mt-2">
-                    {["개발", "테스트", "심사"].map((step, i) => (
-                      <div key={step} className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FDE8E7] text-xs font-bold text-[#E83A33]">
-                          {i + 1}
-                        </span>
-                        <span className="text-xs text-[#6B6D6B]">{step}</span>
-                        {i < 2 && <span className="text-[#DCE4F2]">→</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <Reveal delay={0.15} className="mt-10">
+              <figure className="group relative overflow-hidden rounded-2xl border border-[#DCE4F2] bg-[#262725] shadow-md">
+                <Image
+                  src="/landing/generated/howitworks-launch-moment-v2.png"
+                  alt="첫 미니앱이 Union에서 출시 완료되는 순간을 보는 퍼블리셔"
+                  width={1024}
+                  height={1280}
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="h-auto w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  priority={false}
+                />
+
+                {/* Bottom caption overlay — context for the moment captured */}
+                <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 px-6 pb-6 pt-16 bg-gradient-to-t from-[#262725] via-[#262725]/80 to-transparent">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#EF6560]">
+                    The launch moment
+                  </p>
+                  <p className="mt-2 text-sm font-medium text-white sm:text-base">
+                    아이디어에서 출시까지, 평균 <span className="text-[#EF6560] font-bold">3일</span>
+                  </p>
+                </figcaption>
+              </figure>
             </Reveal>
           </div>
 

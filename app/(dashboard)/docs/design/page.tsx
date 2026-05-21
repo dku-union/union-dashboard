@@ -1,6 +1,5 @@
 "use client";
 
-import { DocSidebar } from "@/components/docs/doc-sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -70,11 +69,7 @@ const checklist = [
 
 export default function DesignGuidelinesPage() {
   return (
-    <div className="flex gap-8">
-      <aside className="hidden w-56 shrink-0 lg:block animate-slide-in-left">
-        <DocSidebar />
-      </aside>
-      <div className="flex-1 space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl">
         <div className="animate-fade-up">
           <h1 className="heading-display text-2xl tracking-tight">디자인 가이드라인</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -181,7 +176,6 @@ export default function DesignGuidelinesPage() {
             </ul>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }

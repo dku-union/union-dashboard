@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 
@@ -19,31 +20,11 @@ function Reveal({
   );
 }
 
-const RELEASE_FLOW = [
-  {
-    num: "01",
-    label: "워크스페이스 정리",
-    sub: "팀, 멤버, 앱 소유권을 먼저 확정합니다.",
-    outcome: "운영 주체 확정",
-  },
-  {
-    num: "02",
-    label: "빌드 업로드",
-    sub: ".unionapp 파일과 버전 메모를 제출합니다.",
-    outcome: "심사 가능한 버전 생성",
-  },
-  {
-    num: "03",
-    label: "QR 테스트·심사",
-    sub: "실기기 테스트 후 리뷰를 요청하고 피드백을 확인합니다.",
-    outcome: "출시 전 검증",
-  },
-  {
-    num: "04",
-    label: "승인 후 배포",
-    sub: "승인된 버전을 슈퍼앱에 배포하고 다음 버전을 관리합니다.",
-    outcome: "사용자 공개",
-  },
+const STATS = [
+  { num: "50+",    label: "파트너 대학교",   sub: "전국 거점 대학 중심" },
+  { num: "1,200+", label: "출시된 미니앱",   sub: "학생회·동아리·개발자" },
+  { num: "98%",    label: "퍼블리셔 만족도", sub: "내부 서베이 기준" },
+  { num: "3일",    label: "평균 출시 기간",  sub: "기획에서 배포까지" },
 ] as const;
 
 export function LandingImpactStats() {
@@ -57,42 +38,61 @@ export function LandingImpactStats() {
           </p>
         </Reveal>
 
-        <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20 lg:items-center">
-          {/* Left: headline */}
+        <div className="grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:items-end">
+          {/* Left: headline + Korea map */}
           <div>
             <Reveal delay={0.06} y={50}>
               <h2
                 className="heading-display font-bold leading-[1.08] tracking-tight text-[#262725]"
                 style={{ fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)", wordBreak: "keep-all" }}
               >
-                퍼블리셔가 따라가는
+                숫자로 보는
                 <br />
-                <span className="text-[#E83A33]">출시 운영 흐름</span>
+                <span className="text-[#E83A33]">Union의 성장</span>
               </h2>
             </Reveal>
             <Reveal delay={0.18} y={20}>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-[#6B6D6B] sm:text-lg" style={{ wordBreak: "keep-all" }}>
-                퍼블리셔가 어디서 시작하고, 어느 시점에 테스트·심사를 거치며,
-                어떤 버전이 실제로 배포되는지 한 흐름으로 보여줍니다.
+              <p className="mt-5 max-w-lg text-base sm:text-lg leading-relaxed text-[#6B6D6B]">
+                Union은 대학생들이 가장 많이 사용하는 캠퍼스 슈퍼앱입니다.
+                퍼블리셔는 단 하나의 플랫폼으로 전국 모든 대학에 즉시 도달합니다.
               </p>
+            </Reveal>
+
+            {/* Broadcast cluster — 단 한 번의 배포로 50+ 파트너 대학에 도달 */}
+            <Reveal delay={0.32} y={20}>
+              <div className="relative mt-10 max-w-sm">
+                <Image
+                  src="/landing/generated/impact-broadcast-cluster.png"
+                  alt="한 번의 배포가 파트너 대학으로 동시 도달하는 모습"
+                  width={1024}
+                  height={1280}
+                  className="h-auto w-full"
+                  priority={false}
+                />
+                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.22em] text-[#8E908E]">
+                  One deploy · 50+ partner universities
+                </p>
+              </div>
             </Reveal>
           </div>
 
-          {/* Right: release timeline */}
-          <div className="rounded-lg border border-[#DCE4F2] bg-white p-3 sm:p-4">
-            {RELEASE_FLOW.map((stat, i) => (
+          {/* Right: 2×2 stat cards */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {STATS.map((stat, i) => (
               <Reveal key={stat.label} delay={0.20 + i * 0.10} y={20}>
-                <div className="grid gap-4 border-b border-[#E8EEF7] px-3 py-5 last:border-b-0 sm:grid-cols-[64px_1fr_150px] sm:items-center sm:px-4">
-                  <div>
-                    <p className="text-[12px] font-semibold tracking-[0.18em] text-[#E83A33]">{stat.num}</p>
-                  </div>
-                  <div>
-                    <p className="text-[15px] font-semibold text-[#262725]">{stat.label}</p>
-                    <p className="mt-1 text-[13px] leading-6 text-[#6B6D6B]">{stat.sub}</p>
-                  </div>
-                  <div className="rounded-md border border-[#DCE4F2] bg-[#F7FAFE] px-3 py-2 text-[12px] font-medium text-[#4A4C4A]">
-                    {stat.outcome}
-                  </div>
+                <div className="group rounded-xl border border-[#DCE4F2] bg-white p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-[#E83A33]/30 transition-all duration-300 h-full">
+                  <p
+                    className="font-black leading-none tracking-tighter text-[#E83A33]"
+                    style={{ fontSize: "clamp(1.8rem, 4.5vw, 3.2rem)" }}
+                  >
+                    {stat.num}
+                  </p>
+                  <p className="mt-3 text-[13px] sm:text-sm font-semibold text-[#262725] leading-tight">
+                    {stat.label}
+                  </p>
+                  <p className="mt-1.5 text-[11px] text-[#8E908E] leading-snug">
+                    {stat.sub}
+                  </p>
                 </div>
               </Reveal>
             ))}
