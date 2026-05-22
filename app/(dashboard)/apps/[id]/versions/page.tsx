@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useMemo, useState } from "react";
 import {
   useDeployVersion,
   useMiniAppDetail,
@@ -13,12 +13,49 @@ import { VersionTestModal } from "@/components/apps/version-test-modal";
 import { RejectionDetail } from "@/components/reviews/rejection-detail";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, AppWindow, ArrowLeft, Upload, QrCode, CheckCircle, Rocket, Send } from "lucide-react";
+import { AlertTriangle, AppWindow, ArrowLeft, Upload, QrCode, CheckCircle, Rocket, Search, Send } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Review } from "@/types/app-version";
+import type { Review, VersionStatus } from "@/types/app-version";
+
+type VersionStatusFilter = VersionStatus | "all";
+const statusFilterOptions: { value: VersionStatusFilter; label: string }[] = [
+  { value: "all", label: "모든 상태" },
+  { value: "DRAFT", label: "DRAFT" },
+  { value: "UPLOADED", label: "UPLOADED" },
+  { value: "IN_REVIEW", label: "IN_REVIEW" },
+  { value: "ACCEPTED", label: "ACCEPTED" },
+  { value: "REJECTED", label: "REJECTED" },
+  { value: "DEPLOYED", label: "DEPLOYED" },
+];
+
+type VersionSort = "created_desc" | "created_asc" | "version_desc";
+const sortOptions: { value: VersionSort; label: string }[] = [
+  { value: "created_desc", label: "최근 생성순" },
+  { value: "created_asc", label: "오래된 순" },
+  { value: "version_desc", label: "버전 내림차순" },
+];
+
+function compareVersions(a: string, b: string) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
+    const ai = pa[i] ?? 0;
+    const bi = pb[i] ?? 0;
+    if (ai !== bi) return ai - bi;
+  }
+  return 0;
+}
 
 const POLL_INTERVAL = 15_000;
 
@@ -48,6 +85,33 @@ export default function VersionsPage({
   } | null>(null);
   const [selectedRejection, setSelectedRejection] = useState<Review | null>(null);
   const [rejectionOpen, setRejectionOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<VersionStatusFilter>("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<VersionSort>("created_desc");
+
+  const visibleVersions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = versions.filter((v) => {
+      if (statusFilter !== "all" && v.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        v.versionNumber.toLowerCase().includes(q) ||
+        (v.releaseNotes ?? "").toLowerCase().includes(q)
+      );
+    });
+    return [...filtered].sort((a, b) => {
+      switch (sort) {
+        case "created_desc":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "created_asc":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "version_desc":
+          return compareVersions(b.versionNumber, a.versionNumber);
+        default:
+          return 0;
+      }
+    });
+  }, [versions, statusFilter, query, sort]);
 
   const isLoading = appLoading || versionsLoading;
 
@@ -176,10 +240,60 @@ export default function VersionsPage({
       </Card>
 
       <Card className="publisher-panel animate-fade-up delay-1">
-        <CardHeader>
-          <CardTitle className="publisher-eyebrow">
-            전체 버전 ({versions.length})
-          </CardTitle>
+        <CardHeader className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <CardTitle className="publisher-eyebrow">
+              전체 버전 ({versions.length})
+            </CardTitle>
+          </div>
+          {versions.length > 0 && (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <Select
+                value={statusFilter}
+                onValueChange={(v) => setStatusFilter(v as VersionStatusFilter)}
+              >
+                <SelectTrigger className="h-9 w-full border-border/70 bg-card text-sm sm:w-44">
+                  <SelectValue>
+                    {() =>
+                      statusFilterOptions.find((o) => o.value === statusFilter)?.label ?? "상태"
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {statusFilterOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex w-full flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+                <div className="relative w-full sm:max-w-72">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="버전·릴리즈 노트 검색"
+                    className="h-9 border-border/70 bg-card pl-8 text-sm"
+                  />
+                </div>
+                <Select value={sort} onValueChange={(v) => setSort(v as VersionSort)}>
+                  <SelectTrigger className="h-9 w-full border-border/70 bg-card text-sm sm:w-40">
+                    <SelectValue>
+                      {() => sortOptions.find((o) => o.value === sort)?.label ?? "정렬"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sortOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           {versions.length === 0 ? (
@@ -193,9 +307,13 @@ export default function VersionsPage({
               }}
               variant="bare"
             />
+          ) : visibleVersions.length === 0 ? (
+            <p className="py-10 text-center text-sm text-muted-foreground">
+              검색·필터 조건에 맞는 버전이 없습니다.
+            </p>
           ) : (
             <div className="space-y-2">
-              {versions.map((v) => {
+              {visibleVersions.map((v) => {
                 const rejection = rejectedReviewByVersionId.get(v.id);
 
                 return (
