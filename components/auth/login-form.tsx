@@ -47,7 +47,9 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    await handleLogin(data.email, data.password);
+    await handleLogin(data.email, data.password, {
+      redirectTo: searchParams.get("from"),
+    });
   };
 
   return (
