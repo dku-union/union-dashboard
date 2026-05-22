@@ -1,19 +1,28 @@
-import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/admin";
 import { listAdminMiniApps } from "@/lib/admin/mini-apps";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const auth = await requireAdminSession();
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return jsonError(auth.error, auth.status, requestId, "ADMIN_AUTH_FAILED");
   }
 
   try {
     const apps = await listAdminMiniApps();
-    return NextResponse.json({ apps });
+    return jsonData({ apps }, requestId);
   } catch (error) {
-    console.error("GET /api/admin/mini-apps error:", error);
-    return NextResponse.json({ error: "미니앱 목록을 불러오지 못했습니다." }, { status: 500 });
+    return serverError(
+      "admin.mini_apps.list.failed",
+      error,
+      requestId,
+      "미니앱 목록을 불러오지 못했습니다.",
+    );
   }
 }
-
