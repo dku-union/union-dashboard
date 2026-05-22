@@ -1,36 +1,57 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdminSession } from "@/lib/auth/admin";
 import { getAdminReviewDetail } from "@/lib/admin/reviews";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const paramsSchema = z.object({
   id: z.string().uuid("유효하지 않은 버전 ID입니다."),
 });
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const auth = await requireAdminSession();
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return jsonError(auth.error, auth.status, requestId, "ADMIN_AUTH_FAILED");
   }
 
   const parsedParams = paramsSchema.safeParse(await params);
   if (!parsedParams.success) {
-    return NextResponse.json({ error: parsedParams.error.issues[0]?.message ?? "유효하지 않은 ID입니다." }, { status: 400 });
+    return jsonError(
+      parsedParams.error.issues[0]?.message ?? "유효하지 않은 ID입니다.",
+      400,
+      requestId,
+      "INVALID_PARAMS",
+    );
   }
 
   try {
     const review = await getAdminReviewDetail(parsedParams.data.id);
 
     if (!review) {
-      return NextResponse.json({ error: "심사 대상을 찾을 수 없습니다." }, { status: 404 });
+      return jsonError(
+        "심사 대상을 찾을 수 없습니다.",
+        404,
+        requestId,
+        "REVIEW_NOT_FOUND",
+      );
     }
 
-    return NextResponse.json({ review });
+    return jsonData({ review }, requestId);
   } catch (error) {
-    console.error("GET /api/admin/reviews/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError(
+      "admin.review.detail.failed",
+      error,
+      requestId,
+      undefined,
+      { versionId: parsedParams.data.id },
+    );
   }
 }

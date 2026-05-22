@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { publishers, emailVerifications, workspaceInvitations, notifications, workspaces } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/auth/password";
 import { createSession } from "@/lib/auth/session";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 import { eq, and, desc } from "drizzle-orm";
 
 const signupSchema = z.object({
@@ -13,15 +18,14 @@ const signupSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
+
   try {
     const body = await request.json();
     const parsed = signupSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
-      );
+      return jsonError("입력값이 올바르지 않습니다.", 400, requestId, "INVALID_INPUT");
     }
 
     const { name, email, password } = parsed.data;
@@ -40,9 +44,11 @@ export async function POST(request: Request) {
       .limit(1);
 
     if (!verification) {
-      return NextResponse.json(
-        { error: "이메일 인증을 먼저 완료해주세요." },
-        { status: 400 },
+      return jsonError(
+        "이메일 인증을 먼저 완료해주세요.",
+        400,
+        requestId,
+        "EMAIL_NOT_VERIFIED",
       );
     }
 
@@ -54,9 +60,11 @@ export async function POST(request: Request) {
       .limit(1);
 
     if (existing.length > 0) {
-      return NextResponse.json(
-        { error: "이미 등록된 이메일입니다." },
-        { status: 409 },
+      return jsonError(
+        "이미 등록된 이메일입니다.",
+        409,
+        requestId,
+        "EMAIL_ALREADY_REGISTERED",
       );
     }
 
@@ -115,20 +123,24 @@ export async function POST(request: Request) {
 
     await createSession({ ...newPublisher, hasWorkspace: false });
 
-    return NextResponse.json({
-      id: newPublisher.publisherId,
-      email: newPublisher.email,
-      name: newPublisher.name,
-      role: newPublisher.role,
-      status: newPublisher.pubstatus,
-      hasWorkspace: false,
-      pendingInvitations: pendingInvites.length,
-    });
+    return jsonData(
+      {
+        id: newPublisher.publisherId,
+        email: newPublisher.email,
+        name: newPublisher.name,
+        role: newPublisher.role,
+        status: newPublisher.pubstatus,
+        hasWorkspace: false,
+        pendingInvitations: pendingInvites.length,
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "회원가입 중 오류가 발생했습니다." },
-      { status: 500 },
+    return serverError(
+      "auth.signup.failed",
+      error,
+      requestId,
+      "회원가입 중 오류가 발생했습니다.",
     );
   }
 }

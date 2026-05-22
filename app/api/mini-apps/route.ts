@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { miniApps, workspaceMembers } from "@/lib/db/schema";
@@ -15,15 +14,21 @@ import { requireSameOrigin } from "@/lib/api/security";
 import { logger } from "@/lib/observability/logger";
 
 export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { searchParams } = new URL(request.url);
   const workspaceId = searchParams.get("workspaceId");
   if (!workspaceId) {
-    return NextResponse.json({ error: "workspaceId가 필요합니다." }, { status: 400 });
+    return jsonError(
+      "workspaceId가 필요합니다.",
+      400,
+      requestId,
+      "MISSING_WORKSPACE_ID",
+    );
   }
 
   try {
@@ -39,7 +44,7 @@ export async function GET(request: Request) {
       );
 
     if (!membership) {
-      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+      return jsonError("권한이 없습니다.", 403, requestId, "WORKSPACE_ACCESS_DENIED");
     }
 
     const apps = await db
@@ -47,7 +52,7 @@ export async function GET(request: Request) {
       .from(miniApps)
       .where(eq(miniApps.workspaceId, workspaceId));
 
-    return NextResponse.json(
+    return jsonData(
       apps.map((app) => ({
         id: app.id,
         name: app.name,
@@ -58,10 +63,13 @@ export async function GET(request: Request) {
         createdAt: app.createdAt.toISOString(),
         updatedAt: app.updatedAt.toISOString(),
       })),
+      requestId,
     );
   } catch (error) {
-    console.error("GET /api/mini-apps error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("mini_app.list.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId,
+    });
   }
 }
 

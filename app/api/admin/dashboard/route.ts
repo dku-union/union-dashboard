@@ -1,19 +1,28 @@
-import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/admin";
 import { getAdminDashboardData } from "@/lib/admin/dashboard";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const auth = await requireAdminSession();
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return jsonError(auth.error, auth.status, requestId, "ADMIN_AUTH_FAILED");
   }
 
   try {
     const dashboard = await getAdminDashboardData();
-    return NextResponse.json(dashboard);
+    return jsonData(dashboard, requestId);
   } catch (error) {
-    console.error("GET /api/admin/dashboard error:", error);
-    return NextResponse.json({ error: "대시보드 데이터를 불러오지 못했습니다." }, { status: 500 });
+    return serverError(
+      "admin.dashboard.failed",
+      error,
+      requestId,
+      "대시보드 데이터를 불러오지 못했습니다.",
+    );
   }
 }
-

@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
 import { and, count, countDistinct, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { miniApps, miniAppUsages, workspaceMembers } from "@/lib/db/schema";
 import type { AnalyticsRange } from "@/types/analytics";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
@@ -107,9 +112,10 @@ async function getSummary(workspaceId: string, from: Date | null, to: Date, mini
 }
 
 export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { searchParams } = new URL(request.url);
@@ -119,10 +125,10 @@ export async function GET(request: Request) {
   const miniAppId = miniAppIdParam && miniAppIdParam !== "all" ? Number(miniAppIdParam) : undefined;
 
   if (!workspaceId) {
-    return NextResponse.json({ error: "workspaceId가 필요합니다." }, { status: 400 });
+    return jsonError("workspaceId가 필요합니다.", 400, requestId, "MISSING_WORKSPACE_ID");
   }
   if (miniAppId !== undefined && Number.isNaN(miniAppId)) {
-    return NextResponse.json({ error: "유효하지 않은 miniAppId입니다." }, { status: 400 });
+    return jsonError("유효하지 않은 miniAppId입니다.", 400, requestId, "INVALID_MINI_APP_ID");
   }
 
   const range = ["today", "last_7_days", "last_30_days", "this_month", "all"].includes(rangeParam)
@@ -142,7 +148,7 @@ export async function GET(request: Request) {
       );
 
     if (!membership) {
-      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+      return jsonError("권한이 없습니다.", 403, requestId, "WORKSPACE_ACCESS_DENIED");
     }
 
     const apps = await db
@@ -152,7 +158,12 @@ export async function GET(request: Request) {
       .orderBy(miniApps.name);
 
     if (miniAppId !== undefined && !apps.some((app) => app.id === miniAppId)) {
-      return NextResponse.json({ error: "워크스페이스에 속한 미니앱이 아닙니다." }, { status: 403 });
+      return jsonError(
+        "워크스페이스에 속한 미니앱이 아닙니다.",
+        403,
+        requestId,
+        "MINI_APP_NOT_IN_WORKSPACE",
+      );
     }
 
     const currentSummary = await getSummary(workspaceId, from, to, miniAppId);
@@ -191,7 +202,7 @@ export async function GET(request: Request) {
       .groupBy(miniApps.id, miniApps.name)
       .orderBy(desc(count(miniAppUsages.id)), miniApps.name);
 
-    return NextResponse.json({
+    return jsonData({
       workspaceId,
       miniAppId: miniAppId ?? "all",
       range,
@@ -225,9 +236,12 @@ export async function GET(request: Request) {
         launches: Number(row.launches),
         activeUsers: Number(row.activeUsers),
       })),
-    });
+    }, requestId);
   } catch (error) {
-    console.error("GET /api/analytics/usage error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("analytics.usage.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId,
+      miniAppId,
+    });
   }
 }

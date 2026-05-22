@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { workspaceMembers, workspaceInvitations, notifications, publishers, workspaces } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { inviteMemberSchema } from "@/lib/validations";
-import { eq, and } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 async function getMemberRole(workspaceId: string, publisherId: string) {
   const [member] = await db
@@ -23,9 +28,10 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id: workspaceId } = await params;
@@ -33,17 +39,14 @@ export async function POST(
   try {
     const myRole = await getMemberRole(workspaceId, session.id);
     if (!myRole || !["owner", "admin"].includes(myRole)) {
-      return NextResponse.json({ error: "멤버 추가 권한이 없습니다." }, { status: 403 });
+      return jsonError("멤버 추가 권한이 없습니다.", 403, requestId, "MEMBER_INVITE_DENIED");
     }
 
     const body = await request.json();
     const parsed = inviteMemberSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
-      );
+      return jsonError("입력값이 올바르지 않습니다.", 400, requestId, "INVALID_INPUT");
     }
 
     const { email, role } = parsed.data;
@@ -58,9 +61,11 @@ export async function POST(
     if (publisher) {
       const existing = await getMemberRole(workspaceId, publisher.publisherId);
       if (existing) {
-        return NextResponse.json(
-          { error: "이미 워크스페이스에 소속된 멤버입니다." },
-          { status: 409 },
+        return jsonError(
+          "이미 워크스페이스에 소속된 멤버입니다.",
+          409,
+          requestId,
+          "MEMBER_ALREADY_EXISTS",
         );
       }
     }
@@ -79,9 +84,11 @@ export async function POST(
       .limit(1);
 
     if (existingInvite) {
-      return NextResponse.json(
-        { error: "이미 초대가 발송된 이메일입니다." },
-        { status: 409 },
+      return jsonError(
+        "이미 초대가 발송된 이메일입니다.",
+        409,
+        requestId,
+        "INVITATION_ALREADY_PENDING",
       );
     }
 
@@ -114,16 +121,21 @@ export async function POST(
       });
     }
 
-    return NextResponse.json({
-      id: invitation.id,
-      email,
-      role: invitation.role,
-      status: invitation.status,
-      createdAt: invitation.createdAt?.toISOString(),
-      isRegistered: !!publisher,
-    });
+    return jsonData(
+      {
+        id: invitation.id,
+        email,
+        role: invitation.role,
+        status: invitation.status,
+        createdAt: invitation.createdAt?.toISOString(),
+        isRegistered: !!publisher,
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("POST /api/workspaces/[id]/members error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.invite.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId,
+    });
   }
 }

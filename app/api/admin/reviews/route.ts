@@ -1,12 +1,18 @@
-import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/admin";
 import { listAdminReviews } from "@/lib/admin/reviews";
 import { adminReviewListQuerySchema } from "@/lib/validations";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const auth = await requireAdminSession();
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return jsonError(auth.error, auth.status, requestId, "ADMIN_AUTH_FAILED");
   }
 
   const { searchParams } = new URL(request.url);
@@ -16,14 +22,19 @@ export async function GET(request: Request) {
   });
 
   if (!parsed.success) {
-    return NextResponse.json({ error: "조회 조건이 올바르지 않습니다." }, { status: 400 });
+    return jsonError("조회 조건이 올바르지 않습니다.", 400, requestId, "INVALID_QUERY");
   }
 
   try {
     const reviews = await listAdminReviews(parsed.data.status, parsed.data.q);
-    return NextResponse.json({ reviews });
+    return jsonData({ reviews }, requestId);
   } catch (error) {
-    console.error("GET /api/admin/reviews error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError(
+      "admin.reviews.list.failed",
+      error,
+      requestId,
+      undefined,
+      { status: parsed.data.status, q: parsed.data.q },
+    );
   }
 }

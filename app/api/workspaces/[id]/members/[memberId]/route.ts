@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { eq, and } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { workspaceMembers } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { eq, and } from "drizzle-orm";
-import { z } from "zod";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const updateRoleSchema = z.object({
   role: z.enum(["admin", "developer", "viewer"]),
@@ -27,9 +32,10 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; memberId: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id: workspaceId, memberId } = await params;
@@ -37,17 +43,19 @@ export async function PATCH(
   try {
     const myRole = await getMemberRole(workspaceId, session.id);
     if (myRole !== "owner") {
-      return NextResponse.json({ error: "소유자만 역할을 변경할 수 있습니다." }, { status: 403 });
+      return jsonError(
+        "소유자만 역할을 변경할 수 있습니다.",
+        403,
+        requestId,
+        "OWNER_ONLY",
+      );
     }
 
     const body = await request.json();
     const parsed = updateRoleSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
-      );
+      return jsonError("입력값이 올바르지 않습니다.", 400, requestId, "INVALID_INPUT");
     }
 
     // owner 역할은 변경 불가
@@ -63,11 +71,16 @@ export async function PATCH(
       .limit(1);
 
     if (!target) {
-      return NextResponse.json({ error: "멤버를 찾을 수 없습니다." }, { status: 404 });
+      return jsonError("멤버를 찾을 수 없습니다.", 404, requestId, "MEMBER_NOT_FOUND");
     }
 
     if (target.role === "owner") {
-      return NextResponse.json({ error: "소유자의 역할은 변경할 수 없습니다." }, { status: 400 });
+      return jsonError(
+        "소유자의 역할은 변경할 수 없습니다.",
+        400,
+        requestId,
+        "OWNER_ROLE_IMMUTABLE",
+      );
     }
 
     const [updated] = await db
@@ -81,23 +94,24 @@ export async function PATCH(
       )
       .returning();
 
-    return NextResponse.json({
-      id: updated.id,
-      role: updated.role,
-    });
+    return jsonData({ id: updated.id, role: updated.role }, requestId);
   } catch (error) {
-    console.error("PATCH /api/workspaces/[id]/members/[memberId] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.member.patch.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId,
+      memberId,
+    });
   }
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string; memberId: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id: workspaceId, memberId } = await params;
@@ -105,7 +119,12 @@ export async function DELETE(
   try {
     const myRole = await getMemberRole(workspaceId, session.id);
     if (!myRole || !["owner", "admin"].includes(myRole)) {
-      return NextResponse.json({ error: "멤버 제거 권한이 없습니다." }, { status: 403 });
+      return jsonError(
+        "멤버 제거 권한이 없습니다.",
+        403,
+        requestId,
+        "MEMBER_REMOVE_DENIED",
+      );
     }
 
     const [target] = await db
@@ -120,11 +139,16 @@ export async function DELETE(
       .limit(1);
 
     if (!target) {
-      return NextResponse.json({ error: "멤버를 찾을 수 없습니다." }, { status: 404 });
+      return jsonError("멤버를 찾을 수 없습니다.", 404, requestId, "MEMBER_NOT_FOUND");
     }
 
     if (target.role === "owner") {
-      return NextResponse.json({ error: "소유자는 제거할 수 없습니다." }, { status: 400 });
+      return jsonError(
+        "소유자는 제거할 수 없습니다.",
+        400,
+        requestId,
+        "OWNER_REMOVAL_FORBIDDEN",
+      );
     }
 
     await db
@@ -136,9 +160,12 @@ export async function DELETE(
         ),
       );
 
-    return NextResponse.json({ success: true });
+    return jsonData({ success: true }, requestId);
   } catch (error) {
-    console.error("DELETE /api/workspaces/[id]/members/[memberId] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.member.delete.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId,
+      memberId,
+    });
   }
 }

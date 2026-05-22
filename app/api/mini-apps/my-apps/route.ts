@@ -1,13 +1,19 @@
-import { NextResponse } from "next/server";
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { miniApps, workspaceMembers, workspaces } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { eq, desc } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   try {
@@ -33,7 +39,7 @@ export async function GET() {
       .where(eq(workspaceMembers.publisherId, session.id))
       .orderBy(desc(miniApps.updatedAt));
 
-    return NextResponse.json(
+    return jsonData(
       rows.map((r) => ({
         id: r.id,
         name: r.name,
@@ -46,9 +52,11 @@ export async function GET() {
         workspaceName: r.workspaceName,
         workspaceColor: r.workspaceColor ?? "#2563EB",
       })),
+      requestId,
     );
   } catch (error) {
-    console.error("GET /api/mini-apps/my-apps error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("mini_app.my_apps.failed", error, requestId, undefined, {
+      actorId: session.id,
+    });
   }
 }

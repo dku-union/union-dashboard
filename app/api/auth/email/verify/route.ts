@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
+import { eq, and, gt, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { emailVerifications } from "@/lib/db/schema";
-import { eq, and, gt } from "drizzle-orm";
-import { desc } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const schema = z.object({
   email: z.string().email(),
@@ -11,14 +15,18 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
+
   try {
     const body = await request.json();
     const parsed = schema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
+      return jsonError(
+        "입력값이 올바르지 않습니다.",
+        400,
+        requestId,
+        "INVALID_INPUT",
       );
     }
 
@@ -38,16 +46,20 @@ export async function POST(request: Request) {
       .limit(1);
 
     if (!record) {
-      return NextResponse.json(
-        { error: "인증 코드가 만료되었거나 존재하지 않습니다." },
-        { status: 400 },
+      return jsonError(
+        "인증 코드가 만료되었거나 존재하지 않습니다.",
+        400,
+        requestId,
+        "CODE_EXPIRED_OR_MISSING",
       );
     }
 
     if (record.code !== code) {
-      return NextResponse.json(
-        { error: "인증 코드가 일치하지 않습니다." },
-        { status: 400 },
+      return jsonError(
+        "인증 코드가 일치하지 않습니다.",
+        400,
+        requestId,
+        "CODE_MISMATCH",
       );
     }
 
@@ -57,12 +69,13 @@ export async function POST(request: Request) {
       .set({ verified: true })
       .where(eq(emailVerifications.id, record.id));
 
-    return NextResponse.json({ message: "이메일 인증이 완료되었습니다." });
+    return jsonData({ message: "이메일 인증이 완료되었습니다." }, requestId);
   } catch (error) {
-    console.error("Email verify error:", error);
-    return NextResponse.json(
-      { error: "인증 확인 중 오류가 발생했습니다." },
-      { status: 500 },
+    return serverError(
+      "auth.email.verify.failed",
+      error,
+      requestId,
+      "인증 확인 중 오류가 발생했습니다.",
     );
   }
 }

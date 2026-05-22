@@ -1,13 +1,19 @@
-import { NextResponse } from "next/server";
+import { eq, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { notifications } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { eq, desc } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   try {
@@ -18,7 +24,7 @@ export async function GET() {
       .orderBy(desc(notifications.createdAt))
       .limit(50);
 
-    return NextResponse.json(
+    return jsonData(
       rows.map((r) => ({
         id: r.id,
         type: r.type,
@@ -28,9 +34,11 @@ export async function GET() {
         referenceId: r.referenceId,
         createdAt: r.createdAt?.toISOString(),
       })),
+      requestId,
     );
   } catch (error) {
-    console.error("GET /api/notifications error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("notification.list.failed", error, requestId, undefined, {
+      actorId: session.id,
+    });
   }
 }

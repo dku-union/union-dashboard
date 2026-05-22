@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { eq, and } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { workspaces, workspaceMembers, publishers, workspaceInvitations } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { eq, and } from "drizzle-orm";
-import { z } from "zod";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const updateSchema = z.object({
   name: z.string().min(2).max(100).optional(),
@@ -27,12 +32,13 @@ async function getMemberRole(workspaceId: string, publisherId: string) {
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
@@ -45,12 +51,22 @@ export async function GET(
       .limit(1);
 
     if (!workspace) {
-      return NextResponse.json({ error: "워크스페이스를 찾을 수 없습니다." }, { status: 404 });
+      return jsonError(
+        "워크스페이스를 찾을 수 없습니다.",
+        404,
+        requestId,
+        "WORKSPACE_NOT_FOUND",
+      );
     }
 
     const myRole = await getMemberRole(id, session.id);
     if (!myRole) {
-      return NextResponse.json({ error: "접근 권한이 없습니다." }, { status: 403 });
+      return jsonError(
+        "접근 권한이 없습니다.",
+        403,
+        requestId,
+        "WORKSPACE_ACCESS_DENIED",
+      );
     }
 
     const members = await db
@@ -82,34 +98,39 @@ export async function GET(
         ),
       );
 
-    return NextResponse.json({
-      id: workspace.workspaceId,
-      name: workspace.name,
-      description: workspace.description,
-      contactEmail: workspace.contactEmail,
-      color: workspace.color,
-      ownerId: workspace.ownerId,
-      createdAt: workspace.createdAt?.toISOString(),
-      updatedAt: workspace.updatedAt?.toISOString(),
-      myRole,
-      members: members.map((m) => ({
-        id: m.id,
-        publisherId: m.publisherId,
-        name: m.name,
-        email: m.email,
-        role: m.role,
-        joinedAt: m.joinedAt?.toISOString(),
-      })),
-      pendingInvitations: pendingInvites.map((inv) => ({
-        id: inv.id,
-        email: inv.email,
-        role: inv.role,
-        createdAt: inv.createdAt?.toISOString(),
-      })),
-    });
+    return jsonData(
+      {
+        id: workspace.workspaceId,
+        name: workspace.name,
+        description: workspace.description,
+        contactEmail: workspace.contactEmail,
+        color: workspace.color,
+        ownerId: workspace.ownerId,
+        createdAt: workspace.createdAt?.toISOString(),
+        updatedAt: workspace.updatedAt?.toISOString(),
+        myRole,
+        members: members.map((m) => ({
+          id: m.id,
+          publisherId: m.publisherId,
+          name: m.name,
+          email: m.email,
+          role: m.role,
+          joinedAt: m.joinedAt?.toISOString(),
+        })),
+        pendingInvitations: pendingInvites.map((inv) => ({
+          id: inv.id,
+          email: inv.email,
+          role: inv.role,
+          createdAt: inv.createdAt?.toISOString(),
+        })),
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("GET /api/workspaces/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.get.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId: id,
+    });
   }
 }
 
@@ -117,9 +138,10 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
@@ -127,17 +149,14 @@ export async function PATCH(
   try {
     const myRole = await getMemberRole(id, session.id);
     if (!myRole || !["owner", "admin"].includes(myRole)) {
-      return NextResponse.json({ error: "수정 권한이 없습니다." }, { status: 403 });
+      return jsonError("수정 권한이 없습니다.", 403, requestId, "WORKSPACE_WRITE_DENIED");
     }
 
     const body = await request.json();
     const parsed = updateSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
-      );
+      return jsonError("입력값이 올바르지 않습니다.", 400, requestId, "INVALID_INPUT");
     }
 
     const [updated] = await db
@@ -146,29 +165,35 @@ export async function PATCH(
       .where(eq(workspaces.workspaceId, id))
       .returning();
 
-    return NextResponse.json({
-      id: updated.workspaceId,
-      name: updated.name,
-      description: updated.description,
-      contactEmail: updated.contactEmail,
-      color: updated.color,
-      ownerId: updated.ownerId,
-      createdAt: updated.createdAt?.toISOString(),
-      updatedAt: updated.updatedAt?.toISOString(),
-    });
+    return jsonData(
+      {
+        id: updated.workspaceId,
+        name: updated.name,
+        description: updated.description,
+        contactEmail: updated.contactEmail,
+        color: updated.color,
+        ownerId: updated.ownerId,
+        createdAt: updated.createdAt?.toISOString(),
+        updatedAt: updated.updatedAt?.toISOString(),
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("PATCH /api/workspaces/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.patch.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId: id,
+    });
   }
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
@@ -176,14 +201,21 @@ export async function DELETE(
   try {
     const myRole = await getMemberRole(id, session.id);
     if (myRole !== "owner") {
-      return NextResponse.json({ error: "소유자만 삭제할 수 있습니다." }, { status: 403 });
+      return jsonError(
+        "소유자만 삭제할 수 있습니다.",
+        403,
+        requestId,
+        "OWNER_ONLY",
+      );
     }
 
     await db.delete(workspaces).where(eq(workspaces.workspaceId, id));
 
-    return NextResponse.json({ success: true });
+    return jsonData({ success: true }, requestId);
   } catch (error) {
-    console.error("DELETE /api/workspaces/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.delete.failed", error, requestId, undefined, {
+      actorId: session.id,
+      workspaceId: id,
+    });
   }
 }

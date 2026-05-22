@@ -1,14 +1,20 @@
-import { NextResponse } from "next/server";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { workspaces, workspaceMembers } from "@/lib/db/schema";
 import { getSession, createSession } from "@/lib/auth/session";
 import { createWorkspaceSchema } from "@/lib/validations";
-import { eq, sql } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   try {
@@ -45,17 +51,19 @@ export async function GET() {
       memberCount: Number(r.memberCount),
     }));
 
-    return NextResponse.json(result);
+    return jsonData(result, requestId);
   } catch (error) {
-    console.error("GET /api/workspaces error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.list.failed", error, requestId, undefined, {
+      actorId: session.id,
+    });
   }
 }
 
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   try {
@@ -63,9 +71,11 @@ export async function POST(request: Request) {
     const parsed = createWorkspaceSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "입력값이 올바르지 않습니다." },
-        { status: 400 },
+      return jsonError(
+        "입력값이 올바르지 않습니다.",
+        400,
+        requestId,
+        "INVALID_INPUT",
       );
     }
 
@@ -97,18 +107,22 @@ export async function POST(request: Request) {
       hasWorkspace: true,
     });
 
-    return NextResponse.json({
-      id: workspace.workspaceId,
-      name: workspace.name,
-      description: workspace.description,
-      contactEmail: workspace.contactEmail,
-      color: workspace.color,
-      ownerId: workspace.ownerId,
-      createdAt: workspace.createdAt?.toISOString(),
-      updatedAt: workspace.updatedAt?.toISOString(),
-    });
+    return jsonData(
+      {
+        id: workspace.workspaceId,
+        name: workspace.name,
+        description: workspace.description,
+        contactEmail: workspace.contactEmail,
+        color: workspace.color,
+        ownerId: workspace.ownerId,
+        createdAt: workspace.createdAt?.toISOString(),
+        updatedAt: workspace.updatedAt?.toISOString(),
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("POST /api/workspaces error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("workspace.create.failed", error, requestId, undefined, {
+      actorId: session.id,
+    });
   }
 }
