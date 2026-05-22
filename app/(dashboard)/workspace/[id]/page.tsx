@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useWorkspace } from "@/hooks/use-workspaces";
 import { MemberCard } from "@/components/workspace/member-card";
 import { InviteMemberDialog } from "@/components/workspace/invite-member-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
 import { MemberRole } from "@/types/workspace";
 import { Badge } from "@/components/ui/badge";
 import { MINI_APP_STATUS_LABELS, MINI_APP_STATUS_COLORS } from "@/lib/constants";
@@ -18,6 +20,7 @@ import {
   Loader2,
   Clock,
   Mail,
+  Search,
   Upload,
   ArrowUpRight,
   CalendarDays,
@@ -33,6 +36,7 @@ export default function WorkspaceDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [memberQuery, setMemberQuery] = useState("");
   const workspaceId = params.id as string;
   const { workspace, isLoading, refetch } = useWorkspace(workspaceId);
   const { apps: miniApps, isLoading: appsLoading } = useMiniAppList(workspaceId);
@@ -83,13 +87,13 @@ export default function WorkspaceDetailPage() {
 
   if (!workspace) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <p className="text-muted-foreground">워크스페이스를 찾을 수 없습니다.</p>
-        <Button variant="outline" onClick={() => router.push("/workspace")}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          목록으로 돌아가기
-        </Button>
-      </div>
+      <EmptyState
+        icon={Users}
+        title="워크스페이스를 찾을 수 없습니다"
+        description="삭제되었거나 접근 권한이 없는 워크스페이스일 수 있습니다."
+        action={{ label: "목록으로 돌아가기", href: "/workspace" }}
+        className="animate-fade-up my-12"
+      />
     );
   }
 
@@ -106,6 +110,13 @@ export default function WorkspaceDetailPage() {
     developer: members.filter((m) => m.role === "developer").length,
     viewer: members.filter((m) => m.role === "viewer").length,
   };
+  const filteredMembers = useMemo(() => {
+    const q = memberQuery.trim().toLowerCase();
+    if (!q) return members;
+    return members.filter((m) =>
+      [m.name ?? "", m.email ?? ""].some((field) => field.toLowerCase().includes(q)),
+    );
+  }, [members, memberQuery]);
   const approvedApps = miniApps.filter((app) => app.status === "APPROVED").length;
   const pendingApps = miniApps.filter((app) => app.status === "PENDING").length;
 
@@ -247,25 +258,17 @@ export default function WorkspaceDetailPage() {
             </div>
 
             {miniApps.length === 0 ? (
-              <div className="flex min-h-64 flex-col items-center justify-center rounded-lg border border-dashed border-border/70 bg-muted/20 px-6 py-12 text-center">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-card">
-                  <AppWindow className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <p className="mt-4 text-sm font-semibold">등록된 미니앱이 없습니다</p>
-                <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
-                  개발이 완료되지 않았더라도 앱을 먼저 등록하고, 이후 빌드를 업로드해 심사와 배포를 진행할 수 있습니다.
-                </p>
-                {canUploadApps && (
-                  <Button
-                    variant="outline"
-                    className="mt-4 border-border/70"
-                    render={<Link href={`/workspace/${workspaceId}/upload`} />}
-                  >
-                    <Upload className="h-4 w-4" />
-                    첫 미니앱 업로드
-                  </Button>
-                )}
-              </div>
+              <EmptyState
+                icon={AppWindow}
+                title="등록된 미니앱이 없습니다"
+                description="개발이 완료되지 않았더라도 앱을 먼저 등록하고, 이후 빌드를 업로드해 심사와 배포를 진행할 수 있습니다."
+                action={
+                  canUploadApps
+                    ? { label: "첫 미니앱 업로드", href: `/workspace/${workspaceId}/upload` }
+                    : undefined
+                }
+                className="min-h-64"
+              />
             ) : (
               <div className="space-y-3">
                 {miniApps.map((app, index) => {
@@ -346,18 +349,36 @@ export default function WorkspaceDetailPage() {
                 </div>
               </div>
 
+              {members.length > 4 && (
+                <div className="relative mt-4">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={memberQuery}
+                    onChange={(e) => setMemberQuery(e.target.value)}
+                    placeholder="멤버 이름·이메일 검색"
+                    className="h-8 border-border/70 bg-card pl-8 text-xs"
+                  />
+                </div>
+              )}
+
               <div className="mt-4 space-y-2">
-                {members.map((member, i) => (
-                  <div key={member.id} className={`animate-fade-up delay-${Math.min(i + 3, 8)}`}>
-                    <MemberCard
-                      member={member}
-                      canManage={canManage}
-                      canChangeRole={canChangeRole}
-                      onRoleChange={handleRoleChange}
-                      onRemove={handleRemoveMember}
-                    />
-                  </div>
-                ))}
+                {filteredMembers.length === 0 ? (
+                  <p className="py-6 text-center text-xs text-muted-foreground">
+                    검색 결과가 없습니다.
+                  </p>
+                ) : (
+                  filteredMembers.map((member, i) => (
+                    <div key={member.id} className={`animate-fade-up delay-${Math.min(i + 3, 8)}`}>
+                      <MemberCard
+                        member={member}
+                        canManage={canManage}
+                        canChangeRole={canChangeRole}
+                        onRoleChange={handleRoleChange}
+                        onRemove={handleRemoveMember}
+                      />
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
