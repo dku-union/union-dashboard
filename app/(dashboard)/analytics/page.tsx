@@ -7,6 +7,7 @@ import { MetricCard } from "@/components/analytics/metric-card";
 import { LineChartCard } from "@/components/analytics/line-chart-card";
 import { BarChartCard } from "@/components/analytics/bar-chart-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Select,
   SelectContent,
@@ -63,15 +64,12 @@ export default function AnalyticsPage() {
           <h1 className="text-heading-1">분석</h1>
           <p className="text-body-sm text-muted-foreground mt-1">미니앱 사용 기록 기반 통계</p>
         </div>
-        <Card className="border-border/60">
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <AppWindow className="h-10 w-10 text-muted-foreground" />
-            <p className="mt-4 text-sm font-medium">조회할 워크스페이스가 없습니다</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              워크스페이스에 참여하면 사용 통계를 확인할 수 있습니다.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={AppWindow}
+          title="조회할 워크스페이스가 없습니다"
+          description="워크스페이스에 참여하면 사용 통계를 확인할 수 있습니다."
+          action={{ label: "워크스페이스 만들기", href: "/workspace/new" }}
+        />
       </div>
     );
   }
