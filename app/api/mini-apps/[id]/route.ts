@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { miniApps, workspaceMembers, workspaces } from "@/lib/db/schema";
@@ -16,18 +15,19 @@ import { logger } from "@/lib/observability/logger";
 import { eq, and } from "drizzle-orm";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
   const miniAppId = Number(id);
   if (Number.isNaN(miniAppId)) {
-    return NextResponse.json({ error: "유효하지 않은 ID입니다." }, { status: 400 });
+    return jsonError("유효하지 않은 ID입니다.", 400, requestId, "INVALID_ID");
   }
 
   try {
@@ -49,7 +49,7 @@ export async function GET(
       .where(eq(miniApps.id, miniAppId));
 
     if (!row) {
-      return NextResponse.json({ error: "앱을 찾을 수 없습니다." }, { status: 404 });
+      return jsonError("앱을 찾을 수 없습니다.", 404, requestId, "MINI_APP_NOT_FOUND");
     }
 
     // 접근 권한 확인
@@ -64,24 +64,29 @@ export async function GET(
       );
 
     if (!membership) {
-      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+      return jsonError("권한이 없습니다.", 403, requestId, "WORKSPACE_ACCESS_DENIED");
     }
 
-    return NextResponse.json({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      iconUrl: row.iconUrl,
-      status: row.status,
-      workspaceId: row.workspaceId,
-      createdAt: row.createdAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-      workspaceName: row.workspaceName,
-      workspaceColor: row.workspaceColor ?? "#2563EB",
-    });
+    return jsonData(
+      {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        iconUrl: row.iconUrl,
+        status: row.status,
+        workspaceId: row.workspaceId,
+        createdAt: row.createdAt.toISOString(),
+        updatedAt: row.updatedAt.toISOString(),
+        workspaceName: row.workspaceName,
+        workspaceColor: row.workspaceColor ?? "#2563EB",
+      },
+      requestId,
+    );
   } catch (error) {
-    console.error("GET /api/mini-apps/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("mini_app.get.failed", error, requestId, undefined, {
+      actorId: session.id,
+      miniAppId,
+    });
   }
 }
 

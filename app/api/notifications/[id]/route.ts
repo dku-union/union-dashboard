@@ -1,16 +1,22 @@
-import { NextResponse } from "next/server";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { notifications } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { eq, and } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 export async function PATCH(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
@@ -28,12 +34,14 @@ export async function PATCH(
       .returning();
 
     if (!updated) {
-      return NextResponse.json({ error: "알림을 찾을 수 없습니다." }, { status: 404 });
+      return jsonError("알림을 찾을 수 없습니다.", 404, requestId, "NOTIFICATION_NOT_FOUND");
     }
 
-    return NextResponse.json({ success: true });
+    return jsonData({ success: true }, requestId);
   } catch (error) {
-    console.error("PATCH /api/notifications/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError("notification.read.failed", error, requestId, undefined, {
+      actorId: session.id,
+      notificationId: id,
+    });
   }
 }

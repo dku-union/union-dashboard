@@ -1,17 +1,23 @@
-import { NextResponse } from "next/server";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { workspaceInvitations, workspaceMembers, notifications, workspaces } from "@/lib/db/schema";
 import { getSession, createSession } from "@/lib/auth/session";
-import { eq, and } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 // POST /api/invitations/[id]?action=accept|decline
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const requestId = getRequestId(request);
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+    return jsonError("인증이 필요합니다.", 401, requestId, "UNAUTHENTICATED");
   }
 
   const { id } = await params;
@@ -19,7 +25,12 @@ export async function POST(
   const action = searchParams.get("action");
 
   if (!action || !["accept", "decline"].includes(action)) {
-    return NextResponse.json({ error: "action 파라미터가 필요합니다. (accept|decline)" }, { status: 400 });
+    return jsonError(
+      "action 파라미터가 필요합니다. (accept|decline)",
+      400,
+      requestId,
+      "INVALID_ACTION",
+    );
   }
 
   try {
@@ -37,7 +48,12 @@ export async function POST(
       .limit(1);
 
     if (!invitation) {
-      return NextResponse.json({ error: "초대를 찾을 수 없습니다." }, { status: 404 });
+      return jsonError(
+        "초대를 찾을 수 없습니다.",
+        404,
+        requestId,
+        "INVITATION_NOT_FOUND",
+      );
     }
 
     if (action === "accept") {
@@ -82,10 +98,13 @@ export async function POST(
         .where(eq(workspaces.workspaceId, invitation.workspaceId))
         .limit(1);
 
-      return NextResponse.json({
-        success: true,
-        message: `"${ws?.name}" 워크스페이스에 참여했습니다.`,
-      });
+      return jsonData(
+        {
+          success: true,
+          message: `"${ws?.name}" 워크스페이스에 참여했습니다.`,
+        },
+        requestId,
+      );
     } else {
       // 거절
       await db
@@ -105,10 +124,18 @@ export async function POST(
           ),
         );
 
-      return NextResponse.json({ success: true, message: "초대를 거절했습니다." });
+      return jsonData(
+        { success: true, message: "초대를 거절했습니다." },
+        requestId,
+      );
     }
   } catch (error) {
-    console.error("POST /api/invitations/[id] error:", error);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    return serverError(
+      "invitation.action.failed",
+      error,
+      requestId,
+      undefined,
+      { actorId: session.id, invitationId: id, action },
+    );
   }
 }
