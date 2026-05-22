@@ -166,19 +166,11 @@ export async function POST(request: Request) {
     }
 
     const created = springResult.data;
-    const now = new Date();
 
-    // dashboard DB 미러링 — Spring 이 발급한 id 그대로 사용
-    await db.insert(miniApps).values({
-      id: created.id,
-      name: created.name,
-      description: created.description,
-      iconUrl: created.iconUrl,
-      status: created.status,
-      workspaceId,
-      createdAt: now,
-      updatedAt: now,
-    });
+    // dashboard 와 Spring 은 동일한 Neon DB 의 mini_apps 테이블을 공유하므로
+    // Spring 이 이미 insert 한 row 를 다시 insert 하면 PK 충돌이 발생함.
+    // dashboard 측 별도 insert 는 제거하고, Spring 응답을 그대로 forward 한다.
+    // (createdAt/updatedAt 도 Spring 측 @PrePersist 가 채운 값 사용)
 
     logger.info("mini_app.register.succeeded", {
       requestId,
@@ -197,8 +189,7 @@ export async function POST(request: Request) {
         workspaceId,
         tags: created.tags,
         permissions: created.permissions,
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString(),
+        createdAt: created.createdAt,
       },
       requestId,
       201,
