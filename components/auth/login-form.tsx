@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { loginSchema, LoginFormValues } from "@/lib/validations";
 import { useAuthActions } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -24,6 +27,16 @@ import { Loader2, ArrowRight } from "lucide-react";
 
 export function LoginForm() {
   const { handleLogin, isSubmitting } = useAuthActions();
+  const searchParams = useSearchParams();
+  const expiredNoticeShown = useRef(false);
+
+  useEffect(() => {
+    if (expiredNoticeShown.current) return;
+    if (searchParams.get("expired") === "1") {
+      toast.info("세션이 만료되어 다시 로그인이 필요합니다.");
+      expiredNoticeShown.current = true;
+    }
+  }, [searchParams]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
