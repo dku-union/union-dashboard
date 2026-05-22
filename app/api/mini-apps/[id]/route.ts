@@ -154,14 +154,8 @@ export async function PATCH(
       return jsonError(result.error, result.status, requestId, "SPRING_REQUEST_FAILED");
     }
 
-    // dashboard DB(drizzle) 동기화: name / description 만 부분 업데이트.
-    // (Spring 응답 전체를 신뢰하되, dashboard 테이블엔 해당 두 필드만 미러링)
-    const updates: { name?: string; description?: string | null; updatedAt: Date } = {
-      updatedAt: new Date(),
-    };
-    if (parsed.data.name !== undefined) updates.name = parsed.data.name;
-    if (parsed.data.description !== undefined) updates.description = parsed.data.description;
-    await db.update(miniApps).set(updates).where(eq(miniApps.id, miniAppId));
+    // dashboard와 Spring 은 동일한 Neon DB 의 mini_apps 테이블을 공유하므로
+    // Spring 이 이미 update 한 row 를 dashboard 에서 또 update 할 필요가 없음.
 
     logger.info("mini_app.patch.succeeded", {
       requestId,
