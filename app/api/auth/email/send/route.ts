@@ -1,23 +1,32 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
+import { eq, and, gt } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { emailVerifications } from "@/lib/db/schema";
 import { sendVerificationEmail } from "@/lib/mail/send";
-import { eq, and, gt } from "drizzle-orm";
+import {
+  getRequestId,
+  jsonData,
+  jsonError,
+  serverError,
+} from "@/lib/api/responses";
 
 const schema = z.object({
   email: z.string().email(),
 });
 
 export async function POST(request: Request) {
+  const requestId = getRequestId(request);
+
   try {
     const body = await request.json();
     const parsed = schema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "유효한 이메일을 입력해주세요." },
-        { status: 400 },
+      return jsonError(
+        "유효한 이메일을 입력해주세요.",
+        400,
+        requestId,
+        "INVALID_INPUT",
       );
     }
 
@@ -36,9 +45,11 @@ export async function POST(request: Request) {
       .limit(1);
 
     if (recent.length > 0) {
-      return NextResponse.json(
-        { error: "1분 후에 다시 시도해주세요." },
-        { status: 429 },
+      return jsonError(
+        "1분 후에 다시 시도해주세요.",
+        429,
+        requestId,
+        "RATE_LIMITED",
       );
     }
 
@@ -48,12 +59,13 @@ export async function POST(request: Request) {
     await db.insert(emailVerifications).values({ email, code, expiresAt });
     await sendVerificationEmail(email, code);
 
-    return NextResponse.json({ message: "인증 코드가 발송되었습니다." });
+    return jsonData({ message: "인증 코드가 발송되었습니다." }, requestId);
   } catch (error) {
-    console.error("Email send error:", error);
-    return NextResponse.json(
-      { error: "인증 코드 발송에 실패했습니다." },
-      { status: 500 },
+    return serverError(
+      "auth.email.send.failed",
+      error,
+      requestId,
+      "인증 코드 발송에 실패했습니다.",
     );
   }
 }
