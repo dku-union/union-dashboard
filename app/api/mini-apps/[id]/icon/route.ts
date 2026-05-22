@@ -1,7 +1,4 @@
-import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "@/lib/db";
-import { miniApps } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { springFetch } from "@/lib/spring/client";
 import {
@@ -116,13 +113,10 @@ export async function PATCH(
       );
     }
 
+    // dashboard와 Spring 은 동일한 Neon DB 의 mini_apps 테이블을 공유하므로
+    // dashboard 측 추가 update 는 동일 row 에 대한 중복 작업 (제거).
     const savedIconUrl =
       result.data?.iconUrl ?? result.data?.fileUrl ?? parsed.data.iconUrl;
-
-    await db
-      .update(miniApps)
-      .set({ iconUrl: savedIconUrl, updatedAt: new Date() })
-      .where(eq(miniApps.id, miniAppId));
 
     logger.info("mini_app.icon.update.succeeded", {
       requestId,
