@@ -12,6 +12,7 @@
 - **P2-8** 공통 `EmptyState` 컴포넌트 + 5곳 적용 (dashboard, apps 목록, apps 상세, apps 분석, apps 버전 이력)
 - **P3-9** 미니앱 메타 편집(`PATCH /mini-apps/{id}`) 활성화
 - **P3-10** 신규 등록 폼에 카테고리/키워드/권한 입력 추가 + 등록 흐름을 Spring source-of-truth 로 정합
+- **hotfix** P3-10 회귀(POST `/api/mini-apps` 미러링 insert로 인한 PK 충돌) 제거 (PR #47, develop)
 
 ---
 
@@ -102,17 +103,13 @@
   - `app/api/mini-apps/[id]/icon/route.ts` (아이콘)
 - update는 idempotent라 PK 충돌은 없고 데이터는 안전. 정리는 별도 cleanup PR로
 
-### 2. POST `/api/mini-apps` 미러링 insert (회귀)
-- 직전 PR(#45)에서 "Spring forward + dashboard 미러링" 패턴 도입 시 같은 DB 공유 사실을 놓쳐서 동일 PK 로 두 번째 insert → PK constraint violation 가능
-- hotfix 브랜치(`fix/mini-app-register-pk-conflict`)에 dashboard insert 제거 패치 준비됨. **머지 필요** — 머지 전까지 신규 미니앱 등록이 실패함
-
-### 3. legacy 코드 정리
+### 2. legacy 코드 정리
 - `types/mini-app.ts` — `MiniAppStatus`(draft/in_review/published/...), `MiniAppCategory`, `PermissionScope` 등 mock 시대 enum. 일부는 신규 코드에서 재사용 중이지만 `types/app-version.ts`로 통합 가능
 - `lib/validations.ts`의 `miniAppSchema`, `MiniAppFormValues` — 사용처는 legacy `app-form.tsx` 한 곳뿐
 - `components/apps/app-form*.tsx`, `components/apps/status-badge.tsx` — legacy 멀티스텝 폼. 사용처 점검 후 삭제 또는 신규 enum으로 갱신
 - `data/admin-reviews.ts`, `data/publishers.ts` — admin 페이지 사용 여부 확인 후 처리
 
-### 4. dashboard drizzle 스키마 `permissions` 컬럼 정합
+### 3. dashboard drizzle 스키마 `permissions` 컬럼 정합
 - 백엔드에서 `mini_apps` 테이블에 `permissions` (JSONB) 컬럼 추가됨
 - dashboard drizzle 스키마에는 해당 컬럼이 정의되어 있지 않아 select 시 누락
 - 두 옵션:
@@ -149,12 +146,11 @@
 
 ## 다음 사이클 권장 우선순위
 
-1. **PK 충돌 hotfix 머지** (정리 작업 #2) — 신규 등록 차단 상태 해소가 가장 시급
-2. **P1-2 권한 격차 점검** — 작업 작고 운영 보안 영향 큼
-3. **P1-3 세션 만료 처리** — 사용자 작업 중 강제 로그아웃 분노 포인트
-4. **P1-5 모니터링 셋업 점검** — 운영 에러 감지 인프라 확인
-5. **P1-4 알림 검증** — 사용자 발견성에 직결
-6. P1-1(에러 응답 통일) + 정리 작업은 큰 회귀 가능성이 작은 작업이라 P1-2/3 끝낸 뒤 같은 PR로 묶기
+1. **P1-2 권한 격차 점검** — 작업 작고 운영 보안 영향 큼
+2. **P1-3 세션 만료 처리** — 사용자 작업 중 강제 로그아웃 분노 포인트
+3. **P1-5 모니터링 셋업 점검** — 운영 에러 감지 인프라 확인
+4. **P1-4 알림 검증** — 사용자 발견성에 직결
+5. P1-1(에러 응답 통일) + 정리 작업은 큰 회귀 가능성이 작은 작업이라 P1-2/3 끝낸 뒤 같은 PR로 묶기
 
 ---
 
