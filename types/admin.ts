@@ -1,39 +1,4 @@
-import type {
-  VersionStatus,
-  MiniAppStatus as RealMiniAppStatus,
-} from "@/types/app-version";
-import type {
-  MiniAppCategory,
-  MiniAppStatus as LegacyMiniAppStatus,
-  PermissionScope,
-} from "@/types/mini-app";
-
-export interface AdminReviewScanSummary {
-  security: "pass" | "warning";
-  performance: "pass" | "warning";
-  notes: string[];
-}
-
-export interface AdminReviewRecord {
-  id: string;
-  appId: string;
-  appName: string;
-  publisherId: string;
-  publisherName: string;
-  publisherEmail: string;
-  contactEmail: string;
-  category: MiniAppCategory;
-  shortDescription: string;
-  version: string;
-  status: LegacyMiniAppStatus;
-  submittedAt: string;
-  reviewedAt?: string;
-  releaseNote: string;
-  reviewerNote?: string;
-  rejectionReasons?: string[];
-  permissions: PermissionScope[];
-  autoScanSummary: AdminReviewScanSummary;
-}
+import type { MiniAppStatus, VersionStatus } from "@/types/app-version";
 
 export type AdminPublisherStatus = "ACTIVE" | "SUSPENDED" | "PENDING";
 export type AdminPublisherRole = "ROLE_USER" | "ROLE_ADMIN";
@@ -93,25 +58,6 @@ export interface AdminPublisherDetail extends AdminPublisherListItem {
   recentApps: AdminPublisherRecentApp[];
 }
 
-export interface AdminPublisherRecord {
-  id: string;
-  email: string;
-  name: string;
-  contactEmail?: string | null;
-  status: AdminPublisherStatus;
-  createdAt: string;
-  appCount: number;
-  publishedAppCount: number;
-  inReviewAppCount: number;
-  role: AdminPublisherRole;
-  recentApps: {
-    id: string;
-    name: string;
-    status: LegacyMiniAppStatus;
-    version: string;
-  }[];
-}
-
 export interface AdminPublisherStatusUpdateResponse {
   publisherId: string;
   status: AdminPublisherStatus;
@@ -124,8 +70,7 @@ export interface AdminManagedAppRecord {
   publisherId?: string | null;
   publisherName: string | null;
   publisherEmail: string | null;
-  category?: MiniAppCategory;
-  status: RealMiniAppStatus;
+  status: MiniAppStatus;
   currentVersion: string | null;
   currentVersionStatus?: VersionStatus | null;
   updatedAt: string;
@@ -135,7 +80,7 @@ export interface AdminManagedAppRecord {
 
 export interface AdminMiniAppStatusUpdateResponse {
   miniAppId: number;
-  status: RealMiniAppStatus;
+  status: MiniAppStatus;
   updatedAt: string;
 }
 
@@ -169,28 +114,3 @@ export interface AdminUserStatusUpdateResponse {
   updatedAt: string;
 }
 
-export interface AdminReportRecord {
-  id: string;
-  targetType: "miniapp" | "review";
-  targetName: string;
-  reporterName: string;
-  reporterEmail: string;
-  reason: string;
-  detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
-  createdAt: string;
-  actionTaken?: "warning" | "suspend" | "delete";
-}
-
-export interface AdminUserReportRecord {
-  id: string;
-  reportedUserName: string;
-  reportedUserEmail: string;
-  reporterName: string;
-  reporterEmail: string;
-  reason: string;
-  detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
-  createdAt: string;
-  actionTaken?: "warning" | "suspend" | "dismiss";
-}
