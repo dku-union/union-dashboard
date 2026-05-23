@@ -53,6 +53,7 @@ export async function GET(request: Request) {
           status: publisher.pubstatus,
           createdAt: publisher.createdAt?.toISOString(),
           hasWorkspace: memberRows.length > 0,
+          expiresAt: session.exp ? new Date(session.exp * 1000).toISOString() : null,
         },
       },
       requestId,
