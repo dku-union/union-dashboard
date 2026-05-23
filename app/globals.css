@@ -617,6 +617,7 @@
 @media (max-width: 640px) {
   .publisher-page-header {
     flex-direction: column;
+    align-items: stretch;
   }
 }
 
