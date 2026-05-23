@@ -11,4 +11,6 @@ export interface Publisher {
   createdAt: string;
   profileImage?: string;
   hasWorkspace?: boolean;
+  /** 세션 만료 시각 ISO 문자열. /api/auth/session 응답에 포함. */
+  expiresAt?: string | null;
 }

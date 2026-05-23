@@ -1,25 +1,5 @@
-import { MiniAppCategory, MiniAppStatus, PermissionScope } from "@/types/mini-app";
 import { MemberRole } from "@/types/workspace";
-import type { VersionStatus, MiniAppStatus as RealMiniAppStatus } from "@/types/app-version";
-
-export const CATEGORY_LABELS: Record<MiniAppCategory, string> = {
-  food: "맛집/음식",
-  education: "교육/학습",
-  marketplace: "중고거래",
-  social: "소셜/커뮤니티",
-  transport: "교통/이동",
-  utility: "유틸리티",
-  entertainment: "엔터테인먼트",
-  health: "건강/운동",
-};
-
-export const STATUS_LABELS: Record<MiniAppStatus, string> = {
-  draft: "임시저장",
-  in_review: "심사 중",
-  rejected: "반려됨",
-  published: "게시됨",
-  suspended: "정지됨",
-};
+import type { MiniAppStatus, PermissionScope, VersionStatus } from "@/types/app-version";
 
 export const PERMISSION_LABELS: Record<PermissionScope, { label: string; description: string }> = {
   "user.profile": {
@@ -84,12 +64,12 @@ export const VERSION_STATUS_COLORS: Record<VersionStatus, { dot: string; bg: str
   DEPLOYED: { dot: "bg-sage", bg: "bg-sage/10 text-sage" },
 };
 
-export const MINI_APP_STATUS_LABELS: Record<RealMiniAppStatus, string> = {
+export const MINI_APP_STATUS_LABELS: Record<MiniAppStatus, string> = {
   PENDING: "대기 중",
   APPROVED: "승인됨",
 };
 
-export const MINI_APP_STATUS_COLORS: Record<RealMiniAppStatus, { dot: string; bg: string }> = {
+export const MINI_APP_STATUS_COLORS: Record<MiniAppStatus, { dot: string; bg: string }> = {
   PENDING: { dot: "bg-gold", bg: "bg-gold/10 text-gold" },
   APPROVED: { dot: "bg-sage", bg: "bg-sage/10 text-sage" },
 };
