@@ -54,7 +54,13 @@ export function BarChartCard({
                   boxShadow: "var(--shadow-lg, 0 4px 16px rgba(38,39,37,0.10))",
                 }}
               />
-              <Bar dataKey="value" fill={color} radius={[4, 4, 0, 0]} opacity={0.85} />
+              <Bar
+                dataKey="value"
+                fill={color}
+                radius={[4, 4, 0, 0]}
+                opacity={0.85}
+                maxBarSize={72}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -216,6 +216,8 @@ export default function AnalyticsPage() {
                   <TableHead>미니앱</TableHead>
                   <TableHead className="text-right">실행</TableHead>
                   <TableHead className="text-right">사용자</TableHead>
+                  <TableHead className="text-right">DAU</TableHead>
+                  <TableHead className="text-right">MAU</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -224,11 +226,13 @@ export default function AnalyticsPage() {
                     <TableCell className="font-medium">{app.name}</TableCell>
                     <TableCell className="text-right">{app.launches.toLocaleString()}</TableCell>
                     <TableCell className="text-right">{app.activeUsers.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{app.dau.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{app.mau.toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
                 {data?.appBreakdown.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                       선택한 조건에 해당하는 사용 기록이 없습니다.
                     </TableCell>
                   </TableRow>
