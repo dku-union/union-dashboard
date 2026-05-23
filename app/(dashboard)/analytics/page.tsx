@@ -84,7 +84,7 @@ export default function AnalyticsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Select
             value={selectedWorkspaceId}
             onValueChange={(value) => {
@@ -93,7 +93,7 @@ export default function AnalyticsPage() {
               setMiniAppId("all");
             }}
           >
-            <SelectTrigger className="min-w-48">
+            <SelectTrigger className="w-full sm:w-auto sm:min-w-48">
               <SelectValue>
                 {() =>
                   workspaces.find((workspace) => workspace.id === selectedWorkspaceId)
@@ -117,7 +117,7 @@ export default function AnalyticsPage() {
               setMiniAppId(value === "all" ? "all" : Number(value));
             }}
           >
-            <SelectTrigger className="min-w-44">
+            <SelectTrigger className="w-full sm:w-auto sm:min-w-44">
               <SelectValue>
                 {() => {
                   if (miniAppId === "all") return "전체 미니앱";
@@ -145,7 +145,7 @@ export default function AnalyticsPage() {
               setRange(value as AnalyticsRange);
             }}
           >
-            <SelectTrigger className="min-w-36">
+            <SelectTrigger className="w-full sm:w-auto sm:min-w-36">
               <SelectValue>
                 {() =>
                   rangeOptions.find((option) => option.value === range)?.label ??
