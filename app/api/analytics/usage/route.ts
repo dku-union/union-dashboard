@@ -111,6 +111,20 @@ async function getSummary(workspaceId: string, from: Date | null, to: Date, mini
   };
 }
 
+async function getAppActiveUserCounts(workspaceId: string, from: Date, to: Date, miniAppId?: number) {
+  const rows = await db
+    .select({
+      id: miniApps.id,
+      activeUsers: countDistinct(miniAppUsages.userId),
+    })
+    .from(miniAppUsages)
+    .innerJoin(miniApps, eq(miniAppUsages.miniAppId, miniApps.id))
+    .where(buildUsageConditions(workspaceId, from, to, miniAppId))
+    .groupBy(miniApps.id);
+
+  return new Map(rows.map((row) => [row.id, Number(row.activeUsers)]));
+}
+
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
   const session = await getSession();
@@ -135,6 +149,10 @@ export async function GET(request: Request) {
     ? rangeParam
     : "last_30_days";
   const { from, to } = resolveRange(range);
+  const now = new Date();
+  const todayStart = startOfKstDay(now);
+  const todayEnd = endOfKstDay(now);
+  const monthStart = startOfKstMonth(now);
 
   try {
     const [membership] = await db
@@ -202,6 +220,11 @@ export async function GET(request: Request) {
       .groupBy(miniApps.id, miniApps.name)
       .orderBy(desc(count(miniAppUsages.id)), miniApps.name);
 
+    const [dauByAppId, mauByAppId] = await Promise.all([
+      getAppActiveUserCounts(workspaceId, todayStart, todayEnd, miniAppId),
+      getAppActiveUserCounts(workspaceId, monthStart, todayEnd, miniAppId),
+    ]);
+
     return jsonData({
       workspaceId,
       miniAppId: miniAppId ?? "all",
@@ -235,6 +258,8 @@ export async function GET(request: Request) {
         name: row.name,
         launches: Number(row.launches),
         activeUsers: Number(row.activeUsers),
+        dau: dauByAppId.get(row.id) ?? 0,
+        mau: mauByAppId.get(row.id) ?? 0,
       })),
     }, requestId);
   } catch (error) {

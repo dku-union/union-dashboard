@@ -21,6 +21,8 @@ export interface AnalyticsAppBreakdown {
   name: string;
   launches: number;
   activeUsers: number;
+  dau: number;
+  mau: number;
 }
 
 export interface AnalyticsOverview {
