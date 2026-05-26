@@ -65,7 +65,7 @@ export function LandingHowItWorks() {
                     The launch moment
                   </p>
                   <p className="mt-2 text-sm font-medium text-white sm:text-base">
-                    아이디어에서 출시까지, 평균 <span className="text-[#EF6560] font-bold">3일</span>
+                    워크스페이스 등록부터 첫 배포까지, <span className="text-[#EF6560] font-bold">하나의 흐름</span>으로
                   </p>
                 </figcaption>
               </figure>

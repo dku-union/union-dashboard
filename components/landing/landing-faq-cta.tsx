@@ -126,12 +126,6 @@ export function LandingFaqCta() {
                   >
                     로그인
                   </Link>
-                  <a
-                    href="#service"
-                    className="inline-flex h-12 items-center justify-center rounded-xl px-5 text-sm font-medium text-white/35 transition-all hover:text-white/60"
-                  >
-                    서비스 알아보기
-                  </a>
                 </div>
               </div>
             </div>
@@ -151,7 +145,7 @@ export function LandingFaqCta() {
 
         {/* Main footer content */}
         <div className="relative z-10 mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1.3fr_0.7fr_0.7fr_0.7fr]">
+          <div className="grid gap-12 lg:grid-cols-[1.5fr_0.75fr_0.75fr]">
             {/* Brand column */}
             <Reveal>
               <div className="flex items-center gap-3">
@@ -195,25 +189,6 @@ export function LandingFaqCta() {
               </ul>
             </Reveal>
 
-            {/* Resources column */}
-            <Reveal delay={0.1}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#262725] mb-5">Resources</p>
-              <ul className="space-y-3">
-                {[
-                  { label: "FAQ", href: "#faq" },
-                  { label: "개발 가이드", href: "/docs/development-guide" },
-                  { label: "Bridge API", href: "/docs/bridge-api" },
-                  { label: "디자인 가이드", href: "/docs/design-guidelines" },
-                ].map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href} className="text-[13px] text-[#6B6D6B] transition-all duration-200 hover:text-[#262725] hover:translate-x-1 inline-block">
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-
             {/* Account column */}
             <Reveal delay={0.15}>
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#262725] mb-5">Account</p>
@@ -239,11 +214,11 @@ export function LandingFaqCta() {
 
           {/* Sub-footer */}
           <div className="mt-14 flex flex-col gap-4 border-t border-[#DCE4F2] pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[11px] text-[#8E908E]">© 2025 Union. All rights reserved.</p>
+            <p className="text-[11px] text-[#8E908E]">© 2026 Union. All rights reserved.</p>
             <div className="flex gap-5 text-[11px] text-[#8E908E]">
-              <a href="#" className="transition-colors hover:text-[#262725]">이용약관</a>
-              <a href="#" className="transition-colors hover:text-[#262725]">개인정보처리방침</a>
-              <span className="text-[#6B6D6B]">단국대학교 캡스톤디자인</span>
+              <Link href="/legal/terms" className="transition-colors hover:text-[#262725]">이용약관</Link>
+              <Link href="/legal/privacy" className="transition-colors hover:text-[#262725]">개인정보처리방침</Link>
+              <span className="text-[#6B6D6B]">단국대학교 캡스톤디자인 2026</span>
             </div>
           </div>
         </div>
