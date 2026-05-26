@@ -66,7 +66,21 @@ const permissionScopeEnum = z.enum([
   "share",
 ]);
 
+// union.config.json 의 appId 와 동일한 reverse-domain 정규식.
+// Spring MiniAppRegisterRequestDto 및 SDK config.ts 와 일관 유지.
+export const APP_ID_REGEX = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9-]*)+$/;
+
+export const appIdSchema = z
+  .string()
+  .min(1, "appId는 필수입니다.")
+  .max(100, "appId는 100자 이하여야 합니다.")
+  .regex(
+    APP_ID_REGEX,
+    "appId는 reverse-domain 형식이어야 합니다. (예: com.union.sample-app)",
+  );
+
 export const createMiniAppSchema = z.object({
+  appId: appIdSchema,
   name: z
     .string()
     .min(2, "앱 이름은 2자 이상이어야 합니다.")

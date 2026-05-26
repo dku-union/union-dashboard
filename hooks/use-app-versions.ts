@@ -143,6 +143,7 @@ export function useCreateMiniApp() {
   const [isCreating, setIsCreating] = useState(false);
 
   const createMiniApp = async (data: {
+    appId: string;
     name: string;
     description?: string;
     workspaceId: string;

@@ -13,6 +13,7 @@ import {
 import { KeywordInput } from "@/components/apps/keyword-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PERMISSION_LABELS } from "@/lib/constants";
+import { useAppIdAvailability } from "@/hooks/use-app-id-availability";
 import type { PermissionScope } from "@/types/app-version";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ export default function UploadPage() {
   const [isNewApp, setIsNewApp] = useState(false);
 
   // 새 미니앱 필드
+  const [newAppId, setNewAppId] = useState("");
   const [newAppName, setNewAppName] = useState("");
   const [newAppDescription, setNewAppDescription] = useState("");
   const [newAppCategoryId, setNewAppCategoryId] = useState<number | null>(null);
@@ -76,6 +78,7 @@ export default function UploadPage() {
   const [iconPreview, setIconPreview] = useState<string | null>(null);
   const iconInputRef = useRef<HTMLInputElement>(null);
   const isUploadingIcon = iconStep === "url" || iconStep === "uploading" || iconStep === "saving";
+  const appIdAvailability = useAppIdAvailability(newAppId);
 
   // 버전 필드
   const [versionNumber, setVersionNumber] = useState(
@@ -136,8 +139,17 @@ export default function UploadPage() {
   };
 
   const handleCreateNewApp = async () => {
-    if (!newAppName.trim() || !iconFile || !newAppCategoryId) return;
+    if (
+      !newAppId.trim() ||
+      !newAppName.trim() ||
+      !iconFile ||
+      !newAppCategoryId ||
+      appIdAvailability.status !== "available"
+    ) {
+      return;
+    }
     const app = await createMiniApp({
+      appId: newAppId.trim(),
       name: newAppName,
       description: newAppDescription || undefined,
       workspaceId,
@@ -158,6 +170,7 @@ export default function UploadPage() {
     setIsNewApp(false);
     await refetchApps();
     clearIconSelection();
+    setNewAppId("");
     setNewAppCategoryId(null);
     setNewAppKeywords([]);
     setNewAppPermissions([]);
@@ -361,6 +374,33 @@ export default function UploadPage() {
               ) : (
                 <div className="space-y-4 rounded-lg border border-border/70 bg-muted/20 p-4">
                   <div>
+                    <Label className="publisher-eyebrow">appId</Label>
+                    <p className="text-[11px] text-muted-foreground/60 mb-2 mt-1">
+                      union.config.json 의 appId 와 동일해야 합니다. reverse-domain 형식.
+                    </p>
+                    <Input
+                      placeholder="com.union.sample-app"
+                      className="mt-1.5 border-border/60 bg-card font-mono text-sm"
+                      value={newAppId}
+                      onChange={(e) => setNewAppId(e.target.value)}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                    {appIdAvailability.message && (
+                      <p
+                        className={`mt-1.5 text-[11px] ${
+                          appIdAvailability.status === "available"
+                            ? "text-success"
+                            : appIdAvailability.status === "checking"
+                              ? "text-muted-foreground"
+                              : "text-destructive"
+                        }`}
+                      >
+                        {appIdAvailability.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
                     <Label className="publisher-eyebrow">앱 이름</Label>
                     <Input
                       placeholder="미니앱 이름"
@@ -504,6 +544,7 @@ export default function UploadPage() {
                       onClick={() => {
                         setIsNewApp(false);
                         clearIconSelection();
+                        setNewAppId("");
                         setNewAppCategoryId(null);
                         setNewAppKeywords([]);
                         setNewAppPermissions([]);
@@ -517,6 +558,7 @@ export default function UploadPage() {
                         !newAppName.trim() ||
                         !iconFile ||
                         !newAppCategoryId ||
+                        appIdAvailability.status !== "available" ||
                         isCreating ||
                         isUploadingIcon
                       }
