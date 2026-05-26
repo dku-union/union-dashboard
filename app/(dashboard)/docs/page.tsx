@@ -57,7 +57,10 @@ const categories: DocCategoryCard[] = [
     description: "심사 기준과 보안 규칙. 반려를 피하는 가장 빠른 길.",
     href: "/docs/guidelines/review",
     icon: ShieldCheck,
-    links: [{ label: "심사 기준", href: "/docs/guidelines/review" }],
+    links: [
+      { label: "심사 기준", href: "/docs/guidelines/review" },
+      { label: "알림 발송", href: "/docs/guidelines/notifications" },
+    ],
   },
   {
     id: "design",

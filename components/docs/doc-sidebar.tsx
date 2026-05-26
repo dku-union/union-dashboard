@@ -56,7 +56,10 @@ const docCategories: DocCategoryConfig[] = [
     id: "guidelines",
     title: "가이드라인",
     icon: ShieldCheck,
-    links: [{ href: "/docs/guidelines/review", title: "심사 기준" }],
+    links: [
+      { href: "/docs/guidelines/review", title: "심사 기준" },
+      { href: "/docs/guidelines/notifications", title: "알림 발송" },
+    ],
   },
   {
     id: "design",
