@@ -5,6 +5,7 @@ import { jwtVerify } from "jose";
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const publicPaths = ["/", "/login", "/signup"];
+const publicPathPrefixes = ["/legal/"];
 const publicAssetPrefixes = ["/landing/"];
 const publicFilePattern = /\.(?:png|webp|jpg|jpeg|gif|svg|ico|bmp|avif)$/i;
 
@@ -66,6 +67,10 @@ export async function proxy(request: NextRequest) {
       }
       return NextResponse.next();
     }
+    return NextResponse.next();
+  }
+
+  if (publicPathPrefixes.some((prefix) => pathname.startsWith(prefix))) {
     return NextResponse.next();
   }
 

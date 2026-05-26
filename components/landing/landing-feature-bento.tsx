@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { Highlight } from "@/components/ui/highlight";
 import {
-  Bell, BarChart3, Code2, FileCheck2, ListChecks, Users,
+  Bell, BarChart3, Code2, FileCheck2, ListChecks,
 } from "lucide-react";
 
 function Reveal({
@@ -40,14 +40,6 @@ const NOTIFS = [
 const CHART_BARS = [35, 52, 40, 68, 55, 78, 70, 88, 82, 95, 90, 100] as const;
 
 const RELEASE_STEPS = ["업로드", "테스트", "심사", "승인", "배포"] as const;
-
-const AVATARS = [
-  { initial: "P", bg: "#E83A33" },
-  { initial: "J", bg: "#2D8A4E" },
-  { initial: "M", bg: "#D4860A" },
-  { initial: "K", bg: "#262725" },
-  { initial: "+3", bg: "#FDE8E7" },
-] as const;
 
 export function LandingFeatureBento() {
   return (
@@ -125,9 +117,9 @@ export function LandingFeatureBento() {
                   <BarChart3 className="h-5 w-5" />
                 </div>
                 <h3 className="heading-display text-xl font-bold text-[#262725]">운영 분석 대시보드</h3>
-                <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">출시 이후 앱 사용 흐름과 리텐션을 확인합니다.</p>
+                <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">앱별 일/주/월 사용량, 이벤트, 디바이스 분포를 확인합니다.</p>
                 <div className="mt-5 flex-1 flex flex-col justify-end">
-                  <div className="flex items-end gap-[3px] h-20">
+                  <div className="flex items-end gap-[3px] h-24">
                     {CHART_BARS.map((h, i) => (
                       <div
                         key={i}
@@ -141,18 +133,9 @@ export function LandingFeatureBento() {
                       />
                     ))}
                   </div>
-                  <div className="mt-1 h-px bg-[#DCE4F2]" />
-                  <div className="mt-4 grid grid-cols-2 gap-2.5">
-                    <div className="rounded-lg border border-[#DCE4F2] bg-[#F7FAFE] px-4 py-3">
-                      <p className="text-[10px] text-[#8E908E] uppercase tracking-wide">주간 사용</p>
-                      <p className="mt-1 text-xl font-bold text-[#262725]">12,840</p>
-                      <p className="mt-0.5 text-[11px] text-[#E83A33]">↑ 18.4%</p>
-                    </div>
-                    <div className="rounded-lg border border-[#DCE4F2] bg-[#F7FAFE] px-4 py-3">
-                      <p className="text-[10px] text-[#8E908E] uppercase tracking-wide">전환율</p>
-                      <p className="mt-1 text-xl font-bold text-[#262725]">7.2%</p>
-                      <p className="mt-0.5 text-[11px] text-[#E83A33]">↑ 2.1%</p>
-                    </div>
+                  <div className="mt-3 flex items-center justify-between text-[10px] text-[#8E908E] uppercase tracking-wide">
+                    <span>최근 12일</span>
+                    <span>일별 추세</span>
                   </div>
                 </div>
               </div>
@@ -174,33 +157,8 @@ export function LandingFeatureBento() {
             </BentoCard>
           </Reveal>
 
-          {/* ④ Team (3 cols) */}
-          <Reveal className="lg:col-span-3" delay={0.20} y={24}>
-            <BentoCard className="p-7 min-h-[220px]">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
-                <Users className="h-5 w-5" />
-              </div>
-              <h3 className="heading-display text-lg font-bold text-[#262725]">팀 협업</h3>
-              <p className="mt-2 text-[13px] text-[#6B6D6B] leading-relaxed">멤버를 초대하고 역할을 나눠 함께 운영하세요.</p>
-              <div className="mt-5 flex -space-x-2">
-                {AVATARS.map((a, i) => (
-                  <div
-                    key={i}
-                    className="h-8 w-8 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold"
-                    style={{
-                      backgroundColor: a.bg,
-                      color: i === 4 ? "#E83A33" : "#FFFFFF",
-                    }}
-                  >
-                    {a.initial}
-                  </div>
-                ))}
-              </div>
-            </BentoCard>
-          </Reveal>
-
-          {/* ⑤ Global Reach (5 cols) */}
-          <Reveal className="lg:col-span-5" delay={0.25} y={24}>
+          {/* ④ Release Steps (8 cols) */}
+          <Reveal className="lg:col-span-8" delay={0.20} y={24}>
             <BentoCard className="p-7 min-h-[220px]">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#F5C6C2] bg-[#FFF7F6] text-[#E83A33] mb-5">
                 <ListChecks className="h-5 w-5" />
@@ -225,8 +183,8 @@ export function LandingFeatureBento() {
             </BentoCard>
           </Reveal>
 
-          {/* ⑥ Bridge SDK (12 cols) */}
-          <Reveal className="sm:col-span-2 lg:col-span-12" delay={0.30} y={24}>
+          {/* ⑤ Bridge SDK (12 cols) */}
+          <Reveal className="sm:col-span-2 lg:col-span-12" delay={0.25} y={24}>
             <BentoCard className="p-7 sm:p-9">
               <div className="flex flex-col lg:flex-row lg:items-center lg:gap-14">
                 <div className="flex-1">
