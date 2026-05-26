@@ -148,6 +148,7 @@ export async function POST(request: Request) {
       iconUrl: null, // 등록 직후 별도 업로드 흐름 (백엔드 optional 처리)
       workspaceId,
       categoryId: parsed.data.categoryId,
+      appId: parsed.data.appId,
       keywords: parsed.data.keywords ?? [],
       permissions: parsed.data.permissions ?? [],
     };
