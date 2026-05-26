@@ -85,6 +85,8 @@ export interface MiniAppRecord {
   updatedAt: string;
   tags?: string | null;
   permissions?: PermissionScope[] | null;
+  /** reverse-domain appId (예: com.union.soccer). Spring `MiniApp.appId`. 알림 발송 대상 식별자. */
+  appId?: string | null;
 }
 
 export interface MiniAppWithWorkspace extends MiniAppRecord {
