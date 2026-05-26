@@ -40,6 +40,18 @@ export default function WorkspaceDetailPage() {
   const workspaceId = params.id as string;
   const { workspace, isLoading, refetch } = useWorkspace(workspaceId);
   const { apps: miniApps, isLoading: appsLoading } = useMiniAppList(workspaceId);
+  const members = useMemo(() => workspace?.members ?? [], [workspace?.members]);
+  const pendingInvitations = useMemo(
+    () => workspace?.pendingInvitations ?? [],
+    [workspace?.pendingInvitations],
+  );
+  const filteredMembers = useMemo(() => {
+    const q = memberQuery.trim().toLowerCase();
+    if (!q) return members;
+    return members.filter((m) =>
+      [m.name ?? "", m.email ?? ""].some((field) => field.toLowerCase().includes(q)),
+    );
+  }, [members, memberQuery]);
 
   const handleRoleChange = async (memberId: number, role: MemberRole) => {
     try {
@@ -97,8 +109,6 @@ export default function WorkspaceDetailPage() {
     );
   }
 
-  const members = workspace.members ?? [];
-  const pendingInvitations = workspace.pendingInvitations ?? [];
   const myRole = workspace.myRole as MemberRole;
   const canManage = myRole === "owner" || myRole === "admin";
   const canUploadApps = canManage || myRole === "developer";
@@ -110,13 +120,6 @@ export default function WorkspaceDetailPage() {
     developer: members.filter((m) => m.role === "developer").length,
     viewer: members.filter((m) => m.role === "viewer").length,
   };
-  const filteredMembers = useMemo(() => {
-    const q = memberQuery.trim().toLowerCase();
-    if (!q) return members;
-    return members.filter((m) =>
-      [m.name ?? "", m.email ?? ""].some((field) => field.toLowerCase().includes(q)),
-    );
-  }, [members, memberQuery]);
   const approvedApps = miniApps.filter((app) => app.status === "APPROVED").length;
   const pendingApps = miniApps.filter((app) => app.status === "PENDING").length;
 

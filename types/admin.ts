@@ -33,6 +33,45 @@ export interface AdminDashboardData {
   attentionPublishers: AdminDashboardPublisherItem[];
 }
 
+export type AdminReportTargetType = "MINI_APP" | "REVIEW" | "USER";
+export type AdminReportStatus = "PENDING" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
+export type AdminReportReason =
+  | "POLICY_VIOLATION"
+  | "HARASSMENT"
+  | "SCAM"
+  | "SPAM"
+  | "INAPPROPRIATE_CONTENT"
+  | "COPYRIGHT"
+  | "OTHER";
+
+export interface AdminReportRecord {
+  id: string;
+  targetType: AdminReportTargetType;
+  targetLabel: string;
+  targetSubLabel: string | null;
+  reporterName: string;
+  reporterEmail: string;
+  reason: AdminReportReason;
+  detail: string | null;
+  status: AdminReportStatus;
+  actionTaken: string;
+  reviewedByName: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminReportListResponse {
+  reports: AdminReportRecord[];
+}
+
+export interface AdminReportUpdateResponse {
+  report: Pick<
+    AdminReportRecord,
+    "id" | "status" | "actionTaken" | "reviewedByName" | "reviewedAt" | "updatedAt"
+  >;
+}
+
 export interface AdminPublisherRecentApp {
   id: string;
   name: string;

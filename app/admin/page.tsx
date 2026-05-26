@@ -223,14 +223,14 @@ export default function AdminDashboardPage() {
             <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-4">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Info className="h-4 w-4 text-muted-foreground" />
-                실데이터 모델 준비 중
+                신고 관리 연결됨
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                신고 도메인은 별도 영속 모델 설계 후 연결할 예정입니다.
+                앱에서 접수된 신고를 확인하고 처리 상태를 반영할 수 있습니다.
               </p>
             </div>
             <Button variant="outline" className="w-full border-border/60" render={<Link href="/admin/reports" />}>
-              준비 상태 보기
+              신고 관리
             </Button>
           </CardContent>
         </Card>
