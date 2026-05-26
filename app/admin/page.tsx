@@ -18,13 +18,13 @@ export default function AdminDashboard() {
     { label: "총 사용자", value: mockAdminUsers.length, icon: Users, color: "text-foreground", bg: "bg-gradient-to-br from-foreground/5 to-foreground/[0.02]" },
     { label: "전체 앱", value: mockMiniApps.length, icon: AppWindow, color: "text-sage", bg: "bg-gradient-to-br from-sage/10 to-sage/5" },
     { label: "심사 대기", value: mockAdminReviews.filter((review) => review.status === "in_review").length, icon: ClipboardCheck, color: "text-gold", bg: "bg-gradient-to-br from-gold/10 to-gold/5" },
-    { label: "신고 접수", value: mockAdminReports.filter((report) => report.status === "RECEIVED" || report.status === "IN_PROGRESS").length, icon: Shield, color: "text-destructive", bg: "bg-gradient-to-br from-destructive/10 to-destructive/5" },
+    { label: "신고 접수", value: mockAdminReports.filter((report) => report.status === "PENDING" || report.status === "IN_PROGRESS").length, icon: Shield, color: "text-destructive", bg: "bg-gradient-to-br from-destructive/10 to-destructive/5" },
   ];
 
   const recentReviews = mockAdminReviews.filter((review) => review.status === "in_review").slice(0, 3);
   const rejectedReviews = mockAdminReviews.filter((review) => review.status === "rejected").slice(0, 3);
   const attentionPublishers = mockAdminPublishers.filter((publisher) => publisher.status !== "ACTIVE").slice(0, 3);
-  const activeReports = mockAdminReports.filter((report) => report.status === "RECEIVED" || report.status === "IN_PROGRESS").slice(0, 3);
+  const activeReports = mockAdminReports.filter((report) => report.status === "PENDING" || report.status === "IN_PROGRESS").slice(0, 3);
 
   return (
     <div className="space-y-8 max-w-6xl">
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
           <CardContent className="space-y-3 pt-5">
             {activeReports.map((report) => (
               <div key={report.id} className="rounded-lg border border-border/50 bg-muted/20 px-3 py-3">
-                <p className="text-sm font-medium">{report.targetName}</p>
+                <p className="text-sm font-medium">{report.targetLabel}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{report.reason}</p>
                 <p className="mt-1 text-xs font-mono text-muted-foreground/70">{report.status} · {report.createdAt}</p>
               </div>

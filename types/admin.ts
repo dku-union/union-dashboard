@@ -59,30 +59,39 @@ export interface AdminManagedAppRecord {
   forcedActionNote?: string;
 }
 
+export type ReportTargetType = "MINI_APP" | "REVIEW" | "USER";
+export type ReportStatus = "PENDING" | "IN_PROGRESS" | "VALID" | "REJECTED" | "ARCHIVED";
+export type ReportReason =
+  | "SPAM"
+  | "SCAM"
+  | "INAPPROPRIATE_CONTENT"
+  | "HARASSMENT"
+  | "PRIVACY_VIOLATION"
+  | "POLICY_VIOLATION"
+  | "ETC";
+export type ReportAction =
+  | "NONE"
+  | "WARN"
+  | "HOLD_APP"
+  | "SUSPEND_APP"
+  | "DELETE_APP"
+  | "SUSPEND_USER";
+
 export interface AdminReportRecord {
   id: string;
-  targetType: "miniapp" | "review";
-  targetName: string;
+  targetType: ReportTargetType;
+  targetLabel: string;
+  targetSubLabel?: string;
   reporterName: string;
   reporterEmail: string;
-  reason: string;
+  reason: ReportReason;
   detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
+  status: ReportStatus;
+  actionTaken: ReportAction;
+  reviewedByName?: string;
+  reviewedAt?: string;
+  adminMemo?: string;
   createdAt: string;
-  actionTaken?: "warning" | "suspend" | "delete";
-}
-
-export interface AdminUserReportRecord {
-  id: string;
-  reportedUserName: string;
-  reportedUserEmail: string;
-  reporterName: string;
-  reporterEmail: string;
-  reason: string;
-  detail: string;
-  status: "RECEIVED" | "IN_PROGRESS" | "RESOLVED" | "DISMISSED";
-  createdAt: string;
-  actionTaken?: "warning" | "suspend" | "dismiss";
 }
 
 export interface AdminUserRecord {
