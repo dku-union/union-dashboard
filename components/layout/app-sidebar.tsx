@@ -21,6 +21,9 @@ import {
   BookOpen,
   Settings,
   Users,
+  KeyRound,
+  Bell,
+  History,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,8 +53,44 @@ export function AppSidebar() {
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
+    // 앱 컨텍스트 항목 (/apps/{id}, /apps/{id}/...): 정확 일치만 활성화 — 형제 경로끼리 충돌 방지.
+    if (/^\/apps\/\d+/.test(href)) return pathname === href;
     return pathname.startsWith(href);
   };
+
+  /**
+   * /apps/{숫자 id}/* 경로일 때 그 id 를 추출. 사이드바에서 앱 전용 보조 메뉴를 노출하는 데 사용.
+   * /apps, /apps/new 같은 비-상세 경로에선 null.
+   */
+  const currentAppId = (() => {
+    const match = pathname.match(/^\/apps\/(\d+)(?:\/.*)?$/);
+    return match ? match[1] : null;
+  })();
+
+  const appContextItems = currentAppId
+    ? [
+        {
+          title: "앱 상세",
+          href: `/apps/${currentAppId}`,
+          icon: AppWindow,
+        },
+        {
+          title: "버전 이력",
+          href: `/apps/${currentAppId}/versions`,
+          icon: History,
+        },
+        {
+          title: "API 키",
+          href: `/apps/${currentAppId}/api-keys`,
+          icon: KeyRound,
+        },
+        {
+          title: "알림 발송",
+          href: `/apps/${currentAppId}/notifications`,
+          icon: Bell,
+        },
+      ]
+    : [];
 
   const renderMenu = (items: typeof navItems) => (
     <SidebarMenu>
@@ -108,6 +147,17 @@ export function AppSidebar() {
             {renderMenu(navItems)}
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {appContextItems.length > 0 && (
+          <SidebarGroup className="px-2 py-1 mt-2">
+            <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/50 px-2 mb-0.5 h-auto">
+              현재 앱
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              {renderMenu(appContextItems)}
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         <SidebarGroup className="px-2 py-1 mt-2">
           <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.1em] text-sidebar-foreground/50 px-2 mb-0.5 h-auto">

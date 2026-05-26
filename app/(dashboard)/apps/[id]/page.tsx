@@ -22,10 +22,12 @@ import { Separator } from "@/components/ui/separator";
 import {
   AlertTriangle,
   AppWindow,
+  Bell,
   CalendarDays,
   CheckCircle,
   History,
   ImagePlus,
+  KeyRound,
   Loader2,
   Pencil,
   QrCode,
@@ -217,6 +219,24 @@ export default function AppDetailPage({
           <Button variant="outline" size="sm" className="border-border/60" render={<Link href={`/apps/${id}/versions`} />}>
             <History className="mr-1 h-4 w-4" />
             버전 이력
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-border/60"
+            render={<Link href={`/apps/${id}/api-keys`} />}
+          >
+            <KeyRound className="mr-1 h-4 w-4" />
+            API 키
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-border/60"
+            render={<Link href={`/apps/${id}/notifications`} />}
+          >
+            <Bell className="mr-1 h-4 w-4" />
+            알림 발송
           </Button>
           <Button
             size="sm"
