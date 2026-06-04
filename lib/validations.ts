@@ -56,14 +56,15 @@ export const inviteMemberSchema = z.object({
 
 export type InviteMemberFormValues = z.infer<typeof inviteMemberSchema>;
 
+// 정본 권한 스코프 (닷-표기 7개) — SDK · iOS · Spring PermissionScope 와 동일.
 const permissionScopeEnum = z.enum([
   "user.profile",
-  "user.student_info",
-  "payment",
-  "location",
+  "user.email",
+  "user.university",
+  "device.location",
+  "device.camera",
+  "device.storage",
   "notification",
-  "camera",
-  "share",
 ]);
 
 // union.config.json 의 appId 와 동일한 reverse-domain 정규식.

@@ -1,34 +1,35 @@
 import { MemberRole } from "@/types/workspace";
 import type { MiniAppStatus, PermissionScope, VersionStatus } from "@/types/app-version";
 
+// 정본 권한 스코프 (닷-표기 7개) — SDK · iOS · Spring PermissionScope 와 동일.
 export const PERMISSION_LABELS: Record<PermissionScope, { label: string; description: string }> = {
   "user.profile": {
     label: "사용자 프로필",
     description: "사용자의 이름, 프로필 이미지 등 기본 정보를 조회합니다.",
   },
-  "user.student_info": {
-    label: "학생 정보",
-    description: "학번, 학과, 학년 등 학생 관련 정보를 조회합니다.",
+  "user.email": {
+    label: "이메일",
+    description: "사용자의 이메일 주소를 조회합니다.",
   },
-  payment: {
-    label: "결제",
-    description: "인앱 결제를 요청합니다.",
+  "user.university": {
+    label: "학교 정보",
+    description: "사용자의 소속 대학교 정보를 조회합니다.",
   },
-  location: {
+  "device.location": {
     label: "위치 정보",
     description: "사용자의 현재 위치 정보를 조회합니다.",
+  },
+  "device.camera": {
+    label: "카메라",
+    description: "기기의 카메라에 접근합니다. (QR 스캔 등)",
+  },
+  "device.storage": {
+    label: "저장소",
+    description: "미니앱 전용 로컬 저장소에 데이터를 읽고 씁니다.",
   },
   notification: {
     label: "알림",
     description: "사용자에게 푸시 알림을 발송합니다.",
-  },
-  camera: {
-    label: "카메라",
-    description: "기기의 카메라에 접근합니다.",
-  },
-  share: {
-    label: "공유",
-    description: "콘텐츠를 외부 앱으로 공유합니다.",
   },
 };
 
