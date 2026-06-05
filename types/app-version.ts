@@ -58,14 +58,15 @@ export interface ReviewDecisionRequest {
 
 export type MiniAppStatus = "PENDING" | "APPROVED";
 
+// 정본 권한 스코프 (닷-표기 7개) — SDK(union.config.json) · iOS · Spring PermissionScope 와 동일.
 export type PermissionScope =
   | "user.profile"
-  | "user.student_info"
-  | "payment"
-  | "location"
-  | "notification"
-  | "camera"
-  | "share";
+  | "user.email"
+  | "user.university"
+  | "device.location"
+  | "device.camera"
+  | "device.storage"
+  | "notification";
 
 export interface MiniAppCategoryDto {
   id: number;
